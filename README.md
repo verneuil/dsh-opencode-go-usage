@@ -46,7 +46,14 @@
 | **GitHub 直装**（推荐） | `github:verneuil/dsh-opencode-go-usage`                                                                      |
 | **固定某个版本**        | `github:verneuil/dsh-opencode-go-usage#v2.10.0`（换成任意已发布 tag）                                                  |
 | **Release 包**     | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v2.10.0/dsh-opencode-go-usage-2.10.0.tgz` |
+| **Release 直链（始终最新）** | `https://github.com/verneuil/dsh-opencode-go-usage/releases/latest/download/dsh-opencode-go-usage.tgz` |
 | **离线 tgz**        | `file:D:/你的路径/dsh-opencode-go-usage-2.10.0.tgz`                                                               |
+
+命令行等价写法（`dsh plugin` 会把声明了 `dsh.bundle` 的依赖自动加进 profile 的 bundles，无需手写 patch）：
+
+```sh
+dsh plugin --profile web add github:verneuil/dsh-opencode-go-usage
+```
 
 不带 `#` 的写法装的是**默认分支的最新提交**（pnpm 会把它解析成当时的 commit 写进 lockfile）；带 `#` 则锁定该 tag。
 
