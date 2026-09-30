@@ -3,6 +3,7 @@
 **中文** · [English](README.en.md)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Listed on dsh-plugin.org](https://dsh-plugin.org/badges/listed.svg)](https://dsh-plugin.org/plugins/verneuil/dsh-opencode-go-usage)
 
 一个 **DeepSeek Harness** 客户端插件：把 **DeepSeek 官方余额** 与 **OpenCode Go** 订阅的三个用量窗口 —— **5 小时（rolling）/ 本周 / 本月** —— 合并到**同一个悬浮胶囊**里，另带一个同名设置页。
 
