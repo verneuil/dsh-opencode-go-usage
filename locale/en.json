@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "OCG Balance & Usage",
+    "description": "One float showing the DeepSeek balance and the OpenCode Go 5-hour / weekly / monthly usage meters, with a settings page for refresh interval, visibility and position."
+  }
+}
