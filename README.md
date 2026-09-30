@@ -146,4 +146,4 @@ Authorization: Bearer <DeepSeek API Key>
 
 ## 反馈
 
-问题与建议请开 [Issue](https://github.com/verneuil/dsh-opencode-go-usage/issues)，欢迎 PR。每个版本的改动记录见 [CHANGELOG.md](CHANGELOG.md)。
+问题与建议请开 [Issue](https://github.com/verneuil/dsh-opencode-go-usage/issues)，欢迎 PR。版本变更见 [CHANGELOG.md](CHANGELOG.md)。
