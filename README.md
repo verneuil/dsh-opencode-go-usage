@@ -40,14 +40,16 @@
 
 | 方式                | 粘贴的 spec                                                                                                     |
 | ----------------- | ------------------------------------------------------------------------------------------------------------ |
-| **GitHub 直装**（推荐） | `github:verneuil/dsh-opencode-go-usage`                                                                      |
+| **GitHub 直装**（推荐） | `github:verneuil/dsh-opencode-go-usage#v2.9.5`                                                               |
 | **Release 包**     | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v2.9.5/dsh-opencode-go-usage-2.9.5.tgz` |
 | **离线 tgz**        | `file:D:/你的路径/dsh-opencode-go-usage-2.9.5.tgz`                                                               |
+
+`#v2.9.5` 是版本标签（Git tag），换成 `#v2.9.6` 即指定另一个版本。**不带 `#` 的写法会装默认分支的最新提交**，不可复现，不推荐。
 
 装完按页面提示刷新（替换已安装的 JavaScript 模块代需要重启 DSH）。
 
 - **只受理「组合包」**：插件管理页拒绝没有 bundle patch 的依赖，本包自带 `cordis.patch.yml`，符合要求。
-- **升级 = 卸载后重新安装**：插件管理页不提供版本选择器与升级按钮；也可以用新 spec 直接覆盖安装。
+- **升级 = 用新版本的 tag 或 Release URL 重装**：插件管理页不提供版本选择器与升级按钮；沿用旧 spec 覆盖安装可能复用已解析的旧提交，建议换新 tag（如 `#v2.9.6`）或先卸载再装。
 - 每个版本的改动见 [CHANGELOG.md](CHANGELOG.md)。
 
 ## 使用
