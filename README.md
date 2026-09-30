@@ -10,17 +10,17 @@
 
 > 前四张为 **DSH 桌面版真机截图**（浅色 / 深色）；最后一张为状态与配色的示意渲染（跑动中的光轨与封环很难截到稳定帧）。
 
-| 浮窗 · 浅色 | 浮窗 · 深色 |
-|---|---|
+| 浮窗 · 浅色                                 | 浮窗 · 深色                                |
+| --------------------------------------- | -------------------------------------- |
 | ![浮窗 · 浅色](screenshots/float-light.png) | ![浮窗 · 深色](screenshots/float-dark.png) |
 
-| 设置页 · 浅色 | 设置页 · 深色 |
-|---|---|
+| 设置页 · 浅色                                    | 设置页 · 深色                                   |
+| ------------------------------------------- | ------------------------------------------ |
 | ![设置页 · 浅色](screenshots/settings-light.png) | ![设置页 · 深色](screenshots/settings-dark.png) |
 
 | 形态与配色总览（示意：刷新中 / 成功封环 / 失败 / 三档配色 / 关掉余额后变窄） |
-|---|
-| ![形态与配色总览](screenshots/states-light.png) |
+| -------------------------------------------- |
+| ![形态与配色总览](screenshots/states-light.png)     |
 
 ## 特性
 
@@ -38,11 +38,11 @@
 
 在 DSH 里打开 **插件管理页 → 「安装插件」对话框 → 粘贴下面任一 spec → 安装**（对话框调用 pnpm，一次只能装一个）：
 
-| 方式 | 粘贴的 spec |
-|---|---|
-| **GitHub 直装**（推荐） | `github:verneuil/dsh-opencode-go-usage` |
-| **Release 包** | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v2.9.5/dsh-opencode-go-usage-2.9.5.tgz` |
-| **离线 tgz** | `file:D:/你的路径/dsh-opencode-go-usage-2.9.5.tgz` |
+| 方式                | 粘贴的 spec                                                                                                     |
+| ----------------- | ------------------------------------------------------------------------------------------------------------ |
+| **GitHub 直装**（推荐） | `github:verneuil/dsh-opencode-go-usage`                                                                      |
+| **Release 包**     | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v2.9.5/dsh-opencode-go-usage-2.9.5.tgz` |
+| **离线 tgz**        | `file:D:/你的路径/dsh-opencode-go-usage-2.9.5.tgz`                                                               |
 
 装完按页面提示刷新（替换已安装的 JavaScript 模块代需要重启 DSH）。
 
@@ -69,12 +69,9 @@
 
 ## 视觉与实现细节
 
-- **常态（迷你胶囊）**：`¥ 余额` + 分隔线 + **三颗圆环**（环心即已用百分比，环外没有 H/W/M 字母标签），浮在界面最上层；**长宽恒定，任何状态下都不改变尺寸**。
-  胶囊高 30px（环盒 20px + 四边内边距 4px + 1px 边框）；内边距按圆环**视觉外径**留白 —— 环视觉 24px 四向各溢出 2px，故环到边框**四边净空一致 2px**（`padding: 4px`）；端头是半径 15px 的圆弧、与环心**同心**（内缘 14px vs 环外缘 12px），所以圆角平行于圆环弧度、整圈间隙均匀；圆环外径 24px（环盒 20px），已用百分比以 **9.5px** 数字收在**环心**（不显示 `%`）—— 两位数百分比也不拥挤。
-  三颗环从左到右依次是 **5 小时**（rolling）/ **本周**（weekly）/ **本月**（monthly），完整口径在 `aria-label`、浮窗 `title` 与设置页标题里。
-- **点击 / 自动刷新**：反馈做成**细光轨**（叠加层，不参与布局，所以不会把浮窗撑大或撑长）：更新中 = **1.15px 发丝光**沿胶囊周长**等弧长匀速**跑圈（SVG 描边 + `pathLength` 归一化，不再有宽胶囊上的「中段飞驰、两端爬行」），光带由**七层彗尾**叠出指数衰减（末端透明度压到 0.10，让它「化掉」而不是一刀切断）+ **白热弹头 / 白热芯**带外发光，另有一道更暗更慢的辅轨（1.35s / 2.15s 不同周期）交织；完成 = 光在**弹头当前位置**收束成整圈「封环」，收口瞬间一次 `drop-shadow` 爆闪，再轻呼吸停留；失败 = 红色同款 + 双击一次；**3 秒后淡出**。
-  > 收笔位置由 JS 在相位切换前读出并冻进 `--ocgu-frozen-a / -b`：浏览器在动画属性变化时会重建动画、`--ocgu-run` 归零，不冻住的话彗尾会瞬间跳回起点（看着就是「后半段突然一条长线」）。
-- **自动刷新**：宿主在真正拉取前先回写 `refreshTick`，浮窗立刻亮起**和手动点击完全一样的边框流光**，出结果后转全绿 / 全红并再停 **3 秒**淡出（25 秒兜底收回，不会一直转）。
+- **常态（迷你胶囊）**：`¥ 余额` + 分隔线 + **三颗圆环**（环心即已用百分比），浮在界面最上层；**长宽恒定，任何状态下都不改变尺寸**。
+  三颗环从左到右依次是 **5 小时**（rolling）/ **本周**（weekly）/ **本月**（monthly），完整口径写在 `aria-label`、浮窗 `title` 与设置页标题里。
+- **自动刷新**：宿主在真正拉取前先回写 `refreshTick`，浮窗立刻亮起**和手动点击完全一样的边框流光**，出结果后转全绿 / 全红并再停 **3 秒**淡出。
 - 配色（红绿灯）：< 80% 绿、≥ 80% 琥珀、≥ 95% 红。浮窗圆环里**已用弧 = 满色**、**未用底盘 = 同色 32% 透明**、环心数字同色；设置页的横向进度条仍从品牌色起步。
 
 ## 数据来源
@@ -97,29 +94,29 @@ Authorization: Bearer <DeepSeek API Key>
 
 ## 构型
 
-| 部分 | 位置 | 说明 |
-|---|---|---|
-| Bundle 清单 | `package.json` | `dsh.bundle.patch` + `dsh.client`（platform web、immediately）+ `icon` + `locale/*.json` 显示元数据 |
-| Loader patch | `cordis.patch.yml` | 插入一行 `id: opencode-go-usage`（本行 id 同时是设置表单的 ns） |
-| 宿主半侧 | `index.js` | `export const Config`（schemastery）+ `apply(ctx, config)`；拉取、解析、写回快照、自动刷新 |
-| 客户端半侧 | `client.js` | `window.__ModuleLoader__` 惰性工厂；只 `require('react')`，注册进 `shell.overlay`（浮窗）与 `settings.section`（设置页） |
+| 部分           | 位置                 | 说明                                                                                                   |
+| ------------ | ------------------ | ---------------------------------------------------------------------------------------------------- |
+| Bundle 清单    | `package.json`     | `dsh.bundle.patch` + `dsh.client`（platform web、immediately）+ `icon` + `locale/*.json` 显示元数据          |
+| Loader patch | `cordis.patch.yml` | 插入一行 `id: opencode-go-usage`（本行 id 同时是设置表单的 ns）                                                      |
+| 宿主半侧         | `index.js`         | `export const Config`（schemastery）+ `apply(ctx, config)`；拉取、解析、写回快照、自动刷新                             |
+| 客户端半侧        | `client.js`        | `window.__ModuleLoader__` 惰性工厂；只 `require('react')`，注册进 `shell.overlay`（浮窗）与 `settings.section`（设置页） |
 
 ## 配置项
 
 设置页覆盖了常用项；下表中的字段也可以直接改本行 patch 的 `config`。
 
-| 字段 | 说明 |
-|---|---|
-| `apiKey` | OpenCode Go 的手动 API Key（secret）。留空则自动使用 DSH 凭据库 |
-| `deepseekApiKey` | DeepSeek 的手动 API Key（secret）。留空则自动使用 DSH 凭据库 |
-| `refreshMinutes` | 自动刷新间隔（分钟，默认 5）；一轮同时刷新余额与用量 |
-| `widgetVisible` | 浮窗显示开关 |
-| `showBalance` | 浮窗上是否显示 DeepSeek 官方余额（默认开） |
-| `widgetAnchorX/Y`、`widgetOffsetX/Y` | 浮窗锚定（拖动时由客户端写入，无需手改） |
-| `refreshRequest` | 手动刷新计数（点击浮窗时由客户端递增） |
-| `refreshTick` | 宿主每轮拉取前自增的「更新中」信号（客户端只读，用来点亮边框流光） |
-| `keyStatus`、`keyHint`、`usageError`、`lastUpdated`、`usage` | OCG 用量的派生快照（宿主写入，客户端读取） |
-| `balanceKeyStatus`、`balanceKeyHint`、`balanceError`、`balance` | DeepSeek 余额的派生快照（宿主写入，客户端读取） |
+| 字段                                                           | 说明                                              |
+| ------------------------------------------------------------ | ----------------------------------------------- |
+| `apiKey`                                                     | OpenCode Go 的手动 API Key（secret）。留空则自动使用 DSH 凭据库 |
+| `deepseekApiKey`                                             | DeepSeek 的手动 API Key（secret）。留空则自动使用 DSH 凭据库    |
+| `refreshMinutes`                                             | 自动刷新间隔（分钟，默认 5）；一轮同时刷新余额与用量                     |
+| `widgetVisible`                                              | 浮窗显示开关                                          |
+| `showBalance`                                                | 浮窗上是否显示 DeepSeek 官方余额（默认开）                      |
+| `widgetAnchorX/Y`、`widgetOffsetX/Y`                          | 浮窗锚定（拖动时由客户端写入，无需手改）                            |
+| `refreshRequest`                                             | 手动刷新计数（点击浮窗时由客户端递增）                             |
+| `refreshTick`                                                | 宿主每轮拉取前自增的「更新中」信号（客户端只读，用来点亮边框流光）               |
+| `keyStatus`、`keyHint`、`usageError`、`lastUpdated`、`usage`     | OCG 用量的派生快照（宿主写入，客户端读取）                         |
+| `balanceKeyStatus`、`balanceKeyHint`、`balanceError`、`balance` | DeepSeek 余额的派生快照（宿主写入，客户端读取）                    |
 
 ## 稳健性设计
 
