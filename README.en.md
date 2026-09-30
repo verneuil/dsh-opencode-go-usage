@@ -41,9 +41,9 @@ In DSH, open the **plugin manager → “Install plugin” dialog → paste one 
 | Method                    | Spec to paste                                                                                                    |
 | ------------------------- | ---------------------------------------------------------------------------------------------------------------- |
 | **Straight from GitHub** (recommended) | `github:verneuil/dsh-opencode-go-usage`                                                              |
-| **Pin a version**         | `github:verneuil/dsh-opencode-go-usage#v2.9.5` (replace with any published tag)                                    |
-| **Release tarball**       | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v2.9.5/dsh-opencode-go-usage-2.9.5.tgz` |
-| **Offline tgz**           | `file:D:/your/path/dsh-opencode-go-usage-2.9.5.tgz`                                                              |
+| **Pin a version**         | `github:verneuil/dsh-opencode-go-usage#v2.9.6` (replace with any published tag)                                    |
+| **Release tarball**       | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v2.9.6/dsh-opencode-go-usage-2.9.6.tgz` |
+| **Offline tgz**           | `file:D:/your/path/dsh-opencode-go-usage-2.9.6.tgz`                                                              |
 
 A spec without `#` installs the **latest commit of the default branch** (pnpm resolves it to that commit and records it in the lockfile); with `#` the tag is pinned instead.
 

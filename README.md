@@ -43,9 +43,9 @@
 | 方式                | 粘贴的 spec                                                                                                     |
 | ----------------- | ------------------------------------------------------------------------------------------------------------ |
 | **GitHub 直装**（推荐） | `github:verneuil/dsh-opencode-go-usage`                                                                      |
-| **固定某个版本**        | `github:verneuil/dsh-opencode-go-usage#v2.9.5`（换成任意已发布 tag）                                                  |
-| **Release 包**     | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v2.9.5/dsh-opencode-go-usage-2.9.5.tgz` |
-| **离线 tgz**        | `file:D:/你的路径/dsh-opencode-go-usage-2.9.5.tgz`                                                               |
+| **固定某个版本**        | `github:verneuil/dsh-opencode-go-usage#v2.9.6`（换成任意已发布 tag）                                                  |
+| **Release 包**     | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v2.9.6/dsh-opencode-go-usage-2.9.6.tgz` |
+| **离线 tgz**        | `file:D:/你的路径/dsh-opencode-go-usage-2.9.6.tgz`                                                               |
 
 不带 `#` 的写法装的是**默认分支的最新提交**（pnpm 会把它解析成当时的 commit 写进 lockfile）；带 `#` 则锁定该 tag。
 

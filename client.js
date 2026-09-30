@@ -1281,8 +1281,12 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
 
   // ---------- 挂载 ----------
   function apply(ctx) {
-    // 不把 connection/slots/remote 声明为硬注入服务：客户端模块系统会在组合后期
-    // 才挂载它们，这里用 apply 内就绪探测 + 幂等挂载，避免重复 apply 与弃权。
+    // 装配方式遵循官方插件规范：
+    // · 席位贡献用 ctx.slots.inject(ownerKey, () => ctx.slots.register(...))（见下方两处），
+    //   官方原文：“Contribute through slots: ctx.slots.inject(ownerKey, () => ctx.slots.register(...))”；
+    // · slots 服务由插件对象的 inject: ['slots'] 声明，宿主保证 apply 时它已就绪（官方模板同款写法）；
+    // · remote（配置投影服务）不声明为硬注入：它在组合后期才挂载，缺失时应当保留重试，
+    //   而不是让整条目弃权 —— 所以这里只为 remote 保留就绪探测 + 阶梯重试。
     var mounted = false;
     var remoteOf = function () {
       var remote = ctx.get('remote');
@@ -1295,8 +1299,8 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
       if (mounted) return true;
       var slots = ctx.get('slots');
       var remote = remoteOf();
-      // 两个服务都就绪才挂载：slots 用于注册席位，remote 用于读配置投影。
-      // 任一缺失都只是挂载时序未到，交给下面的阶梯重试，不要挂出一个读不到数据的空壳。
+      // slots 由 inject: ['slots'] 保证已就绪；remote 可能仍在组合后期 —— 未就绪时交给下面的
+      // 阶梯重试，不要挂出一个读不到数据的空壳。
       if (!slots || !remote) return false;
       mounted = true;
 
@@ -1340,6 +1344,6 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
     ctx.effect(function () { return function () { if (timer !== null) clearTimeout(timer); }; });
   }
 
-  module.exports = { name: 'opencode-go-usage', apply: apply };
+  module.exports = { name: 'opencode-go-usage', inject: ['slots'], apply: apply };
   return module.exports;
 }});
