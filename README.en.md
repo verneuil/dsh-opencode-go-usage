@@ -30,6 +30,7 @@ An unofficial **DeepSeek Harness** client plugin that merges your **DeepSeek acc
 - **Drag to snap**: on release the pill snaps to the nearest reference line (composer card edge / window edge) and keeps following it when the window resizes, the side panel opens, or the chat width changes.
 - **Fixed size**: the pill never changes size in any state (the feedback layer is an absolutely positioned overlay that does not participate in layout).
 - **Zero dependencies**: plain JavaScript — **no build step, no third-party runtime dependencies** (only `require('react')`, provided by the host).
+- **Bilingual UI**: every interface string goes through the client locale dictionaries and follows the DSH language setting instantly (pill, settings page, menu label and all action messages).
 - **Theme aware**: colours come only from host theme tokens (`--dsw-alias-*`), so light/dark follow automatically; switches, buttons, inputs and badges are copied from the host's own components (only the class prefix is renamed).
 
 ## Installation
@@ -41,9 +42,9 @@ In DSH, open the **plugin manager → “Install plugin” dialog → paste one 
 | Method                    | Spec to paste                                                                                                    |
 | ------------------------- | ---------------------------------------------------------------------------------------------------------------- |
 | **Straight from GitHub** (recommended) | `github:verneuil/dsh-opencode-go-usage`                                                              |
-| **Pin a version**         | `github:verneuil/dsh-opencode-go-usage#v2.9.6` (replace with any published tag)                                    |
-| **Release tarball**       | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v2.9.6/dsh-opencode-go-usage-2.9.6.tgz` |
-| **Offline tgz**           | `file:D:/your/path/dsh-opencode-go-usage-2.9.6.tgz`                                                              |
+| **Pin a version**         | `github:verneuil/dsh-opencode-go-usage#v2.10.0` (replace with any published tag)                                    |
+| **Release tarball**       | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v2.10.0/dsh-opencode-go-usage-2.10.0.tgz` |
+| **Offline tgz**           | `file:D:/your/path/dsh-opencode-go-usage-2.10.0.tgz`                                                              |
 
 A spec without `#` installs the **latest commit of the default branch** (pnpm resolves it to that commit and records it in the lockfile); with `#` the tag is pinned instead.
 
@@ -135,7 +136,7 @@ The settings page covers the common options; the fields below can also be edited
 - **Unofficial plugin**: this project is **not affiliated with DeepSeek or OpenCode**. Neither endpoint is a frozen public contract, so a major upstream change can break it (the parser already tolerates common variants such as “remaining percentage / used amount and quota / seconds until reset”, and the host reports readable text in `usageError` when it cannot).
 - **Keys stay on your machine**: the host half calls the two endpoints directly, with no third party in between. A manually entered key is stored in this machine's plugin config, and the UI only ever shows a masked hint (such as `sk-****5590`).
 - **Network hiccups**: occasional cross-border HTTPS timeouts are normal. The pill then keeps the **last known values** and the border turns to a warning colour; the host retries at 3/8/20/40 seconds and recovers automatically.
-- **Interface language**: the pill and the settings page are in Chinese (they do not use the client locale dictionaries yet).
+- **Interface language**: the pill and the settings page are **bilingual (Chinese / English)** and follow the DSH language setting. **Error details** produced by the API layer (such as 401/403 or an unexpected response shape) are still in Chinese.
 - **Use at your own risk**: this software is provided “as is” under the MIT licence, without warranty of any kind.
 
 ## License
