@@ -8,13 +8,19 @@
 
 ## 截图
 
+> 下图为**示意框架**中的渲染：宿主主题令牌逐字取自 DSH 应用包，浮窗与设置页用的是插件自身真实样式（非重绘）。
+
 | 浮窗 · 浅色 | 浮窗 · 深色 |
 |---|---|
-| ![浮窗·浅色](screenshots/float-light.png) | ![浮窗·深色](screenshots/float-dark.png) |
+| ![浮窗 · 浅色](screenshots/float-light.png) | ![浮窗 · 深色](screenshots/float-dark.png) |
+
+| 刷新反馈：完成后整圈「封环」 | 形态与配色总览（含刷新中 / 失败 / 分档配色） |
+|---|---|
+| ![刷新反馈](screenshots/float-feedback.png) | ![形态与配色](screenshots/states-light.png) |
 
 | 设置页 · 浅色 | 设置页 · 深色 |
 |---|---|
-| ![设置页·浅色](screenshots/settings-light.png) | ![设置页·深色](screenshots/settings-dark.png) |
+| ![设置页 · 浅色](screenshots/settings-light.png) | ![设置页 · 深色](screenshots/settings-dark.png) |
 
 ## 特性
 
