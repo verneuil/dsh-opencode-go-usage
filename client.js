@@ -118,8 +118,8 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
     // 环心数字：绝对定位不参与行高；tabular-nums 让数值变化时不抖；颜色跟环同色（一眼成套）。
     // 9.5px/-.3px 是环内径(≈17.8px)的上限，两位数百分比正好放得下
     '.ocgu-mini-ring-val{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:9.5px;line-height:1;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:-.3px;white-space:nowrap;color:var(--ocgu-ring)}' +
-    // 用量分级配色（红绿灯，一色两用）：<80% 绿、>=80% 琥珀、>=95% 红。
-    // 已用弧 = 该色满不透明；未用底盘 = 同色 32% 透明。
+    // 用量分级配色（红绿灯，一色两用）：剩余 >20% 绿、<=20% 琥珀、<=5% 红。
+    // 剩余弧 = 该色满不透明；底盘（已消耗部分）= 同色 32% 透明。
     '.ocgu-mini-ring[data-level="ok"]{--ocgu-ring:var(--dsw-alias-state-success-primary)}' +
     '.ocgu-mini-ring[data-level="warn"]{--ocgu-ring:var(--dsw-alias-state-warn-primary)}' +
     '.ocgu-mini-ring[data-level="danger"]{--ocgu-ring:var(--dsw-alias-state-error-primary)}' +
@@ -303,9 +303,16 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
     if (v > max) return max;
     return v;
   }
-  function levelOf(percent) {
-    if (percent >= 95) return 'danger';
-    if (percent >= 80) return 'warn';
+  // 显示口径：官方页面现按「剩余」呈现（xx% left），这里把内部的「已用」换算成「剩余」。
+  // 内部数据（宿主解析、config 存储）仍保持「已用」语义不变，只在显示层换算。
+  function leftOf(used) {
+    var u = clampNum(Number(used), 0, 100);
+    return Math.round(100 - u);
+  }
+  // 风险分级：改按「剩余」判定 —— 剩余越少越危险（等价于原来按已用 ≥80 / ≥95 判）
+  function levelOf(leftPct) {
+    if (leftPct <= 5) return 'danger';
+    if (leftPct <= 20) return 'warn';
     return 'ok';
   }
   function currencySymbol(cur) {
@@ -419,7 +426,7 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
   // 这一轮不会回结果了（宿主提前返回 / 连接挂起），把流光收回，不能让一直转。
   var AUTO_LOADING_MAX_MS = 25000;
   // 迷你圆环几何：viewBox 24×24、r=10（描边 2.2 → 外径 22.2），周长即 dash 总长；
-  // 弧长按已用百分比取：strokeDashoffset = C × (1 - pct/100)，0% 时弧度全长偏移 = 不画。
+  // 弧长按剩余百分比取：strokeDashoffset = C × (1 - left/100)，剩余 0% 时偏移全长 = 不画。
   // （原 viewBox 18×18、r=8：环小、环心 8px 数字放两位数很挤，故整体放大）
   var RING_BOX = 24;
   var RING_MID = RING_BOX / 2;
@@ -427,7 +434,7 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
   var RING_C = 2 * Math.PI * RING_R;
   // 三个窗口的展示口径：浮窗只放得下 1 个字符的短标签（H = 5 小时、W = 本周、M = 本月），
   // 完整口径在 aria-label / 浮窗 title / 设置页标题里
-  // 浮窗只在环心显示已用百分比（不再在环外单列 H/W/M 标签，浮窗更短）
+  // 浮窗只在环心显示剩余百分比（不再在环外单列 H/W/M 标签，浮窗更短）
   var WINDOWS = [
     { key: 'rolling', mini: 'H' },
     { key: 'weekly', mini: 'W' },
@@ -454,12 +461,12 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
       'label.balance': '显示DS官方余额',
       'title.balance': '是否在浮窗上显示 DeepSeek 官方余额',
       'float.groupTitle': 'OpenCode Go · {win}（{mini}）',
-      'float.ring': 'OpenCode Go {win} 已用 {pct}%',
-      'float.ringEmpty': 'OpenCode Go {win} 已用（暂无数据）',
+      'float.ring': 'OpenCode Go {win} 剩余 {pct}%',
+      'float.ringEmpty': 'OpenCode Go {win} 剩余（暂无数据）',
       'float.noKey': '未配置 API Key：可在设置 → OCG 余量查询 里填写，或写入 DSH 凭据库（点击刷新，拖动可移动位置）',
       'float.failed': '刷新失败：{err}（点击重试，拖动可移动位置）',
       'float.balance': 'DeepSeek 余额 {bal} · ',
-      'float.usage': 'OpenCode Go 用量（已用）：5 小时 / 本周 / 本月 · 每 {min} 分钟自动刷新 · 更新于 {rel}',
+      'float.usage': 'OpenCode Go 剩余用量：5 小时 / 本周 / 本月 · 每 {min} 分钟自动刷新 · 更新于 {rel}',
       'float.tail': '（点击或自动刷新：边框流光 → 全绿/全红 → 3 秒淡出；拖动可移动位置；明细见设置 → OCG 余量查询）',
       'rel.justNow': '刚刚更新',
       'rel.min': '{n} 分钟前',
@@ -491,7 +498,7 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
       'settings.refreshing': '刷新中…',
       'settings.updated': '已更新（{time}）',
       'settings.failed': '刷新失败：{err}',
-      'settings.cardHint': '百分比为「已用」：进度条 ≥80% 橙色、≥95% 红色。',
+      'settings.cardHint': '百分比为「剩余」：剩余 ≤20% 转橙、≤5% 转红。',
       'settings.section': '设置',
       'field.interval': '自动刷新',
       'field.interval.hint': '自动刷新间隔（当前 {n} 分钟，0.5 ~ 1440）；手动刷新不受此限。',
@@ -537,12 +544,12 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
       'label.balance': 'Show DS balance',
       'title.balance': 'Whether to show the DS balance on the pill',
       'float.groupTitle': 'OpenCode Go · {win} ({mini})',
-      'float.ring': 'OpenCode Go {win} used {pct}%',
-      'float.ringEmpty': 'OpenCode Go {win} used (no data)',
+      'float.ring': 'OpenCode Go {win} {pct}% left',
+      'float.ringEmpty': 'OpenCode Go {win} left (no data)',
       'float.noKey': 'No API key configured: add one in Settings → OCG Usage, or put it in the DSH credential store (click to refresh, drag to move)',
       'float.failed': 'Refresh failed: {err} (click to retry, drag to move)',
       'float.balance': 'DeepSeek balance {bal} · ',
-      'float.usage': 'OpenCode Go usage (used): 5-hour / weekly / monthly · auto-refresh every {min} min · updated {rel}',
+      'float.usage': 'OpenCode Go usage left: 5-hour / weekly / monthly · auto-refresh every {min} min · updated {rel}',
       'float.tail': '(click or auto-refresh: border light trail → all green/red → fades after 3s; drag to move; details in Settings → OCG Usage)',
       'rel.justNow': 'just now',
       'rel.min': '{n} min ago',
@@ -574,7 +581,7 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
       'settings.refreshing': 'Refreshing…',
       'settings.updated': 'Updated ({time})',
       'settings.failed': 'Refresh failed: {err}',
-      'settings.cardHint': 'Percentages are “used”: the bar turns amber at ≥80% and red at ≥95%.',
+      'settings.cardHint': 'Percentages are “left”: amber at ≤20%, red at ≤5%.',
       'settings.section': 'Settings',
       'field.interval': 'Auto-refresh',
       'field.interval.hint': 'Auto-refresh interval (currently {n} min, 0.5–1440); manual refresh is not limited by this.',
@@ -1067,20 +1074,22 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
     }
     WINDOWS.forEach(function (w) {
       var win = windowOf(usage, w.key);
-      var pct = win.percent;
-      var shown = Math.round(pct);
-      // 环心显示已用百分比（环外不再单列 H/W/M 标签，三颗环紧挨着，浮窗更短）
+      // 该窗口是否真有数据（宿主对缺失窗口给的是 status/resetsAt 皆空）
+      var winHas = hasData && !!(win.status || win.resetsAt);
+      // 显示「剩余」：弧长也按剩余 —— 满剩余 = 整圈，越用越短（与官方页面 xx% left 一致）
+      var left = leftOf(win.percent);
+      // 环心显示剩余百分比（环外不再单列 H/W/M 标签，三颗环紧挨着，浮窗更短）
       children.push(React.createElement('span', {
         key: w.key, className: 'ocgu-mini-group', title: t('float.groupTitle', { win: winName(w, t), mini: w.mini })
       },
         React.createElement('span', {
           className: 'ocgu-mini-ring',
-          'data-level': hasData ? levelOf(pct) : 'empty',
+          'data-level': winHas ? levelOf(left) : 'empty',
           role: 'progressbar',
           'aria-valuemin': 0,
           'aria-valuemax': 100,
-          'aria-valuenow': hasData ? shown : 0,
-          'aria-label': hasData ? t('float.ring', { win: winName(w, t), pct: shown }) : t('float.ringEmpty', { win: winName(w, t) })
+          'aria-valuenow': winHas ? left : 0,
+          'aria-label': winHas ? t('float.ring', { win: winName(w, t), pct: left }) : t('float.ringEmpty', { win: winName(w, t) })
         },
           React.createElement('svg', { viewBox: '0 0 ' + RING_BOX + ' ' + RING_BOX, 'aria-hidden': 'true', focusable: 'false' },
             React.createElement('circle', { className: 'ocgu-mini-ring-track', cx: RING_MID, cy: RING_MID, r: RING_R }),
@@ -1090,10 +1099,10 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
                 className: 'ocgu-mini-ring-arc', cx: RING_MID, cy: RING_MID, r: RING_R,
                 style: {
                   strokeDasharray: String(RING_C),
-                  strokeDashoffset: String(hasData ? RING_C * (1 - pct / 100) : RING_C)
+                  strokeDashoffset: String(winHas ? RING_C * (1 - left / 100) : RING_C)
                 }
               }))),
-          React.createElement('span', { className: 'ocgu-mini-ring-val' }, hasData ? shown : '--'))));
+          React.createElement('span', { className: 'ocgu-mini-ring-val' }, winHas ? left : '--'))));
     });
 
     var title = missingKey
@@ -1150,15 +1159,19 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
   function UsageRow(props) {
     var win = props.win;
     var t = props.t || tZh;
+    // 无数据的窗口不显示百分比：宿主对缺失窗口给的是 status/resetsAt 皆空，
+    // 若按「剩余」口径硬算会得到误导性的 100%
+    var winHas = !!(win.status || win.resetsAt);
+    var left = leftOf(win.percent);
     // 重置倒计时放在标题行、百分比左侧（不独占一行）
     return React.createElement('div', { className: 'ocgu-row', style: { marginBottom: '10px' } },
       React.createElement('div', { className: 'ocgu-row-top' },
         React.createElement('span', { className: 'ocgu-row-label' }, props.label),
         React.createElement('span', { className: 'ocgu-row-reset' },
           (fmtCountdown(win.resetsAt, t) || t('cd.unknown')) + (win.status && win.status !== 'ok' ? t('cd.status', { s: win.status }) : '')),
-        React.createElement('span', { className: 'ocgu-row-pct' }, win.percent + '%')),
+        React.createElement('span', { className: 'ocgu-row-pct' }, winHas ? left + '%' : '--')),
       React.createElement('div', { className: 'ocgu-row-track' },
-        React.createElement('div', { className: 'ocgu-row-fill ocgu-fill', 'data-level': levelOf(win.percent), style: { width: win.percent + '%' } })));
+        React.createElement('div', { className: 'ocgu-row-fill ocgu-fill', 'data-level': winHas ? levelOf(left) : 'empty', style: { width: (winHas ? left : 0) + '%' } })));
   }
 
   function SettingsPage(props) {

@@ -82,7 +82,7 @@ const OCG_CREDENTIALS = ["OPENCODE_GO_API_KEY", "OPENCODE_API_KEY"]
 const DS_CREDENTIALS = ["DEEPSEEK_API_KEY"]
 // 官方文档明确要求客户端自报身份（"Identify itself with its own user agent, such as
 // my-coding-agent/1.0, rather than a generic SDK or HTTP-library name"）；两个接口都带上。
-const USER_AGENT = "dsh-opencode-go-usage/2.9.5 (+DeepSeek Harness plugin)"
+const USER_AGENT = "dsh-opencode-go-usage/2.11.0 (+DeepSeek Harness plugin)"
 // 单请求总超时。跨国链路偶发慢连接，15s 偏紧，放宽到 20s（inflight 去重，不会叠加请求）。
 const REQUEST_TIMEOUT_MS = 20000
 
