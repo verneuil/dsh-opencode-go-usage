@@ -9,7 +9,7 @@ An unofficial **DeepSeek Harness** client plugin that merges your **DeepSeek acc
 
 ## Screenshots
 
-> The first four are **real screenshots from the DSH desktop app** (light / dark). The last one is a rendered illustration of the states and colour grades — a moving light rail and a closing ring are hard to capture as a stable frame.
+> All five are **rendered illustrations** of the interface, built from the plugin's real stylesheet and the host theme tokens — a moving light rail and a closing ring are hard to capture as a stable frame.
 
 | Pill · light                            | Pill · dark                           |
 | --------------------------------------- | ------------------------------------- |
@@ -26,7 +26,7 @@ An unofficial **DeepSeek Harness** client plugin that merges your **DeepSeek acc
 ## Features
 
 - **Two datasets in one pill**: DeepSeek balance (`¥` amount) + OpenCode Go usage for three windows; **click the pill to refresh both** (fetched together — a failure on one side does not affect the other).
-- **Three rings**: each ring's centre shows the **used percentage** (no `%` sign); < 80% green, ≥ 80% amber, ≥ 95% red; the unused track is the same colour at 32% opacity, so every ring reads as one piece.
+- **Three rings**: each ring's centre shows the **percentage left** (no `%` sign); > 20% green, ≤ 20% amber, ≤ 5% red; the track is the same colour at 32% opacity, so every ring reads as one piece.
 - **Hairline light rail**: while refreshing, a hairline of light runs around the pill's perimeter at **constant arc-length speed**; on completion it **closes into a full ring** at the head's current position; failures use the same effect in red.
 - **Drag to snap**: on release the pill snaps to the nearest reference line (composer card edge / window edge) and keeps following it when the window resizes, the side panel opens, or the chat width changes.
 - **Fixed size**: the pill never changes size in any state (the feedback layer is an absolutely positioned overlay that does not participate in layout).
@@ -64,7 +64,7 @@ Follow the on-screen prompt to reload afterwards (replacing an installed JavaScr
 ## Settings page
 
 - The **manual refresh** button sits at the right end of the “OpenCode Go 用量详情” heading row, with the refresh time / result message to its left (after a successful refresh it shows “已更新（time）” and **falls back to “上次更新: …” after 3 seconds**).
-- **Usage details**: a progress bar, used percentage, reset countdown and API status for each of the three windows.
+- **Usage details**: a progress bar, percentage left, reset countdown and API status for each of the three windows.
 - **Auto-refresh interval** (minutes, 0.5 – 1440).
 - **Floating pill**: three things in one row — the “显示DS官方余额” checkbox (turn it off and the pill keeps only the three rings and gets narrower), the “Reset to bottom-right” button, and the master switch.
 - **Manual overrides for both API keys** (leave blank to use the DSH credential store; clear them at any time to go back to automatic).
@@ -87,7 +87,7 @@ GET https://api.deepseek.com/user/balance                  # DeepSeek balance
 Authorization: Bearer <DeepSeek API Key>
 ```
 
-The usage endpoint returns `{ usage: { rolling, weekly, monthly } }`, where each window carries `status` / `percent` (**used** percentage) / `resetsAt`; the balance endpoint returns `balance_infos[]` (the CNY entry is preferred).
+The usage endpoint returns `{ usage: { rolling, weekly, monthly } }`, where each window carries `status` / `percent` (**used** percentage) / `resetsAt`; the balance endpoint returns `balance_infos[]` (the CNY entry is preferred). The UI shows the **percentage left**; the internal value stays “used”.
 The host half performs the fetching and parsing (neither key ever leaves the host process); the client half only reads the configuration projection the host writes.
 
 **Key resolution** (independent per side, in priority order):
