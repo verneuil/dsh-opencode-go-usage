@@ -26,7 +26,7 @@ An unofficial **DeepSeek Harness** client plugin that merges your **DeepSeek acc
 ## Features
 
 - **Two datasets in one pill**: DeepSeek balance (`¥` amount) + OpenCode Go usage for three windows; **click the pill to refresh both** (fetched together — a failure on one side does not affect the other).
-- **Three rings**: each ring's centre shows the **percentage left** (no `%` sign); > 20% green, ≤ 20% amber, ≤ 5% red; the track is the same colour at 32% opacity, so every ring reads as one piece.
+- **Three rings**: each ring's centre shows the percentage — **Left** by default, switchable to **Used** in settings (no `%` sign); > 20% green, ≤ 20% amber, ≤ 5% red; the track is the same colour at 32% opacity, so every ring reads as one piece.
 - **Hairline light rail**: while refreshing, a hairline of light runs around the pill's perimeter at **constant arc-length speed**; on completion it **closes into a full ring** at the head's current position; failures use the same effect in red.
 - **Drag to snap**: on release the pill snaps to the nearest reference line (composer card edge / window edge) and keeps following it when the window resizes, the side panel opens, or the chat width changes.
 - **Fixed size**: the pill never changes size in any state (the feedback layer is an absolutely positioned overlay that does not participate in layout).
@@ -64,7 +64,8 @@ Follow the on-screen prompt to reload afterwards (replacing an installed JavaScr
 ## Settings page
 
 - The **manual refresh** button sits at the right end of the “OpenCode Go 用量详情” heading row, with the refresh time / result message to its left (after a successful refresh it shows “已更新（time）” and **falls back to “上次更新: …” after 3 seconds**).
-- **Usage details**: a progress bar, percentage left, reset countdown and API status for each of the three windows.
+- **Usage details**: a progress bar, the percentage (basis is selectable), reset countdown and API status for each of the three windows.
+- **Progress basis** (top-right of the usage card): **Used** / **Left** — the pill and the settings rows follow; defaults to Left.
 - **Auto-refresh interval** (minutes, 0.5 – 1440).
 - **Floating pill**: three things in one row — the “显示DS官方余额” checkbox (turn it off and the pill keeps only the three rings and gets narrower), the “Reset to bottom-right” button, and the master switch.
 - **Manual overrides for both API keys** (leave blank to use the DSH credential store; clear them at any time to go back to automatic).
@@ -87,7 +88,7 @@ GET https://api.deepseek.com/user/balance                  # DeepSeek balance
 Authorization: Bearer <DeepSeek API Key>
 ```
 
-The usage endpoint returns `{ usage: { rolling, weekly, monthly } }`, where each window carries `status` / `percent` (**used** percentage) / `resetsAt`; the balance endpoint returns `balance_infos[]` (the CNY entry is preferred). The UI shows the **percentage left**; the internal value stays “used”.
+The usage endpoint returns `{ usage: { rolling, weekly, monthly } }`, where each window carries `status` / `percent` (**used** percentage) / `resetsAt`; the balance endpoint returns `balance_infos[]` (the CNY entry is preferred). The UI defaults to the **percentage left** and can be switched to **used** in settings; the internal value stays “used”.
 The host half performs the fetching and parsing (neither key ever leaves the host process); the client half only reads the configuration projection the host writes.
 
 **Key resolution** (independent per side, in priority order):
@@ -115,6 +116,7 @@ The settings page covers the common options; the fields below can also be edited
 | `refreshMinutes`                                               | Auto-refresh interval in minutes (default 5); one round refreshes both balance and usage |
 | `widgetVisible`                                                | Pill visibility switch                                                             |
 | `showBalance`                                                  | Whether to show the DeepSeek balance on the pill (default on)                       |
+| `percentMode`                                                  | Usage progress basis: `left` (default) or `used`                                   |
 | `widgetAnchorX/Y`, `widgetOffsetX/Y`                            | Pill anchoring (written by the client while dragging; no need to edit by hand)      |
 | `refreshRequest`                                               | Manual refresh counter (incremented by the client when the pill is clicked)         |
 | `refreshTick`                                                  | “Refreshing” signal the host increments before each fetch (client read-only; lights up the border rail) |
