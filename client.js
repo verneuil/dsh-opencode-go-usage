@@ -163,6 +163,10 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
     '.ocgu-field-titlerow{display:flex;align-items:center;gap:8px;min-width:0}' +
     '.ocgu-field-title{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;font-weight:500;line-height:1.5;color:var(--dsw-alias-label-primary)}' +
     '.ocgu-field-right{display:flex;align-items:center;gap:10px;flex:none;margin-left:auto}' +
+    // 二选一分段控件（用量进度口径：已使用 / 剩余）
+    '.ocgu-seg{display:inline-flex;align-items:center;gap:2px;padding:2px;border-radius:9px;background:var(--dsw-alias-interactive-bg-hover)}' +
+    '.ocgu-seg-item{border:0;background:transparent;color:var(--dsw-alias-label-secondary);font:inherit;font-size:12.5px;line-height:1;padding:5px 10px;border-radius:7px;cursor:pointer}' +
+    '.ocgu-seg-item[data-on="1"]{background:var(--dsw-alias-bg-base);color:var(--dsw-alias-label-primary);font-weight:500}' +
     '.ocgu-field-control{display:flex;align-items:center;flex-wrap:wrap;gap:8px}' +
     // 块布局（两把 Key 用）：标题/描述独占一行，控件行**通栏** —— 输入框左到头、右到按钮（自己撑满）
     '.ocgu-field[data-layout="block"] .ocgu-field-main{flex:1 1 100%}' +
@@ -303,17 +307,18 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
     if (v > max) return max;
     return v;
   }
-  // 显示口径：官方页面现按「剩余」呈现（xx% left），这里把内部的「已用」换算成「剩余」。
-  // 内部数据（宿主解析、config 存储）仍保持「已用」语义不变，只在显示层换算。
-  function leftOf(used) {
-    var u = clampNum(Number(used), 0, 100);
-    return Math.round(100 - u);
+  // 进度口径（设置页可切换）：left = 剩余（默认），used = 已使用。
+  // 内部数据始终是「已用」，这里只在显示层换算成当前口径的值与风险等级。
+  function modeOf(value) {
+    return value && value.percentMode === 'used' ? 'used' : 'left';
   }
-  // 风险分级：改按「剩余」判定 —— 剩余越少越危险（等价于原来按已用 ≥80 / ≥95 判）
-  function levelOf(leftPct) {
-    if (leftPct <= 5) return 'danger';
-    if (leftPct <= 20) return 'warn';
-    return 'ok';
+  function dispOf(used, mode) {
+    var u = clampNum(Number(used), 0, 100);
+    if (mode === 'used') {
+      return { value: Math.round(u), level: u >= 95 ? 'danger' : (u >= 80 ? 'warn' : 'ok') };
+    }
+    var l = Math.round(100 - u);
+    return { value: l, level: l <= 5 ? 'danger' : (l <= 20 ? 'warn' : 'ok') };
   }
   function currencySymbol(cur) {
     if (!cur || cur === 'CNY') return '¥';
@@ -461,12 +466,12 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
       'label.balance': '显示DS官方余额',
       'title.balance': '是否在浮窗上显示 DeepSeek 官方余额',
       'float.groupTitle': 'OpenCode Go · {win}（{mini}）',
-      'float.ring': 'OpenCode Go {win} 剩余 {pct}%',
-      'float.ringEmpty': 'OpenCode Go {win} 剩余（暂无数据）',
+      'float.ring': 'OpenCode Go {win} {mode} {pct}%',
+      'float.ringEmpty': 'OpenCode Go {win}（暂无数据）',
       'float.noKey': '未配置 API Key：可在设置 → OCG 余量查询 里填写，或写入 DSH 凭据库（点击刷新，拖动可移动位置）',
       'float.failed': '刷新失败：{err}（点击重试，拖动可移动位置）',
       'float.balance': 'DeepSeek 余额 {bal} · ',
-      'float.usage': 'OpenCode Go 剩余用量：5 小时 / 本周 / 本月 · 每 {min} 分钟自动刷新 · 更新于 {rel}',
+      'float.usage': 'OpenCode Go 用量：5 小时 / 本周 / 本月 · 每 {min} 分钟自动刷新 · 更新于 {rel}',
       'float.tail': '（点击或自动刷新：边框流光 → 全绿/全红 → 3 秒淡出；拖动可移动位置；明细见设置 → OCG 余量查询）',
       'rel.justNow': '刚刚更新',
       'rel.min': '{n} 分钟前',
@@ -499,6 +504,10 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
       'settings.updated': '已更新（{time}）',
       'settings.failed': '刷新失败：{err}',
       'settings.cardHint': '百分比为「剩余」：剩余 ≤20% 转橙、≤5% 转红。',
+      'settings.cardHintUsed': '百分比为「已使用」：进度条 ≥80% 转橙、≥95% 转红。',
+      'mode.used': '已使用',
+      'mode.left': '剩余',
+      'aria.mode': '用量进度口径',
       'settings.section': '设置',
       'field.interval': '自动刷新',
       'field.interval.hint': '自动刷新间隔（当前 {n} 分钟，0.5 ~ 1440）；手动刷新不受此限。',
@@ -544,12 +553,12 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
       'label.balance': 'Show DS balance',
       'title.balance': 'Whether to show the DS balance on the pill',
       'float.groupTitle': 'OpenCode Go · {win} ({mini})',
-      'float.ring': 'OpenCode Go {win} {pct}% left',
-      'float.ringEmpty': 'OpenCode Go {win} left (no data)',
+      'float.ring': 'OpenCode Go {win} {mode} {pct}%',
+      'float.ringEmpty': 'OpenCode Go {win} (no data)',
       'float.noKey': 'No API key configured: add one in Settings → OCG Usage, or put it in the DSH credential store (click to refresh, drag to move)',
       'float.failed': 'Refresh failed: {err} (click to retry, drag to move)',
       'float.balance': 'DeepSeek balance {bal} · ',
-      'float.usage': 'OpenCode Go usage left: 5-hour / weekly / monthly · auto-refresh every {min} min · updated {rel}',
+      'float.usage': 'OpenCode Go usage: 5-hour / weekly / monthly · auto-refresh every {min} min · updated {rel}',
       'float.tail': '(click or auto-refresh: border light trail → all green/red → fades after 3s; drag to move; details in Settings → OCG Usage)',
       'rel.justNow': 'just now',
       'rel.min': '{n} min ago',
@@ -582,6 +591,10 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
       'settings.updated': 'Updated ({time})',
       'settings.failed': 'Refresh failed: {err}',
       'settings.cardHint': 'Percentages are “left”: amber at ≤20%, red at ≤5%.',
+      'settings.cardHintUsed': 'Percentages are “used”: amber at ≥80%, red at ≥95%.',
+      'mode.used': 'Used',
+      'mode.left': 'Left',
+      'aria.mode': 'Usage progress basis',
       'settings.section': 'Settings',
       'field.interval': 'Auto-refresh',
       'field.interval.hint': 'Auto-refresh interval (currently {n} min, 0.5–1440); manual refresh is not limited by this.',
@@ -1072,24 +1085,26 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
         }, balanceText(value)),
         React.createElement('span', { key: 'sep', className: 'ocgu-sep' }));
     }
+    var mode = modeOf(value);
     WINDOWS.forEach(function (w) {
       var win = windowOf(usage, w.key);
       // 该窗口是否真有数据（宿主对缺失窗口给的是 status/resetsAt 皆空）
       var winHas = hasData && !!(win.status || win.resetsAt);
-      // 显示「剩余」：弧长也按剩余 —— 满剩余 = 整圈，越用越短（与官方页面 xx% left 一致）
-      var left = leftOf(win.percent);
-      // 环心显示剩余百分比（环外不再单列 H/W/M 标签，三颗环紧挨着，浮窗更短）
+      // 弧长与环心数字按当前口径（剩余口径：满剩余 = 整圈，越用越短）
+      var d = dispOf(win.percent, mode);
+      var left = d.value;
+      // 环心显示百分比（环外不再单列 H/W/M 标签，三颗环紧挨着，浮窗更短）
       children.push(React.createElement('span', {
         key: w.key, className: 'ocgu-mini-group', title: t('float.groupTitle', { win: winName(w, t), mini: w.mini })
       },
         React.createElement('span', {
           className: 'ocgu-mini-ring',
-          'data-level': winHas ? levelOf(left) : 'empty',
+          'data-level': winHas ? d.level : 'empty',
           role: 'progressbar',
           'aria-valuemin': 0,
           'aria-valuemax': 100,
           'aria-valuenow': winHas ? left : 0,
-          'aria-label': winHas ? t('float.ring', { win: winName(w, t), pct: left }) : t('float.ringEmpty', { win: winName(w, t) })
+          'aria-label': winHas ? t('float.ring', { win: winName(w, t), mode: t(mode === 'used' ? 'mode.used' : 'mode.left'), pct: left }) : t('float.ringEmpty', { win: winName(w, t) })
         },
           React.createElement('svg', { viewBox: '0 0 ' + RING_BOX + ' ' + RING_BOX, 'aria-hidden': 'true', focusable: 'false' },
             React.createElement('circle', { className: 'ocgu-mini-ring-track', cx: RING_MID, cy: RING_MID, r: RING_R }),
@@ -1160,18 +1175,18 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
     var win = props.win;
     var t = props.t || tZh;
     // 无数据的窗口不显示百分比：宿主对缺失窗口给的是 status/resetsAt 皆空，
-    // 若按「剩余」口径硬算会得到误导性的 100%
+    // 若按当前口径硬算会得到误导性的 100%
     var winHas = !!(win.status || win.resetsAt);
-    var left = leftOf(win.percent);
+    var d = dispOf(win.percent, props.mode);
     // 重置倒计时放在标题行、百分比左侧（不独占一行）
     return React.createElement('div', { className: 'ocgu-row', style: { marginBottom: '10px' } },
       React.createElement('div', { className: 'ocgu-row-top' },
         React.createElement('span', { className: 'ocgu-row-label' }, props.label),
         React.createElement('span', { className: 'ocgu-row-reset' },
           (fmtCountdown(win.resetsAt, t) || t('cd.unknown')) + (win.status && win.status !== 'ok' ? t('cd.status', { s: win.status }) : '')),
-        React.createElement('span', { className: 'ocgu-row-pct' }, winHas ? left + '%' : '--')),
+        React.createElement('span', { className: 'ocgu-row-pct' }, winHas ? d.value + '%' : '--')),
       React.createElement('div', { className: 'ocgu-row-track' },
-        React.createElement('div', { className: 'ocgu-row-fill ocgu-fill', 'data-level': winHas ? levelOf(left) : 'empty', style: { width: (winHas ? left : 0) + '%' } })));
+        React.createElement('div', { className: 'ocgu-row-fill ocgu-fill', 'data-level': winHas ? d.level : 'empty', style: { width: (winHas ? d.value : 0) + '%' } })));
   }
 
   function SettingsPage(props) {
@@ -1335,6 +1350,15 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
       });
     };
 
+    // 切换用量进度口径（已使用 / 剩余）：数字即时反转，无需刷新
+    var setMode = function (m) {
+      if (modeOf(value) === m) return;
+      updateNs(remote, viewRef.current, { percentMode: m }, function (err, nv) {
+        if (err || !nv) { say('mode', t('msg.saveFailed', { err: err || t('msg.unknownErr') }), 'error'); return; }
+        apply(nv);
+      });
+    };
+
     var resetPos = function () {
       updateNs(remote, viewRef.current, DEFAULT_ANCHORS, function (err, nv) {
         if (err || !nv) { say('widget', t('msg.saveFailed', { err: err || t('msg.unknownErr') }), 'error'); return; }
@@ -1358,6 +1382,8 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
     var isDefaultPos = DEFAULT_ANCHORS.widgetAnchorX === ax && DEFAULT_ANCHORS.widgetAnchorY === ay
       && value.widgetOffsetX === DEFAULT_ANCHORS.widgetOffsetX && value.widgetOffsetY === DEFAULT_ANCHORS.widgetOffsetY;
     var refreshMinutes = value.refreshMinutes || 5;
+    // 当前进度口径：left（剩余，默认）/ used（已使用）
+    var mode = modeOf(value);
 
     // keyHint 形如 "sk-****5590（DEEPSEEK_API_KEY）"，页面里只取掩码本身，避免括号套括号
     var masked = function (h) { return String(h || '').split('（')[0].trim() || t('status.missing'); };
@@ -1366,7 +1392,7 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
     var refreshMsg = msgOf('refresh');
     var winList = WINDOWS.map(function (w) {
       return React.createElement(UsageRow, {
-        key: w.key, label: t('float.groupTitle', { win: winName(w, t), mini: w.mini }), win: windowOf(usage, w.key), t: t
+        key: w.key, label: t('float.groupTitle', { win: winName(w, t), mini: w.mini }), win: windowOf(usage, w.key), mode: mode, t: t
       });
     });
 
@@ -1394,10 +1420,29 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
       React.createElement('div', { className: 'ocgu-card', style: { marginTop: '10px' } },
         React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' } },
           React.createElement('span', { className: 'ocgu-badge', 'data-tone': badgeTone(ocgKeyStatus) }, statusText(ocgKeyStatus)),
-          React.createElement('span', { className: 'ocgu-hint' }, value.keyHint || 'OPENCODE_GO_API_KEY')),
+          React.createElement('span', { className: 'ocgu-hint' }, value.keyHint || 'OPENCODE_GO_API_KEY'),
+          // 切换失败时的提示落点（隐形提示等于没有提示）
+          React.createElement('span', {
+            className: 'ocgu-msg', 'data-tone': msgOf('mode') ? toneOf('mode') : 'muted', role: 'status', 'aria-live': 'polite',
+            title: msgOf('mode') || '', style: { marginLeft: 'auto' }
+          }, msgOf('mode')),
+          // 进度口径二选一（已使用 / 剩余）：贴卡片右上角
+          React.createElement('span', {
+            className: 'ocgu-seg', role: 'radiogroup', 'aria-label': t('aria.mode')
+          },
+            React.createElement('button', {
+              type: 'button', className: 'ocgu-seg-item', role: 'radio',
+              'aria-checked': mode === 'used' ? 'true' : 'false', 'data-on': mode === 'used' ? '1' : '0',
+              onClick: function () { setMode('used'); }
+            }, t('mode.used')),
+            React.createElement('button', {
+              type: 'button', className: 'ocgu-seg-item', role: 'radio',
+              'aria-checked': mode === 'left' ? 'true' : 'false', 'data-on': mode === 'left' ? '1' : '0',
+              onClick: function () { setMode('left'); }
+            }, t('mode.left')))),
         winList,
         React.createElement('div', { className: 'ocgu-hint', style: { marginTop: '6px' } },
-          t('settings.cardHint')),
+          t(mode === 'used' ? 'settings.cardHintUsed' : 'settings.cardHint')),
         value.usageError ? React.createElement('div', { className: 'ocgu-err' }, value.usageError) : null),
 
       // ── 操作项 ──

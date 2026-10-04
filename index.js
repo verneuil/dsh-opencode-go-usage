@@ -47,6 +47,8 @@ export const Config = z.object({
   widgetVisible: z.boolean().default(true).volatile(),
   // 浮窗上是否显示 DeepSeek 账户余额（关掉后浮窗只留 OCG 三组圆环，更窄）
   showBalance: z.boolean().default(true).volatile(),
+  // 用量进度口径：left = 显示剩余（默认），used = 显示已使用
+  percentMode: z.string().default("left").volatile(),
   // 浮窗锚定（「最近锚线」模型）：拖动松手时只记「锚线 + 偏移」，窗口或输入框
   // 尺寸变化时按锚线重算像素位置，而不是记住绝对坐标。
   // 水平锚线：card-left | card-right | view-left | view-right
@@ -82,7 +84,7 @@ const OCG_CREDENTIALS = ["OPENCODE_GO_API_KEY", "OPENCODE_API_KEY"]
 const DS_CREDENTIALS = ["DEEPSEEK_API_KEY"]
 // 官方文档明确要求客户端自报身份（"Identify itself with its own user agent, such as
 // my-coding-agent/1.0, rather than a generic SDK or HTTP-library name"）；两个接口都带上。
-const USER_AGENT = "dsh-opencode-go-usage/2.11.0 (+DeepSeek Harness plugin)"
+const USER_AGENT = "dsh-opencode-go-usage/2.12.0 (+DeepSeek Harness plugin)"
 // 单请求总超时。跨国链路偶发慢连接，15s 偏紧，放宽到 20s（inflight 去重，不会叠加请求）。
 const REQUEST_TIMEOUT_MS = 20000
 
