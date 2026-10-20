@@ -2,6 +2,9 @@
 
 记录每个版本相对上一版的变更，最新在最上。版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## 2.15.2
+- 把 `@deepseek-ai/schemastery` 声明为 `peerDependencies`（并标 `optional`，由宿主运行时提供，不会多装副本）
+
 ## 2.15.1
 - 补齐 `package.json` 的 `main` 字段；描述里的「边框光轨」改为现行的边框闪烁（行为无变化）
 
