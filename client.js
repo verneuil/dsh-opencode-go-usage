@@ -14,21 +14,6 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
   // 形态：常态 = 单行迷你胶囊（DeepSeek 余额 + OCG 三组「标签 + 圆环 + 环心百分比」）；
   // 点击 / 自动刷新 = 同一套反馈：**边框光芒**（更新中 2px 双彗尾光带流转 → 完成整圈爆闪 → 3 秒淡出），
   // 浮窗长宽恒定不变。完整明细在设置页。
-  // 「更新中」光轨的层参数（供下面的 CSS 生成，省掉一堆几乎一样的手写规则）：
-  // 每层 = [弧长(周长千分比), 透明度, 线宽]，「越短越亮」→ 叠加出指数衰减的尾焰；
-  // 主轨 A 尾焰 270/1000（占周长 27%）；末端透明度压到 0.10 让它「化掉」而不是一刀切断（那正是「一条长线」的观感）。
-  var RAIL_A_LAYERS = [[270, 0.1, 1], [215, 0.16, 1.02], [168, 0.25, 1.04], [126, 0.36, 1.06], [90, 0.5, 1.08], [58, 0.66, 1.11], [30, 0.84, 1.14]];
-  var RAIL_B_LAYERS = [[240, 0.07, 1], [140, 0.11, 1.02], [64, 0.16, 1.05]];
-  var RAIL_HEAD_LEN = 26;
-  var RAIL_SPARK_LEN = 9;
-  function railLayerCss(prefix, layers) {
-    var out = '';
-    for (var i = 0; i < layers.length; i++) {
-      out += '.ocgu-rail-' + prefix + i + '{--ocgu-len:' + layers[i][0] +
-        ';stroke-opacity:' + layers[i][1] + ';stroke-width:' + layers[i][2] + '}';
-    }
-    return out;
-  }
 
   var CSS =
     // 胶囊高度 26px → 30px（行高 16 → 18、上下内边距 4 → 5）：环盒 16 → 20、视觉环 18 → 24，
@@ -36,88 +21,72 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
     // 四边净空一致：环视觉 24px（环盒 20px，四向各溢出 2px），padding 4px ⇒ 环到边框处处 2px。
     // border-radius:999px 不是随手写的：胶囊端头是半径 15px 的圆弧，圆心与圆环同心
     // （内缘半径 14px vs 环外缘 12px），所以圆角与圆环弧度平行、整圈间隙均匀 —— 换小圆角反而会啃掉环的净空
-    '.ocgu-float{position:fixed;right:24px;bottom:24px;pointer-events:auto;display:inline-flex;align-items:center;gap:0;padding:4px;border-radius:999px;font-size:11px;line-height:18px;color:var(--dsw-alias-label-primary);user-select:none;-webkit-user-select:none;touch-action:none;cursor:pointer;background:var(--dsw-alias-bg-layer-2);border:1px solid var(--dsw-alias-border-l2);transition:border-color .2s ease}' +
+    '.ocgu-float{position:fixed;right:24px;bottom:24px;pointer-events:auto;display:inline-flex;align-items:center;gap:0;padding:3px;border-radius:999px;font-size:10.5px;line-height:16px;color:var(--dsw-alias-label-primary);user-select:none;-webkit-user-select:none;touch-action:none;cursor:pointer;background:var(--dsw-alias-bg-layer-2);border:1px solid var(--dsw-alias-border-l2);transition:border-color .2s ease}' +
     // 悬停提亮不用 --dsw-alias-border-l3（同样不在官方令牌表里），由 border-l2 掺二级文字色派生
     '.ocgu-float:hover{border-color:color-mix(in srgb,var(--dsw-alias-border-l2) 40%,var(--dsw-alias-label-secondary))}' +
     '.ocgu-float[data-dragging="true"]{cursor:grabbing;border-color:var(--dsw-alias-brand-primary)}' +
     '.ocgu-float[data-warn="true"]{border-color:var(--dsw-alias-state-warn-primary)}' +
-    // ---------- 更新反馈：细光轨（SVG 描边光带，改它不影响浮窗布局与尺寸） ----------
-    // 2.0 之所以像「一段绿线在转圈」：conic 的角度增量在宽胶囊（约 250×26）上到弧长的映射极不均匀——
-    // 上下两条长边各吃掉约 170°，中段每度走过的弧长是两端的百倍以上，于是光带「中段飞驰、两端爬行」，
-    // 看上去就是一根死板的线在跳。3.0 换成 **SVG 描边光轨**：<rect pathLength="1000"> 把弧长归一化，
-    // stroke-dashoffset 随 --ocgu-run 线性推进 → **等弧长匀速**；线宽 2px → 1.15px 发丝级。
-    // · 彗尾 = 6 层同心描边（弧长 300→42、越短越亮）叠出指数衰减，再用 0.6px 模糊把台阶揉开；
-    //   弹头白热带 drop-shadow 外发光；另有第二道更暗更慢的光轨（1.35s / 2.15s，周期不成整数比），
-    //   两光时而并行时而交叠，圈圈不重样。
-    // · 完成 / 失败 = 彗尾在弹头当前位置收束成整圈「封环」（dasharray 40→1000，dashoffset 沿用同一个
-    //   --ocgu-run，所以是从弹头处继续往前包一圈，而不是跳回起点）+ 0.36s 后一次光晕冲击 + 内壁淡染色，
-    //   3 秒后由组件把 phase 归零、整层淡出。
-    // 全程只动 --ocgu-run / --ocgu-run2 与 opacity，浮窗长宽恒定不变。
-    '@property --ocgu-run{syntax:"<length>";initial-value:0px;inherits:true}' +
-    '@property --ocgu-run2{syntax:"<length>";initial-value:0px;inherits:true}' +
-    '@keyframes ocgu-run{from{--ocgu-run:0px}to{--ocgu-run:1000px}}' +
-    '@keyframes ocgu-run2{from{--ocgu-run2:0px}to{--ocgu-run2:1000px}}' +
-    '.ocgu-glow{--ocgu-glow:var(--dsw-alias-state-success-primary);--ocgu-frozen-a:0px;--ocgu-frozen-b:0px;position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;background-color:transparent;transition:opacity .38s ease}' +
-    // 更新中：两道不同周期的光轨同时跑。结果相位不保留跑圈动画 —— 相位切换时 Chromium 会重建
-    // 动画、--ocgu-run / --ocgu-run2 归零，尾焰会瞬间跳回起点（看着就是「后半段突然一条长线」），
-    // 收笔前用 JS 把当前位置读进 --ocgu-frozen-a / -b 冻住（见 UsageFloat.freezeRail）。
-    '.ocgu-glow[data-phase="loading"]{opacity:1;animation:ocgu-run 1.35s linear infinite,ocgu-run2 2.15s linear infinite}' +
+    // ---------- 更新反馈：细光轨已移除 ----------
+    // 早先是「SVG 描边光带沿胶囊周长跑」的跑马灯（含彗尾分层、封环、冻结相位等一整套几何与动画）。
+    // 但胶囊是「圆角 + 1px 边框」，描边路径与真实边框在圆角处必然有偏差，很难处处对齐；
+    // 现改为直接闪边框本身（见下方 .ocgu-float[data-state] 的动画），路径即边框，零对齐问题。
+    '.ocgu-glow{--ocgu-glow:var(--dsw-alias-state-success-primary);position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:0;background-color:transparent;transition:opacity .38s ease}' +
+    // 结果相位：内壁极轻染色（边框本身的闪烁由 .ocgu-float[data-state] 的动画负责）
     '.ocgu-glow[data-phase="ok"]{opacity:1;background-color:color-mix(in srgb,var(--ocgu-glow) 6%,transparent)}' +
     '.ocgu-glow[data-phase="error"]{--ocgu-glow:var(--dsw-alias-state-error-primary);opacity:1;background-color:color-mix(in srgb,var(--ocgu-glow) 6%,transparent)}' +
-    // 光轨层：SVG 左/上各外移 1px 对齐 border-box（几何由组件按实测尺寸重算；pathLength 归一化
-    // 让尺寸变化只重画几何、不动动画相位）
-    '.ocgu-rail{position:absolute;left:-1px;top:-1px;display:block;overflow:visible}' +
-    '.ocgu-rail-st{fill:none;stroke-linecap:round;shape-rendering:geometricPrecision;stroke-dasharray:calc(var(--ocgu-len) * 1px) 1000px;stroke-dashoffset:calc(var(--ocgu-len) * 1px - var(--ocgu-run))}' +
-    '.ocgu-rail-st.ocgu-rail-b{stroke-dashoffset:calc(var(--ocgu-len) * 1px - var(--ocgu-run2))}' +
-    // 结果相位：彗尾冻在收笔位置淡出（辅轨 B 必须一起隐藏：漏掉它会停在起点变成一条常驻长线）
-    '.ocgu-glow[data-phase="ok"] .ocgu-rail-st,.ocgu-glow[data-phase="error"] .ocgu-rail-st{stroke-dashoffset:calc(var(--ocgu-len) * 1px - var(--ocgu-frozen-a))}' +
-    '.ocgu-glow[data-phase="ok"] .ocgu-rail-st.ocgu-rail-b,.ocgu-glow[data-phase="error"] .ocgu-rail-st.ocgu-rail-b{stroke-dashoffset:calc(var(--ocgu-len) * 1px - var(--ocgu-frozen-b))}' +
-    railLayerCss('a', RAIL_A_LAYERS) +
-    railLayerCss('b', RAIL_B_LAYERS) +
-    '.ocgu-rail-track{fill:none;stroke:color-mix(in srgb,var(--ocgu-glow) 18%,transparent);stroke-width:1;opacity:.55}' +
-    '.ocgu-rail-comet,.ocgu-rail-head,.ocgu-rail-spark,.ocgu-rail-b{opacity:0;transition:opacity .14s linear}' +
-    '.ocgu-rail-comet{filter:blur(.35px)}' +
-    // 弹头：跟 label-primary 调和 —— 深色主题是「淡薄荷」，浅色主题自动变成「深墨绿」，不会在白底上糊成白线
-    '.ocgu-rail-head{--ocgu-len:' + RAIL_HEAD_LEN + ';stroke-width:1.5;stroke:color-mix(in srgb,var(--ocgu-glow) 62%,var(--dsw-alias-label-primary));filter:drop-shadow(0 0 2.2px color-mix(in srgb,var(--ocgu-glow) 80%,transparent))}' +
-    // 白热芯：更短更亮的一小节压在弹头上，做出「灯丝」感
-    '.ocgu-rail-spark{--ocgu-len:' + RAIL_SPARK_LEN + ';stroke-width:1.7;stroke:color-mix(in srgb,var(--ocgu-glow) 34%,var(--dsw-alias-label-primary));filter:drop-shadow(0 0 2.6px color-mix(in srgb,var(--ocgu-glow) 90%,transparent))}' +
-    '.ocgu-glow[data-phase="loading"] .ocgu-rail-track{animation:ocgu-track 2.2s ease-in-out infinite}' +
-    '.ocgu-glow[data-phase="loading"] .ocgu-rail-comet,.ocgu-glow[data-phase="loading"] .ocgu-rail-head,.ocgu-glow[data-phase="loading"] .ocgu-rail-spark,.ocgu-glow[data-phase="loading"] .ocgu-rail-b{opacity:1}' +
-    '.ocgu-glow[data-phase="ok"] .ocgu-rail-track,.ocgu-glow[data-phase="error"] .ocgu-rail-track{opacity:0}' +
-    '@keyframes ocgu-track{0%,100%{opacity:.45}50%{opacity:1}}' +
-    // 封环：dashoffset 取「冻结的收笔位置」，描边 40 → 1000 千分弧长从弹头处往前包一整圈；
-    // 收口时刻（0.46s）收口用一次 drop-shadow 爆闪（扩散环会在封环后再亮一次，观感像绿底重复）。
-    // 封环终态必须是「间隙 = 0」（1000px 0px）才盖满整圈：写 1000px 1000px 时图案总长是 2000、
-    // 而路径只有 1000 单位，dashoffset = -收笔位置 会把「起点之前那段」留在间隙里 ——
-    // 缺口宽度正好等于收笔位置（实测截图：收笔在 35% 处就缺 35%，看着就是「没闭合」）。
-    '.ocgu-rail-seal{fill:none;stroke:var(--ocgu-glow);stroke-width:1.15;stroke-linecap:round;opacity:0;stroke-dasharray:40px 1000px;stroke-dashoffset:calc(-1 * var(--ocgu-frozen-a))}' +
-    '.ocgu-glow[data-phase="ok"] .ocgu-rail-seal,.ocgu-glow[data-phase="error"] .ocgu-rail-seal{opacity:1;animation:ocgu-seal .46s cubic-bezier(.3,.72,.2,1) forwards,ocgu-sealbloom .8s .22s ease-out both}' +
-    '.ocgu-glow[data-phase="ok"] .ocgu-rail-seal{animation:ocgu-seal .46s cubic-bezier(.3,.72,.2,1) forwards,ocgu-sealbloom .8s .22s ease-out both,ocgu-hold 2.6s .8s ease-in-out infinite}' +
-    '.ocgu-glow[data-phase="error"] .ocgu-rail-seal{animation:ocgu-seal .46s cubic-bezier(.3,.72,.2,1) forwards,ocgu-sealbloom .8s .22s ease-out both,ocgu-deny .46s .9s 2}' +
-    '@keyframes ocgu-seal{from{stroke-dasharray:40px 1000px}to{stroke-dasharray:1000px 0px}}' +
-    '@keyframes ocgu-sealbloom{0%{filter:drop-shadow(0 0 0 transparent)}30%{filter:drop-shadow(0 0 6px color-mix(in srgb,var(--ocgu-glow) 75%,transparent))}100%{filter:drop-shadow(0 0 2px color-mix(in srgb,var(--ocgu-glow) 40%,transparent))}}' +
-    '@keyframes ocgu-deny{0%,100%{opacity:1}50%{opacity:.3}}' +
-    // 封环后 3 秒停留：极轻的一次呼吸，别让整圈死住
-    '@keyframes ocgu-hold{0%,100%{opacity:1}50%{opacity:.8}}' +
-    // 系统开了「减少动态效果」：不跑圈、不爆闪，只留一圈静态光 + 一次性收束
-    '@media (prefers-reduced-motion:reduce){.ocgu-glow[data-phase="loading"]{animation:none}.ocgu-rail-comet,.ocgu-rail-head,.ocgu-rail-spark,.ocgu-rail-b{display:none}.ocgu-glow[data-phase="loading"] .ocgu-rail-track{opacity:.7;animation:none}.ocgu-glow[data-phase="ok"] .ocgu-rail-seal,.ocgu-glow[data-phase="error"] .ocgu-rail-seal{animation:none;opacity:1;stroke-dasharray:1000px 0px}}' +
+    // ---------- 更新反馈：直接闪浮窗自己的边框 ----------
+    // 早先的「跑马灯光点」是沿 SVG 描边路径跑的光带，但胶囊是「圆角 + 1px 边框」，
+    // 描边路径与真实边框很难处处对齐（圆角处的偏差尤其明显）。改成直接闪边框：路径就是边框本身，零对齐问题。
+    '.ocgu-float[data-state="loading"]{animation:ocgu-blink 1s ease-in-out infinite}' +
+    '.ocgu-float[data-state="ok"]{animation:ocgu-flash-ok 2.8s ease-out 1}' +
+    '.ocgu-float[data-state="error"]{animation:ocgu-flash-err .5s ease-out 3}' +
+    '@keyframes ocgu-blink{0%,100%{border-color:var(--dsw-alias-border-l2)}50%{border-color:var(--dsw-alias-state-success-primary)}}' +
+    '@keyframes ocgu-flash-ok{0%{border-color:var(--dsw-alias-state-success-primary)}65%{border-color:var(--dsw-alias-state-success-primary)}100%{border-color:var(--dsw-alias-border-l2)}}' +
+    '@keyframes ocgu-flash-err{0%,100%{border-color:var(--dsw-alias-border-l2)}50%{border-color:var(--dsw-alias-state-error-primary)}}' +
+    // 系统开了「减少动态效果」：不闪，直接给出静态结果色
+    '@media (prefers-reduced-motion:reduce){.ocgu-float[data-state="loading"]{animation:none;border-color:var(--dsw-alias-state-success-primary)}.ocgu-float[data-state="ok"]{animation:none;border-color:var(--dsw-alias-state-success-primary)}.ocgu-float[data-state="error"]{animation:none;border-color:var(--dsw-alias-state-error-primary)}}' +
     // 余额：跟胶囊行高对齐（11px / 18px），不参与顶高
-    '.ocgu-bal{font-size:11px;line-height:18px;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:.2px;white-space:nowrap;margin-right:6px}' +
+    '.ocgu-bal{font-size:10.5px;line-height:16px;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:.2px;white-space:nowrap;margin-right:3px}' +
     // 余额只在「余额自己」出错时才转黄：用量侧的失败不该把健康的余额也染黄（两路互相独立）
     '.ocgu-bal[data-balwarn="true"]{color:var(--dsw-alias-state-warn-primary)}' +
-    '.ocgu-sep{flex:none;width:1px;height:14px;background:var(--dsw-alias-border-l2);margin-right:6px}' +
+    '.ocgu-sep{flex:none;width:1px;height:13px;background:var(--dsw-alias-border-l2);margin-right:3px}' +
+    // 悬停临时浮层：余额 + 三条进度（条下带重置倒计时），左对齐贴在胶囊下方；不接收指针事件，避免与拖动/hover 打架
+    '.ocgu-tip{position:absolute;left:0;z-index:6;pointer-events:none;display:flex;flex-direction:column;gap:8px;padding:10px 12px;border-radius:12px;background:var(--dsw-alias-bg-layer-2);border:1px solid var(--dsw-alias-border-l2);font-size:11px;line-height:1.3;white-space:nowrap;animation:ocgu-tip-in .12s ease-out}' +
+    '.ocgu-tip[data-pos="down"]{top:calc(100% + 8px)}' +
+    '.ocgu-tip[data-pos="up"]{bottom:calc(100% + 8px)}' +
+    '@keyframes ocgu-tip-in{from{opacity:0}to{opacity:1}}' +
+    '.ocgu-tip-bal{font-size:11.5px;font-weight:600;font-variant-numeric:tabular-nums}' +
+    '.ocgu-tip-row{display:flex;align-items:flex-start;gap:8px}' +
+    '.ocgu-tip-k{flex:none;width:11px;text-align:center;font-size:10px;line-height:16px;color:var(--dsw-alias-label-tertiary)}' +
+    '.ocgu-tip-main{display:flex;flex-direction:column;gap:3px;min-width:0}' +
+    '.ocgu-tip-line{display:flex;align-items:center;gap:8px}' +
+    '.ocgu-tip-track{position:relative;flex:none;width:150px;height:6px;border-radius:999px;background:color-mix(in srgb,var(--dsw-alias-label-tertiary) 24%,transparent);overflow:hidden}' +
+    '.ocgu-tip-fill{position:absolute;left:0;top:0;bottom:0;border-radius:999px;background:var(--dsw-alias-state-success-primary);transition:width .3s cubic-bezier(.22,.9,.28,1)}' +
+    '.ocgu-tip-fill[data-level="warn"]{background:var(--dsw-alias-state-warn-primary)}' +
+    '.ocgu-tip-fill[data-level="danger"]{background:var(--dsw-alias-state-error-primary)}' +
+    '.ocgu-tip-fill[data-level="empty"]{background:var(--dsw-alias-label-tertiary)}' +
+    '.ocgu-tip-p{flex:none;min-width:30px;text-align:right;font-size:10.5px;font-variant-numeric:tabular-nums;color:var(--dsw-alias-label-secondary)}' +
+    '.ocgu-tip-cd{font-size:9.5px;color:var(--dsw-alias-label-tertiary)}' +
+    // 极简模式：三环嵌套（外 M / 中 W / 内 H），只比常规三环略大；余额取整后显示在环旁
+    '.ocgu-nest{position:relative;flex:none;display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px}' +
+    '.ocgu-nest svg{position:absolute;inset:0;width:26px;height:26px;overflow:visible}' +
+    '.ocgu-nest-track{fill:none;stroke-width:2.6;stroke:color-mix(in srgb,var(--dsw-alias-label-tertiary) 26%,transparent)}' +
+    '.ocgu-nest-arc{fill:none;stroke-width:2.6;stroke-linecap:round;stroke:var(--dsw-alias-state-success-primary)}' +
+    '.ocgu-nest-arc[data-level="warn"]{stroke:var(--dsw-alias-state-warn-primary)}' +
+    '.ocgu-nest-arc[data-level="danger"]{stroke:var(--dsw-alias-state-error-primary)}' +
+    '.ocgu-nest-arc[data-level="empty"]{stroke:var(--dsw-alias-label-tertiary)}' +
     // OCG 三组迷你圆环：环盒 20px（视觉环 24px，上下各溢出 2px，落在 5px 内边距里）、环心数字 9.5px ——
     // 两位数百分比在环心也不拥挤；环外不再单列 H/W/M 标签（省掉三个字母位，浮窗更短）。
     // 完整口径仍在 aria-label / title / 设置页。
-    '.ocgu-mini-group{display:inline-flex;align-items:center;margin-right:7px}' +
+    '.ocgu-mini-group{display:inline-flex;align-items:center;margin-right:3px}' +
     '.ocgu-mini-group:last-child{margin-right:0}' +
-    '.ocgu-mini-ring{position:relative;flex:none;display:inline-flex;width:20px;height:20px}' +
-    '.ocgu-mini-ring svg{position:absolute;left:50%;top:50%;width:24px;height:24px;transform:translate(-50%,-50%);overflow:visible}' +
-    '.ocgu-mini-ring-track{fill:none;stroke:color-mix(in srgb,var(--ocgu-ring) 32%,transparent);stroke-width:2.2;transition:stroke .2s ease}' +
-    '.ocgu-mini-ring-arc{fill:none;stroke:var(--ocgu-ring);stroke-width:2.2;stroke-linecap:round;transition:stroke-dashoffset .35s cubic-bezier(.22,.9,.28,1),stroke .2s ease}' +
+    '.ocgu-mini-ring{position:relative;flex:none;display:inline-flex;width:18px;height:18px}' +
+    '.ocgu-mini-ring svg{position:absolute;left:50%;top:50%;width:21px;height:21px;transform:translate(-50%,-50%);overflow:visible}' +
+    '.ocgu-mini-ring-track{fill:none;stroke:color-mix(in srgb,var(--ocgu-ring) 32%,transparent);stroke-width:3.2;transition:stroke .2s ease}' +
+    '.ocgu-mini-ring-arc{fill:none;stroke:var(--ocgu-ring);stroke-width:3.2;stroke-linecap:round;transition:stroke-dashoffset .35s cubic-bezier(.22,.9,.28,1),stroke .2s ease}' +
     // 环心数字：绝对定位不参与行高；tabular-nums 让数值变化时不抖；颜色跟环同色（一眼成套）。
     // 9.5px/-.3px 是环内径(≈17.8px)的上限，两位数百分比正好放得下
-    '.ocgu-mini-ring-val{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:9.5px;line-height:1;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:-.3px;white-space:nowrap;color:var(--ocgu-ring)}' +
+    '.ocgu-mini-ring-val{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:8.5px;line-height:1;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:-.3px;white-space:nowrap;color:var(--ocgu-ring)}' +
     // 用量分级配色（红绿灯，一色两用）：剩余 >20% 绿、<=20% 琥珀、<=5% 红。
     // 剩余弧 = 该色满不透明；底盘（已消耗部分）= 同色 32% 透明。
     '.ocgu-mini-ring[data-level="ok"]{--ocgu-ring:var(--dsw-alias-state-success-primary)}' +
@@ -463,7 +432,10 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
       'btn.atDefault': '已在默认位置',
       'title.resetPos': '把浮窗放回窗口右下角',
       'aria.widget': '显示悬浮窗',
-      'label.balance': '显示DS官方余额',
+      'label.balance': '官方余额',
+      'label.minimal': '极简模式',
+      'title.minimal': '三环嵌套（H / W / M），余额取整显示在环心',
+      'tip.balance': 'DS账户余额：{bal}',
       'title.balance': '是否在浮窗上显示 DeepSeek 官方余额',
       'float.groupTitle': 'OpenCode Go · {win}（{mini}）',
       'float.ring': 'OpenCode Go {win} {mode} {pct}%',
@@ -550,7 +522,10 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
       'btn.atDefault': 'At default',
       'title.resetPos': 'Move the pill back to the bottom-right corner',
       'aria.widget': 'Show floating pill',
-      'label.balance': 'Show DS balance',
+      'label.balance': 'Balance',
+      'label.minimal': 'Minimal',
+      'title.minimal': 'Nested rings (H / W / M) with the rounded balance in the centre',
+      'tip.balance': 'DS balance: {bal}',
       'title.balance': 'Whether to show the DS balance on the pill',
       'float.groupTitle': 'OpenCode Go · {win} ({mini})',
       'float.ring': 'OpenCode Go {win} {mode} {pct}%',
@@ -666,6 +641,14 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
     return value.keyStatus === 'missing' || value.balanceKeyStatus === 'missing'
       || !!value.usageError || !!value.balanceError;
   }
+  // 极简模式：余额只到「元」（四舍五入，不带小数）
+  function balanceYuan(value) {
+    var b = balanceOf(value);
+    var cur = (value && typeof value.balance === 'object' && value.balance && value.balance.currency) || 'CNY';
+    if (!b) return currencySymbol(cur) + '--';
+    var n = Number(String(b.totalBalance).replace(/[^0-9.\-]/g, ''));
+    return isFinite(n) ? currencySymbol(cur) + String(Math.round(n)) : currencySymbol(cur) + b.totalBalance;
+  }
 
   // ---------- 悬浮窗（余额 + OCG 用量 + 刷新状态提示） ----------
   // 单行胶囊：点击 = 原位刷新 + 左侧滑出状态提示，出结果后再停留 3 秒收回。
@@ -685,6 +668,13 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
     var setRefreshMinutes = rminState[1];
     var tickState = React.useState(0);
     var setTick = tickState[1];
+    // 悬停临时浮层（余额 + 三条精简进度）：hovering 控制显隐，tipUp 决定向上/向下展开
+    var hoverState = React.useState(false);
+    var hovering = hoverState[0];
+    var setHovering = hoverState[1];
+    var tipUpState = React.useState(false);
+    var tipUp = tipUpState[0];
+    var setTipUp = tipUpState[1];
 
     var rootRef = React.useRef(null);
     var dragRef = React.useRef(null);
@@ -702,26 +692,6 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
     var seenTickRef = React.useRef(null);
     var autoRevealRef = React.useRef(null);
     var autoLoadingRef = React.useRef(null);
-    // 光轨尺寸：SVG 描边要精确贴合胶囊 border-box（宽度随余额/环心数值变化，拖动不触发重算）
-    var szState = React.useState({ w: 0, h: 0 });
-    var glowSize = szState[0];
-    var setGlowSize = szState[1];
-    // 收笔冻结点：相位切到 ok / error 时，跑圈动画被浏览器重建、--ocgu-run / --ocgu-run2 归零，
-    // 彗尾会瞬间跳回起点（观感就是「后半段突然一条长线」）。所以切换前先把两道彗尾的当前位置读出来，
-    // 结果相位改用 --ocgu-frozen-a / -b：尾焰就地淡出、封环从弹头处起笔，全程不跳。
-    var fzState = React.useState({ a: 0, b: 0 });
-    var frozen = fzState[0];
-    var setFrozen = fzState[1];
-    var freezeRail = function () {
-      var node = rootRef.current;
-      if (!node || typeof window.getComputedStyle !== 'function') return;
-      var glow = node.querySelector('.ocgu-glow');
-      if (!glow) return;
-      var cs = window.getComputedStyle(glow);
-      var a = parseFloat(cs.getPropertyValue('--ocgu-run')) || 0;
-      var b = parseFloat(cs.getPropertyValue('--ocgu-run2')) || 0;
-      setFrozen(function (prev) { return (prev.a === a && prev.b === b) ? prev : { a: a, b: b }; });
-    };
 
     var bump = function () { setTick(function (n) { return n + 1; }); };
 
@@ -890,7 +860,6 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
         onDone: function (ok) {
           manualBusyRef.current = false;
           stopAutoLoading();
-          freezeRail();
           setRefreshState(ok ? 'ok' : 'error');
           // 全绿（或全红）后再停留 3 秒淡出（刷新耗时不计入，慢网络下也一定看得到结果）
           if (hideTimerRef.current) clearTimeout(hideTimerRef.current);
@@ -913,7 +882,6 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
     var autoReveal = function (failed) {
       if (dragRef.current) return; // 拖动中不打扰
       stopAutoLoading();
-      freezeRail();
       if (hideTimerRef.current) { clearTimeout(hideTimerRef.current); hideTimerRef.current = null; }
       setRefreshState(failed ? 'error' : 'ok');
       hideTimerRef.current = setTimeout(function () {
@@ -977,28 +945,6 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
       };
     }, []);
 
-    // 光轨几何：按胶囊 border-box 实测（SVG 左/上各外移 1px 抵消 1px 边框，圆角取高的一半 → 胶囊形）。
-    // 尺寸变化只重画几何、不动动画相位（pathLength 已把弧长归一化）。
-    React.useEffect(function () {
-      var node = rootRef.current;
-      if (!node) return undefined;
-      var apply = function () {
-        var rect = node.getBoundingClientRect();
-        var w = Math.round(rect.width * 100) / 100;
-        var h = Math.round(rect.height * 100) / 100;
-        if (!(w > 0) || !(h > 0)) return;
-        setGlowSize(function (prev) { return prev.w === w && prev.h === h ? prev : { w: w, h: h }; });
-      };
-      apply();
-      if (typeof ResizeObserver !== 'function') {
-        window.addEventListener('resize', apply);
-        return function () { window.removeEventListener('resize', apply); };
-      }
-      var ro = new ResizeObserver(apply);
-      ro.observe(node);
-      return function () { ro.disconnect(); };
-    }, [value.widgetVisible]);
-
     if (value.widgetVisible === false) return null;
 
     var missingKey = value.keyStatus === 'missing' || value.balanceKeyStatus === 'missing';
@@ -1023,60 +969,16 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
     };
 
     // 更新反馈 = 绝对定位的光轨层（不占布局），phase 直接取自 refreshState。
-    // 光轨 = 贴胶囊 border-box 的 SVG 描边：底轨 track + 辅轨 B（暗而慢）+ 主轨 A 六层彗尾 + 白热弹头 + 封环。
-    // 线宽 1.15px 居中压在 1px 边框上 → 几何各内缩半线宽，圆角取高的一半（胶囊形）。
-    var rail = null;
-    if (glowSize.w > 8 && glowSize.h > 8) {
-      var railSw = 1.15;
-      var railGeo = {
-        x: railSw / 2,
-        y: railSw / 2,
-        width: Math.max(0, glowSize.w - railSw),
-        height: Math.max(0, glowSize.h - railSw),
-        rx: Math.max(0, (glowSize.h - railSw) / 2)
-      };
-      var railRect = function (key, cls) {
-        return React.createElement('rect', {
-          key: key, className: cls,
-          x: railGeo.x, y: railGeo.y, width: railGeo.width, height: railGeo.height,
-          rx: railGeo.rx, pathLength: '1000'
-        });
-      };
-      var railKids = [railRect('track', 'ocgu-rail-track')];
-      var ri;
-      // 辅轨 B：暗而慢（2.15s），与主轨 1.35s 周期不成整数比 → 两光交织，看不出循环
-      for (ri = 0; ri < RAIL_B_LAYERS.length; ri++) {
-        railKids.push(railRect('b' + ri, 'ocgu-rail-st ocgu-rail-b ocgu-rail-b' + ri));
-      }
-      // 主轨 A：六层彗尾（越长越暗）叠成柔和尾焰
-      var tailKids = [];
-      for (ri = 0; ri < RAIL_A_LAYERS.length; ri++) {
-        tailKids.push(railRect('a' + ri, 'ocgu-rail-st ocgu-rail-a' + ri));
-      }
-      railKids.push(React.createElement('g', { key: 'comet', className: 'ocgu-rail-comet' }, tailKids));
-      // 白热弹头：不被模糊、带 drop-shadow 外发光
-      railKids.push(railRect('head', 'ocgu-rail-st ocgu-rail-head'));
-      // 白热芯：更短更亮的一小节，压在最上层
-      railKids.push(railRect('spark', 'ocgu-rail-st ocgu-rail-spark'));
-      // 封环：完成 / 失败时从弹头当前位置把整圈包起来
-      railKids.push(railRect('seal', 'ocgu-rail-seal'));
-      rail = React.createElement('svg', {
-        key: 'rail', className: 'ocgu-rail', width: glowSize.w, height: glowSize.h,
-        'aria-hidden': 'true', focusable: 'false'
-      }, railKids);
-    }
-
     // 单行内容：余额 + 分隔线 + 三组迷你圆环 —— 长宽恒定，任何状态下都不改变尺寸。
     var children = [
+      // 反馈层：结果相位的极轻内壁染色（边框闪烁由 .ocgu-float[data-state] 的动画负责）
       React.createElement('span', {
-        key: 'glow', className: 'ocgu-glow', 'data-phase': refreshState,
-        // 冻结位置以行内变量下发（CSS 里给的是 0px 兜底）：结果相位据此就地淡出 + 起笔
-        style: { '--ocgu-frozen-a': frozen.a + 'px', '--ocgu-frozen-b': frozen.b + 'px' },
-        'aria-hidden': 'true'
-      }, rail)
+        key: 'glow', className: 'ocgu-glow', 'data-phase': refreshState, 'aria-hidden': 'true'
+      })
     ];
     // 余额可关（设置页复选框）：关掉后连同分隔线一起去掉，浮窗自动变窄（光轨几何跟着 ResizeObserver 重算）
-    if (value.showBalance !== false) {
+    var minimal = value.minimalMode === true;
+    if (!minimal && value.showBalance !== false) {
       children.push(
         React.createElement('span', {
           key: 'bal',
@@ -1086,7 +988,7 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
         React.createElement('span', { key: 'sep', className: 'ocgu-sep' }));
     }
     var mode = modeOf(value);
-    WINDOWS.forEach(function (w) {
+    if (!minimal) WINDOWS.forEach(function (w) {
       var win = windowOf(usage, w.key);
       // 该窗口是否真有数据（宿主对缺失窗口给的是 status/resetsAt 皆空）
       var winHas = hasData && !!(win.status || win.resetsAt);
@@ -1120,21 +1022,99 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
           React.createElement('span', { className: 'ocgu-mini-ring-val' }, winHas ? left : '--'))));
     });
 
+    // 极简模式：三环嵌套（外 M / 中 W / 内 H），只比常规三环略大；余额取整后显示在环旁
+    if (minimal) {
+      if (value.showBalance !== false) {
+        children.push(
+          React.createElement('span', {
+            key: 'bal', className: 'ocgu-bal',
+            'data-balwarn': (value.balanceError || value.balanceKeyStatus === 'missing') ? 'true' : 'false'
+          }, balanceYuan(value)),
+          React.createElement('span', { key: 'sep', className: 'ocgu-sep' }));
+      }
+      var NEST = 26, NC = NEST / 2;
+      var NEST_RINGS = [
+        { w: WINDOWS[2], r: 11.5 },
+        { w: WINDOWS[1], r: 7.5 },
+        { w: WINDOWS[0], r: 3.5 }
+      ];
+      var nestKids = [];
+      var nestAria = [];
+      NEST_RINGS.forEach(function (rg, i) {
+        var nw = windowOf(usage, rg.w.key);
+        var nHas = hasData && !!(nw.status || nw.resetsAt);
+        var nd = dispOf(nw.percent, mode);
+        var nc = 2 * Math.PI * rg.r;
+        nestKids.push(React.createElement('circle', { key: 't' + i, className: 'ocgu-nest-track', cx: NC, cy: NC, r: rg.r }));
+        nestKids.push(React.createElement('circle', {
+          key: 'a' + i, className: 'ocgu-nest-arc', cx: NC, cy: NC, r: rg.r,
+          'data-level': nHas ? nd.level : 'empty',
+          transform: 'rotate(-90 ' + NC + ' ' + NC + ')',
+          style: { strokeDasharray: String(nc), strokeDashoffset: String(nHas ? nc * (1 - nd.value / 100) : nc) }
+        }));
+        nestAria.push(t('float.ring', {
+          win: winName(rg.w, t), mode: t(mode === 'used' ? 'mode.used' : 'mode.left'), pct: nHas ? nd.value : 0
+        }));
+      });
+      children.push(React.createElement('span', {
+        key: 'nest', className: 'ocgu-nest', role: 'img', 'aria-label': nestAria.join(' · ')
+      }, React.createElement('svg', {
+        key: 'svg', viewBox: '0 0 ' + NEST + ' ' + NEST, 'aria-hidden': 'true', focusable: 'false'
+      }, nestKids)));
+    }
+
+    // 悬停浮层取代了原来的长 title（刷新间隔、更新时间、用法说明都在设置页）；只有「缺 Key / 出错」
+    // 才保留原生提示 —— 那是需要立刻看到的可读错误。
     var title = missingKey
       ? t('float.noKey')
       : (value.usageError || value.balanceError)
         ? t('float.failed', { err: value.usageError || value.balanceError })
-        : (value.showBalance !== false ? t('float.balance', { bal: balanceText(value) }) : '')
-          + t('float.usage', { min: refreshMinutes, rel: fmtRelative(value.lastUpdated, t) })
-          + t('float.tail');
+        : '';
+
+    // 悬停临时浮层：余额 + 三条精简进度（口径跟随设置，详情在设置页）
+    if (hovering) {
+      var tipRows = WINDOWS.map(function (w) {
+        var tw = windowOf(usage, w.key);
+        var twHas = hasData && !!(tw.status || tw.resetsAt);
+        var td = dispOf(tw.percent, mode);
+        return React.createElement('div', { key: w.key, className: 'ocgu-tip-row' },
+          React.createElement('span', { className: 'ocgu-tip-k' }, w.mini),
+          React.createElement('div', { className: 'ocgu-tip-main' },
+            React.createElement('div', { className: 'ocgu-tip-line' },
+              React.createElement('span', { className: 'ocgu-tip-track' },
+                React.createElement('span', {
+                  className: 'ocgu-tip-fill', 'data-level': twHas ? td.level : 'empty',
+                  style: { width: (twHas ? td.value : 0) + '%' }
+                })),
+              React.createElement('span', { className: 'ocgu-tip-p' }, twHas ? td.value + '%' : '--')),
+            // 条下跟一条重置倒计时
+            React.createElement('div', { className: 'ocgu-tip-cd' }, fmtCountdown(tw.resetsAt, t) || t('cd.unknown'))));
+      });
+      children.push(React.createElement('div', {
+        key: 'tip', className: 'ocgu-tip', 'data-pos': tipUp ? 'up' : 'down', 'aria-hidden': 'true'
+      },
+        React.createElement('div', { className: 'ocgu-tip-bal' }, t('tip.balance', { bal: balanceText(value) })),
+        tipRows));
+    }
 
     return React.createElement('div', {
       ref: rootRef,
       className: 'ocgu-float',
       'data-state': refreshState,
       'data-warn': warn ? 'true' : 'false',
+      'data-minimal': minimal ? 'true' : 'false',
       title: title,
-      onPointerDown: onPointerDown
+      onPointerDown: onPointerDown,
+      onMouseEnter: function () {
+        var el = rootRef.current;
+        if (el && typeof el.getBoundingClientRect === 'function') {
+          var r = el.getBoundingClientRect();
+          // 贴近视口底部时向上展开，避免浮层被裁掉
+          setTipUp(r.bottom + 140 > (window.innerHeight || 0));
+        }
+        setHovering(true);
+      },
+      onMouseLeave: function () { setHovering(false); }
     }, children);
   }
 
@@ -1350,6 +1330,14 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
       });
     };
 
+    // 极简模式：三环嵌套（H/W/M）+ 环心余额；关掉即回「余额 + 三颗独立圆环」
+    var toggleMinimal = function () {
+      updateNs(remote, viewRef.current, { minimalMode: !(value.minimalMode === true) }, function (err, nv) {
+        if (err || !nv) { say('widget', t('msg.saveFailed', { err: err || t('msg.unknownErr') }), 'error'); return; }
+        apply(nv);
+      });
+    };
+
     // 切换用量进度口径（已使用 / 剩余）：数字即时反转，无需刷新
     var setMode = function (m) {
       if (modeOf(value) === m) return;
@@ -1476,8 +1464,16 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
         msg: msgOf('widget'),
         tone: toneOf('widget'),
         nowrap: true,
-        // 右侧控件从左到右：是否显示余额（复选框）→ 重置位置 → 总开关
+        // 右侧控件从左到右：极简模式 → 官方余额 → 重置位置 → 总开关
         control: [
+          React.createElement('label', {
+            key: 'min', className: 'ocgu-check', title: t('title.minimal')
+          },
+            React.createElement('input', {
+              type: 'checkbox', checked: value.minimalMode === true,
+              onChange: toggleMinimal, 'aria-label': t('label.minimal')
+            }),
+            t('label.minimal')),
           React.createElement('label', {
             key: 'bal', className: 'ocgu-check', title: t('title.balance')
           },
