@@ -19,7 +19,7 @@ An unofficial **DeepSeek Harness** client plugin that merges your **DeepSeek acc
 | --------------------------------------------- | ------------------------------------------- |
 | ![Settings · light](screenshots/settings-light.png) | ![Settings · dark](screenshots/settings-dark.png) |
 
-| States & colour grades (illustration: refreshing / success / failure / three grade colours / minimal mode / narrowed after hiding the balance) |
+| States & colour grades (illustration: refreshing / success / failure / three grade colours / minimal mode / most compact form / narrowed after hiding the balance) |
 | ------------------------------------------------------------ |
 | ![States and colour grades](screenshots/states-light.png)     |
 
@@ -29,7 +29,7 @@ An unofficial **DeepSeek Harness** client plugin that merges your **DeepSeek acc
 - **Three rings**: each ring's centre shows the percentage — **Left** by default, switchable to **Used** in settings (no `%` sign); > 20% green, ≤ 20% amber, ≤ 5% red; the track is the same colour at 32% opacity, so every ring reads as one piece.
 - **Border feedback**: the pill's own border **pulses** while refreshing, **holds green** on success and **blinks red three times** on failure — the border *is* the animation, so nothing can drift out of alignment.
 - **Hover popover**: hovering the pill shows the DS balance plus three progress bars, each with its **reset countdown** underneath; it flips upwards near the bottom of the window.
-- **Minimal mode**: three **nested** rings (H inner / W middle / M outer) with the balance **rounded to whole yuan** shown beside them — a more compact pill.
+- **Minimal mode**: three **nested** rings (H inner / W middle / M outer) with the balance **rounded to whole yuan** shown beside them — a more compact pill. Turning the balance off as well gives the **most compact form**: nested rings only.
 - **Drag to snap**: on release the pill snaps to the nearest reference line (composer card edge / window edge) and keeps following it when the window resizes, the side panel opens, or the chat width changes.
 - **Fixed size**: the pill never changes size in any state (the feedback layer is an absolutely positioned overlay that does not participate in layout).
 - **Zero dependencies**: plain JavaScript — **no build step, no third-party runtime dependencies** (only `require('react')`, provided by the host).
