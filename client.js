@@ -43,10 +43,14 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
     '@keyframes ocgu-blink{0%,100%{border-color:var(--dsw-alias-border-l2)}50%{border-color:var(--dsw-alias-state-success-primary)}}' +
     '@keyframes ocgu-flash-ok{0%{border-color:var(--dsw-alias-state-success-primary)}65%{border-color:var(--dsw-alias-state-success-primary)}100%{border-color:var(--dsw-alias-border-l2)}}' +
     '@keyframes ocgu-flash-err{0%,100%{border-color:var(--dsw-alias-border-l2)}50%{border-color:var(--dsw-alias-state-error-primary)}}' +
+    // 切换动效：形态切换（极简 ↔ 常规、余额显隐）时内容淡入并轻微放大；数字变化时淡入，避免生硬跳变
+    '@keyframes ocgu-swap{from{opacity:0;transform:scale(.86)}to{opacity:1;transform:scale(1)}}' +
+    '@keyframes ocgu-num{from{opacity:.2;transform:translate(-50%,-50%) scale(.78)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}' +
+    '@keyframes ocgu-fade{from{opacity:.25}to{opacity:1}}' +
     // 系统开了「减少动态效果」：不闪，直接给出静态结果色
     '@media (prefers-reduced-motion:reduce){.ocgu-float[data-state="loading"]{animation:none;border-color:var(--dsw-alias-state-success-primary)}.ocgu-float[data-state="ok"]{animation:none;border-color:var(--dsw-alias-state-success-primary)}.ocgu-float[data-state="error"]{animation:none;border-color:var(--dsw-alias-state-error-primary)}}' +
     // 余额：跟胶囊行高对齐（11px / 18px），不参与顶高
-    '.ocgu-bal{font-size:10.5px;line-height:16px;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:.2px;white-space:nowrap;margin-right:3px}' +
+    '.ocgu-bal{font-size:10.5px;line-height:16px;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:.2px;white-space:nowrap;margin-right:3px;animation:ocgu-swap .3s cubic-bezier(.22,.9,.28,1)}' +
     // 余额只在「余额自己」出错时才转黄：用量侧的失败不该把健康的余额也染黄（两路互相独立）
     '.ocgu-bal[data-balwarn="true"]{color:var(--dsw-alias-state-warn-primary)}' +
     '.ocgu-sep{flex:none;width:1px;height:13px;background:var(--dsw-alias-border-l2);margin-right:3px}' +
@@ -68,17 +72,17 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
     '.ocgu-tip-p{flex:none;min-width:30px;text-align:right;font-size:10.5px;font-variant-numeric:tabular-nums;color:var(--dsw-alias-label-secondary)}' +
     '.ocgu-tip-cd{font-size:9.5px;color:var(--dsw-alias-label-tertiary)}' +
     // 极简模式：三环嵌套（外 M / 中 W / 内 H），只比常规三环略大；余额取整后显示在环旁
-    '.ocgu-nest{position:relative;flex:none;display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px}' +
+    '.ocgu-nest{position:relative;flex:none;display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;animation:ocgu-swap .3s cubic-bezier(.22,.9,.28,1)}' +
     '.ocgu-nest svg{position:absolute;inset:0;width:26px;height:26px;overflow:visible}' +
     '.ocgu-nest-track{fill:none;stroke-width:2.6;stroke:color-mix(in srgb,var(--dsw-alias-label-tertiary) 26%,transparent)}' +
-    '.ocgu-nest-arc{fill:none;stroke-width:2.6;stroke-linecap:round;stroke:var(--dsw-alias-state-success-primary)}' +
+    '.ocgu-nest-arc{fill:none;stroke-width:2.6;stroke-linecap:round;stroke:var(--dsw-alias-state-success-primary);transition:stroke-dashoffset .35s cubic-bezier(.22,.9,.28,1),stroke .2s ease}' +
     '.ocgu-nest-arc[data-level="warn"]{stroke:var(--dsw-alias-state-warn-primary)}' +
     '.ocgu-nest-arc[data-level="danger"]{stroke:var(--dsw-alias-state-error-primary)}' +
     '.ocgu-nest-arc[data-level="empty"]{stroke:var(--dsw-alias-label-tertiary)}' +
     // OCG 三组迷你圆环：环盒 20px（视觉环 24px，上下各溢出 2px，落在 5px 内边距里）、环心数字 9.5px ——
     // 两位数百分比在环心也不拥挤；环外不再单列 H/W/M 标签（省掉三个字母位，浮窗更短）。
     // 完整口径仍在 aria-label / title / 设置页。
-    '.ocgu-mini-group{display:inline-flex;align-items:center;margin-right:3px}' +
+    '.ocgu-mini-group{display:inline-flex;align-items:center;margin-right:3px;animation:ocgu-swap .3s cubic-bezier(.22,.9,.28,1)}' +
     '.ocgu-mini-group:last-child{margin-right:0}' +
     '.ocgu-mini-ring{position:relative;flex:none;display:inline-flex;width:18px;height:18px}' +
     '.ocgu-mini-ring svg{position:absolute;left:50%;top:50%;width:21px;height:21px;transform:translate(-50%,-50%);overflow:visible}' +
@@ -86,7 +90,7 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
     '.ocgu-mini-ring-arc{fill:none;stroke:var(--ocgu-ring);stroke-width:3.2;stroke-linecap:round;transition:stroke-dashoffset .35s cubic-bezier(.22,.9,.28,1),stroke .2s ease}' +
     // 环心数字：绝对定位不参与行高；tabular-nums 让数值变化时不抖；颜色跟环同色（一眼成套）。
     // 9.5px/-.3px 是环内径(≈17.8px)的上限，两位数百分比正好放得下
-    '.ocgu-mini-ring-val{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:8.5px;line-height:1;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:-.3px;white-space:nowrap;color:var(--ocgu-ring)}' +
+    '.ocgu-mini-ring-val{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:8.5px;line-height:1;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:-.3px;white-space:nowrap;color:var(--ocgu-ring);animation:ocgu-num .28s ease}' +
     // 用量分级配色（红绿灯，一色两用）：剩余 >20% 绿、<=20% 琥珀、<=5% 红。
     // 剩余弧 = 该色满不透明；底盘（已消耗部分）= 同色 32% 透明。
     '.ocgu-mini-ring[data-level="ok"]{--ocgu-ring:var(--dsw-alias-state-success-primary)}' +
@@ -102,7 +106,7 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
     '.ocgu-row-top{display:flex;align-items:baseline;gap:10px}' +
     '.ocgu-row-label{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;line-height:18px;color:var(--dsw-alias-label-secondary)}' +
     // 百分比定宽右对齐 + tabular-nums：三行的数字成列
-    '.ocgu-row-pct{flex:none;min-width:38px;text-align:right;font-size:13px;line-height:18px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--dsw-alias-label-primary)}' +
+    '.ocgu-row-pct{flex:none;min-width:38px;text-align:right;font-size:13px;line-height:18px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--dsw-alias-label-primary);animation:ocgu-fade .26s ease}' +
     // 进度槽 6 → 8px：槽底比纯 border-l1 更有「槽」感，又不抢眼
     '.ocgu-row-track{position:relative;height:8px;border-radius:999px;background:color-mix(in srgb,var(--dsw-alias-border-l1) 82%,var(--dsw-alias-bg-base));overflow:hidden}' +
     '.ocgu-row-fill{position:absolute;left:0;top:0;bottom:0;border-radius:999px;background:var(--dsw-alias-brand-primary);transition:width .45s cubic-bezier(.22,.9,.28,1)}' +
@@ -134,7 +138,7 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
     '.ocgu-field-right{display:flex;align-items:center;gap:10px;flex:none;margin-left:auto}' +
     // 二选一分段控件（用量进度口径：已使用 / 剩余）
     '.ocgu-seg{display:inline-flex;align-items:center;gap:2px;padding:2px;border-radius:9px;background:var(--dsw-alias-interactive-bg-hover)}' +
-    '.ocgu-seg-item{border:0;background:transparent;color:var(--dsw-alias-label-secondary);font:inherit;font-size:12.5px;line-height:1;padding:5px 10px;border-radius:7px;cursor:pointer}' +
+    '.ocgu-seg-item{border:0;background:transparent;color:var(--dsw-alias-label-secondary);font:inherit;font-size:12.5px;line-height:1;padding:5px 10px;border-radius:7px;cursor:pointer;transition:background-color .18s ease,color .18s ease}' +
     '.ocgu-seg-item[data-on="1"]{background:var(--dsw-alias-bg-base);color:var(--dsw-alias-label-primary);font-weight:500}' +
     '.ocgu-field-control{display:flex;align-items:center;flex-wrap:wrap;gap:8px}' +
     // 块布局（两把 Key 用）：标题/描述独占一行，控件行**通栏** —— 输入框左到头、右到按钮（自己撑满）
@@ -390,7 +394,8 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
     var y = t('anchor.' + (typeof ay === 'string' && ay ? ay : 'view-bottom'));
     return x + ' · ' + y;
   }
-  var DEFAULT_ANCHORS = { widgetAnchorX: 'view-right', widgetOffsetX: -24, widgetAnchorY: 'view-bottom', widgetOffsetY: -24 };
+  // 默认位置 = 窗口左上角（贴左边 11px、距顶 50px）；「重置位置」与「恢复默认设置」都回到这里
+  var DEFAULT_ANCHORS = { widgetAnchorX: 'view-left', widgetOffsetX: 11, widgetAnchorY: 'view-top', widgetOffsetY: 50 };
   var REVEAL_MS = 3000;
   // 刷新超时的哨兵值：文案交给界面层按语言生成，helper 里不放中文（否则英文界面会中英混排）
   var ERR_TIMEOUT = '@timeout';
@@ -428,9 +433,11 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
       'unit.minute': '分钟',
       'btn.save': '保存',
       'btn.clear': '清空',
-      'btn.resetPos': '重置到右下角',
+      'btn.resetPos': '重置位置',
       'btn.atDefault': '已在默认位置',
-      'title.resetPos': '把浮窗放回窗口右下角',
+      'title.resetPos': '把浮窗放回默认位置（窗口左上角）',
+      'btn.resetAll': '恢复默认设置',
+      'title.resetAll': '一键恢复：已使用 / 5 分钟 / 极简模式 / 不显示余额 / 默认位置',
       'aria.widget': '显示悬浮窗',
       'label.balance': '官方余额',
       'label.minimal': '极简模式',
@@ -504,7 +511,8 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
       'msg.widgetHidden': '悬浮窗已隐藏',
       'msg.balanceShown': '浮窗已显示余额',
       'msg.balanceHidden': '浮窗已隐藏余额',
-      'msg.posReset': '浮窗已回到右下角',
+      'msg.posReset': '浮窗已回到默认位置',
+      'msg.resetAllDone': '已恢复默认设置',
       'status.auto': '已自动读取',
       'status.manual': '手动配置',
       'status.loading': '检测中',
@@ -520,7 +528,9 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
       'btn.clear': 'Clear',
       'btn.resetPos': 'Reset position',
       'btn.atDefault': 'At default',
-      'title.resetPos': 'Move the pill back to the bottom-right corner',
+      'title.resetPos': 'Move the pill back to its default position (top-left of the window)',
+      'btn.resetAll': 'Restore defaults',
+      'title.resetAll': 'One-click defaults: Used / 5 min / Minimal / no balance / default position',
       'aria.widget': 'Show floating pill',
       'label.balance': 'Balance',
       'label.minimal': 'Minimal',
@@ -594,7 +604,8 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
       'msg.widgetHidden': 'Floating pill hidden',
       'msg.balanceShown': 'Balance shown on the pill',
       'msg.balanceHidden': 'Balance hidden from the pill',
-      'msg.posReset': 'Pill moved back to the bottom-right',
+      'msg.posReset': 'Pill moved back to its default position',
+      'msg.resetAllDone': 'Defaults restored',
       'status.auto': 'Read automatically',
       'status.manual': 'Set manually',
       'status.loading': 'Checking',
@@ -1019,7 +1030,7 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
                   strokeDashoffset: String(winHas ? RING_C * (1 - left / 100) : RING_C)
                 }
               }))),
-          React.createElement('span', { className: 'ocgu-mini-ring-val' }, winHas ? left : '--'))));
+          React.createElement('span', { key: 'v' + (winHas ? left : '-'), className: 'ocgu-mini-ring-val' }, winHas ? left : '--'))));
     });
 
     // 极简模式：三环嵌套（外 M / 中 W / 内 H），只比常规三环略大；余额取整后显示在环旁
@@ -1164,7 +1175,7 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
         React.createElement('span', { className: 'ocgu-row-label' }, props.label),
         React.createElement('span', { className: 'ocgu-row-reset' },
           (fmtCountdown(win.resetsAt, t) || t('cd.unknown')) + (win.status && win.status !== 'ok' ? t('cd.status', { s: win.status }) : '')),
-        React.createElement('span', { className: 'ocgu-row-pct' }, winHas ? d.value + '%' : '--')),
+        React.createElement('span', { key: 'p' + (winHas ? d.value : '-'), className: 'ocgu-row-pct' }, winHas ? d.value + '%' : '--')),
       React.createElement('div', { className: 'ocgu-row-track' },
         React.createElement('div', { className: 'ocgu-row-fill ocgu-fill', 'data-level': winHas ? d.level : 'empty', style: { width: (winHas ? d.value : 0) + '%' } })));
   }
@@ -1352,6 +1363,27 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
         if (err || !nv) { say('widget', t('msg.saveFailed', { err: err || t('msg.unknownErr') }), 'error'); return; }
         apply(nv);
         say('widget', t('msg.posReset'));
+      });
+    };
+
+    // 一键恢复默认设置（区块右下角按钮）：口径 / 间隔 / 极简 / 余额 / 位置 一次写回
+    var resetAll = function () {
+      var patch = {
+        percentMode: 'used',
+        refreshMinutes: 5,
+        minimalMode: true,
+        showBalance: false,
+        widgetVisible: true,
+        widgetAnchorX: DEFAULT_ANCHORS.widgetAnchorX,
+        widgetOffsetX: DEFAULT_ANCHORS.widgetOffsetX,
+        widgetAnchorY: DEFAULT_ANCHORS.widgetAnchorY,
+        widgetOffsetY: DEFAULT_ANCHORS.widgetOffsetY
+      };
+      updateNs(remote, viewRef.current, patch, function (err, nv) {
+        if (err || !nv) { say('resetAll', t('msg.saveFailed', { err: err || t('msg.unknownErr') }), 'error'); return; }
+        apply(nv);
+        setRefreshDraft(String(nsValue(nv).refreshMinutes || 5));
+        say('resetAll', t('msg.resetAllDone'));
       });
     };
 
@@ -1544,7 +1576,18 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
           }, t('btn.clear'))
         ],
         nowrap: true
-      }));
+      }),
+      // 一键恢复默认设置（区块最底部、右下角）
+      React.createElement('div', {
+        style: { display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '10px', marginTop: '20px' }
+      },
+        React.createElement('span', {
+          className: 'ocgu-msg', 'data-tone': msgOf('resetAll') ? toneOf('resetAll') : 'muted',
+          role: 'status', 'aria-live': 'polite', title: msgOf('resetAll') || ''
+        }, msgOf('resetAll')),
+        React.createElement('button', {
+          className: 'ocgu-btn', 'data-kind': 'outline', onClick: resetAll, title: t('title.resetAll')
+        }, t('btn.resetAll'))));
   }
 
   // ---------- 挂载 ----------

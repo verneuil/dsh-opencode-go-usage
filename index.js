@@ -45,20 +45,21 @@ export const Config = z.object({
   refreshMinutes: z.number().default(5).volatile(),
   // 浮窗显示开关
   widgetVisible: z.boolean().default(true).volatile(),
-  // 浮窗上是否显示 DeepSeek 账户余额（关掉后浮窗只留 OCG 三组圆环，更窄）
-  showBalance: z.boolean().default(true).volatile(),
-  // 用量进度口径：left = 显示剩余（默认），used = 显示已使用
-  percentMode: z.string().default("left").volatile(),
-  // 极简模式：三环嵌套（外 M / 中 W / 内 H）+ 环心余额（只到元）
-  minimalMode: z.boolean().default(false).volatile(),
+  // 浮窗上是否显示 DeepSeek 账户余额（默认关：极简形态只留三环）
+  showBalance: z.boolean().default(false).volatile(),
+  // 用量进度口径：used = 显示已使用（默认），left = 显示剩余
+  percentMode: z.string().default("used").volatile(),
+  // 极简模式（默认开）：三环嵌套（外 M / 中 W / 内 H）+ 环旁余额（只到元）
+  minimalMode: z.boolean().default(true).volatile(),
   // 浮窗锚定（「最近锚线」模型）：拖动松手时只记「锚线 + 偏移」，窗口或输入框
   // 尺寸变化时按锚线重算像素位置，而不是记住绝对坐标。
+  // 默认 = 窗口左上角（贴左边 11px、距顶 50px）—— 「重置位置」按钮回到这里。
   // 水平锚线：card-left | card-right | view-left | view-right
   // 垂直锚线：card-top | card-bottom | view-top | view-bottom
-  widgetAnchorX: z.string().default("view-right").volatile(),
-  widgetOffsetX: z.number().default(-24).volatile(),
-  widgetAnchorY: z.string().default("view-bottom").volatile(),
-  widgetOffsetY: z.number().default(-24).volatile(),
+  widgetAnchorX: z.string().default("view-left").volatile(),
+  widgetOffsetX: z.number().default(11).volatile(),
+  widgetAnchorY: z.string().default("view-top").volatile(),
+  widgetOffsetY: z.number().default(50).volatile(),
   // 手动刷新请求计数：客户端递增以触发宿主立即重新拉取
   refreshRequest: z.number().default(0).volatile(),
   // 「更新中」信号：宿主每轮真正开始拉取前自增。宿主是拉取完成后才写 lastUpdated 的，
@@ -86,7 +87,7 @@ const OCG_CREDENTIALS = ["OPENCODE_GO_API_KEY", "OPENCODE_API_KEY"]
 const DS_CREDENTIALS = ["DEEPSEEK_API_KEY"]
 // 官方文档明确要求客户端自报身份（"Identify itself with its own user agent, such as
 // my-coding-agent/1.0, rather than a generic SDK or HTTP-library name"）；两个接口都带上。
-const USER_AGENT = "dsh-opencode-go-usage/2.14.0 (+DeepSeek Harness plugin)"
+const USER_AGENT = "dsh-opencode-go-usage/2.15.0 (+DeepSeek Harness plugin)"
 // 单请求总超时。跨国链路偶发慢连接，15s 偏紧，放宽到 20s（inflight 去重，不会叠加请求）。
 const REQUEST_TIMEOUT_MS = 20000
 
