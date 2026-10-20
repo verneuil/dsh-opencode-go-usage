@@ -9,7 +9,7 @@ An unofficial **DeepSeek Harness** client plugin that merges your **DeepSeek acc
 
 ## Screenshots
 
-> All five are **rendered illustrations** of the interface, built from the plugin's real stylesheet and the host theme tokens — a moving light rail and a closing ring are hard to capture as a stable frame.
+> All five are **rendered illustrations** of the interface, built from the plugin's real stylesheet and the host theme tokens.
 
 | Pill · light                            | Pill · dark                           |
 | --------------------------------------- | ------------------------------------- |
@@ -19,7 +19,7 @@ An unofficial **DeepSeek Harness** client plugin that merges your **DeepSeek acc
 | --------------------------------------------- | ------------------------------------------- |
 | ![Settings · light](screenshots/settings-light.png) | ![Settings · dark](screenshots/settings-dark.png) |
 
-| States & colour grades (illustration: refreshing / success seal / failure / three grade colours / narrowed after hiding the balance) |
+| States & colour grades (illustration: refreshing / success / failure / three grade colours / minimal mode / narrowed after hiding the balance) |
 | ------------------------------------------------------------ |
 | ![States and colour grades](screenshots/states-light.png)     |
 
@@ -27,7 +27,9 @@ An unofficial **DeepSeek Harness** client plugin that merges your **DeepSeek acc
 
 - **Two datasets in one pill**: DeepSeek balance (`¥` amount) + OpenCode Go usage for three windows; **click the pill to refresh both** (fetched together — a failure on one side does not affect the other).
 - **Three rings**: each ring's centre shows the percentage — **Left** by default, switchable to **Used** in settings (no `%` sign); > 20% green, ≤ 20% amber, ≤ 5% red; the track is the same colour at 32% opacity, so every ring reads as one piece.
-- **Hairline light rail**: while refreshing, a hairline of light runs around the pill's perimeter at **constant arc-length speed**; on completion it **closes into a full ring** at the head's current position; failures use the same effect in red.
+- **Border feedback**: the pill's own border **pulses** while refreshing, **holds green** on success and **blinks red three times** on failure — the border *is* the animation, so nothing can drift out of alignment.
+- **Hover popover**: hovering the pill shows the DS balance plus three progress bars, each with its **reset countdown** underneath; it flips upwards near the bottom of the window.
+- **Minimal mode**: three **nested** rings (H inner / W middle / M outer) with the balance **rounded to whole yuan** shown beside them — a more compact pill.
 - **Drag to snap**: on release the pill snaps to the nearest reference line (composer card edge / window edge) and keeps following it when the window resizes, the side panel opens, or the chat width changes.
 - **Fixed size**: the pill never changes size in any state (the feedback layer is an absolutely positioned overlay that does not participate in layout).
 - **Zero dependencies**: plain JavaScript — **no build step, no third-party runtime dependencies** (only `require('react')`, provided by the host).
@@ -67,7 +69,7 @@ Follow the on-screen prompt to reload afterwards (replacing an installed JavaScr
 - **Usage details**: a progress bar, the percentage (basis is selectable), reset countdown and API status for each of the three windows.
 - **Progress basis** (top-right of the usage card): **Used** / **Left** — the pill and the settings rows follow; defaults to Left.
 - **Auto-refresh interval** (minutes, 0.5 – 1440).
-- **Floating pill**: three things in one row — the “显示DS官方余额” checkbox (turn it off and the pill keeps only the three rings and gets narrower), the “Reset to bottom-right” button, and the master switch.
+- **Floating pill**: four things in one row — the “Minimal” checkbox, the “Balance” checkbox (turn it off and the pill keeps only the three rings and gets narrower), the “Reset to bottom-right” button, and the master switch.
 - **Manual overrides for both API keys** (leave blank to use the DSH credential store; clear them at any time to go back to automatic).
 - **Per-row feedback**: each action's message appears in the row it belongs to (the interval message in the “auto-refresh” row, the toggle message in the “floating pill” row, and so on) — red on failure, green on success. Messages live in a slot on the title row, so **showing and hiding them does not shift the layout** (measured `delta = 0` for identically structured fields) and they **disappear after 3 seconds**.
 
@@ -119,7 +121,8 @@ The settings page covers the common options; the fields below can also be edited
 | `percentMode`                                                  | Usage progress basis: `left` (default) or `used`                                   |
 | `widgetAnchorX/Y`, `widgetOffsetX/Y`                            | Pill anchoring (written by the client while dragging; no need to edit by hand)      |
 | `refreshRequest`                                               | Manual refresh counter (incremented by the client when the pill is clicked)         |
-| `refreshTick`                                                  | “Refreshing” signal the host increments before each fetch (client read-only; lights up the border rail) |
+| `refreshTick`                                                  | “Refreshing” signal the host increments before each fetch (client read-only; lights up the border feedback) |
+| `minimalMode`                                                  | Minimal mode: nested rings with the balance rounded and shown beside them (default off) |
 | `keyStatus`, `keyHint`, `usageError`, `lastUpdated`, `usage`     | Derived OpenCode Go snapshots (written by the host, read by the client)             |
 | `balanceKeyStatus`, `balanceKeyHint`, `balanceError`, `balance` | Derived DeepSeek balance snapshots (written by the host, read by the client)        |
 
