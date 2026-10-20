@@ -26,7 +26,7 @@ An unofficial **DeepSeek Harness** client plugin that merges your **DeepSeek acc
 ## Features
 
 - **Two datasets in one pill**: DeepSeek balance (`¥` amount) + OpenCode Go usage for three windows; **click the pill to refresh both** (fetched together — a failure on one side does not affect the other).
-- **Three rings**: each ring's centre shows the percentage — **Left** by default, switchable to **Used** in settings (no `%` sign); > 20% green, ≤ 20% amber, ≤ 5% red; the track is the same colour at 32% opacity, so every ring reads as one piece.
+- **Three rings**: each ring's centre shows the percentage — **Used** by default, switchable to **Left** in settings (no `%` sign); > 20% green, ≤ 20% amber, ≤ 5% red; the track is the same colour at 32% opacity, so every ring reads as one piece.
 - **Border feedback**: the pill's own border **pulses** while refreshing, **holds green** on success and **blinks red three times** on failure — the border *is* the animation, so nothing can drift out of alignment.
 - **Hover popover**: hovering the pill shows the DS balance plus three progress bars, each with its **reset countdown** underneath; it flips upwards near the bottom of the window.
 - **Minimal mode**: three **nested** rings (H inner / W middle / M outer) with the balance **rounded to whole yuan** shown beside them — a more compact pill. Turning the balance off as well gives the **most compact form**: nested rings only.
@@ -60,7 +60,7 @@ Follow the on-screen prompt to reload afterwards (replacing an installed JavaScr
 ## Usage
 
 - **Click the pill** = refresh the balance and the usage immediately (or just wait for the automatic refresh).
-- **Drag the pill** = move it; it snaps on release. The “Reset to bottom-right” button in the settings page restores the default position.
+- **Drag the pill** = move it; it snaps on release. The “Reset position” button in the settings page restores the default position (top-left of the window).
 - **Settings page** = `Settings → Plugins → OCG 余量查询`.
 
 ## Settings page
@@ -69,7 +69,9 @@ Follow the on-screen prompt to reload afterwards (replacing an installed JavaScr
 - **Usage details**: a progress bar, the percentage (basis is selectable), reset countdown and API status for each of the three windows.
 - **Progress basis** (top-right of the usage card): **Used** / **Left** — the pill and the settings rows follow; defaults to Left.
 - **Auto-refresh interval** (minutes, 0.5 – 1440).
-- **Floating pill**: four things in one row — the “Minimal” checkbox, the “Balance” checkbox (turn it off and the pill keeps only the three rings and gets narrower), the “Reset to bottom-right” button, and the master switch.
+- **Floating pill**: four things in one row — the “Minimal” checkbox, the “Balance” checkbox (turn it off and the pill keeps only the three rings and gets narrower), the “Reset position” button, and the master switch (defaults: Minimal on, Balance off).
+- **Restore defaults** (bottom-right of the settings section): one click writes back “Used / 5 min / Minimal / no balance / top-left default position” — the same set a fresh install starts with.
+- **Transitions**: switching Minimal, the progress basis or the balance fades and scales the content in, with animated ring arcs and numbers — no hard cut.
 - **Manual overrides for both API keys** (leave blank to use the DSH credential store; clear them at any time to go back to automatic).
 - **Per-row feedback**: each action's message appears in the row it belongs to (the interval message in the “auto-refresh” row, the toggle message in the “floating pill” row, and so on) — red on failure, green on success. Messages live in a slot on the title row, so **showing and hiding them does not shift the layout** (measured `delta = 0` for identically structured fields) and they **disappear after 3 seconds**.
 
@@ -117,12 +119,12 @@ The settings page covers the common options; the fields below can also be edited
 | `deepseekApiKey`                                               | Manual DeepSeek API key (secret). Leave empty to use the DSH credential store      |
 | `refreshMinutes`                                               | Auto-refresh interval in minutes (default 5); one round refreshes both balance and usage |
 | `widgetVisible`                                                | Pill visibility switch                                                             |
-| `showBalance`                                                  | Whether to show the DeepSeek balance on the pill (default on)                       |
-| `percentMode`                                                  | Usage progress basis: `left` (default) or `used`                                   |
-| `widgetAnchorX/Y`, `widgetOffsetX/Y`                            | Pill anchoring (written by the client while dragging; no need to edit by hand)      |
+| `showBalance`                                                  | Whether to show the DeepSeek balance on the pill (default off)                      |
+| `percentMode`                                                  | Usage progress basis: `used` (default) or `left`                                   |
+| `widgetAnchorX/Y`, `widgetOffsetX/Y`                            | Pill anchoring (written by the client while dragging; defaults to 11 / 50 at the window's top-left) |
 | `refreshRequest`                                               | Manual refresh counter (incremented by the client when the pill is clicked)         |
 | `refreshTick`                                                  | “Refreshing” signal the host increments before each fetch (client read-only; lights up the border feedback) |
-| `minimalMode`                                                  | Minimal mode: nested rings with the balance rounded and shown beside them (default off) |
+| `minimalMode`                                                  | Minimal mode: nested rings with the balance rounded and shown beside them (default on) |
 | `keyStatus`, `keyHint`, `usageError`, `lastUpdated`, `usage`     | Derived OpenCode Go snapshots (written by the host, read by the client)             |
 | `balanceKeyStatus`, `balanceKeyHint`, `balanceError`, `balance` | Derived DeepSeek balance snapshots (written by the host, read by the client)        |
 
