@@ -3,9 +3,17 @@
 | ![插件图标](assets/icon.png) | **把 DeepSeek 官方余额与 OpenCode Go 三个用量窗口（5 小时 R / 本周 W / 本月 M）合并进同一个悬浮胶囊**，另带一个同名设置页。 |
 | :---: | --- |
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) [![version](https://img.shields.io/github/v/tag/verneuil/dsh-opencode-go-usage?label=version&color=4b8bf5)](https://github.com/verneuil/dsh-opencode-go-usage/releases/latest) [![Listed on dsh-plugin.org](https://dsh-plugin.org/badges/listed.svg)](https://dsh-plugin.org/plugins/verneuil/dsh-opencode-go-usage) [![Awesome DSH Plugin](https://awesome-dsh-plugin.com/badge.svg)](https://awesome-dsh-plugin.com/p/verneuil/dsh-opencode-go-usage) [![dsh.so risk](https://www.dsh.so/badge/dsh-opencode-go-usage-15.svg)](https://www.dsh.so/artifact/dsh-opencode-go-usage-15/)
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
+  <a href="https://github.com/verneuil/dsh-opencode-go-usage/releases/latest"><img src="https://img.shields.io/github/v/tag/verneuil/dsh-opencode-go-usage?label=version&color=4b8bf5" alt="version"></a>
+  <a href="https://dsh-plugin.org/plugins/verneuil/dsh-opencode-go-usage"><img src="https://dsh-plugin.org/badges/listed.svg" alt="Listed on dsh-plugin.org"></a>
+  <a href="https://www.dsh.so/artifact/dsh-opencode-go-usage-15/"><img src="https://www.dsh.so/badge/dsh-opencode-go-usage-15.svg" alt="dsh.so risk"></a>
+  <a href="https://awesome-dsh-plugin.com/p/verneuil/dsh-opencode-go-usage"><img src="https://awesome-dsh-plugin.com/badge.svg" alt="Awesome DSH Plugin"></a>
+</p>
 
-**中文** · [English](README.en.md) · [更新日志](CHANGELOG.md) · [反馈](https://github.com/verneuil/dsh-opencode-go-usage/issues)
+<p align="center">
+  <b>中文</b> · <a href="README.en.md">English</a> · <a href="CHANGELOG.md">更新日志</a> · <a href="https://github.com/verneuil/dsh-opencode-go-usage/issues">反馈</a>
+</p>
 
 ![浮窗 · 浅色主题](screenshots/float-light.png)
 

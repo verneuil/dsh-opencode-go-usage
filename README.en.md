@@ -3,9 +3,17 @@
 | ![Plugin icon](assets/icon.png) | **Merges your DeepSeek balance and your OpenCode Go usage across three windows (Rolling R / Weekly W / Monthly M) into a single floating pill**, with a settings page of the same name. |
 | :---: | --- |
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) [![version](https://img.shields.io/github/v/tag/verneuil/dsh-opencode-go-usage?label=version&color=4b8bf5)](https://github.com/verneuil/dsh-opencode-go-usage/releases/latest) [![Listed on dsh-plugin.org](https://dsh-plugin.org/badges/listed.svg)](https://dsh-plugin.org/plugins/verneuil/dsh-opencode-go-usage) [![Awesome DSH Plugin](https://awesome-dsh-plugin.com/badge.svg)](https://awesome-dsh-plugin.com/p/verneuil/dsh-opencode-go-usage) [![dsh.so risk](https://www.dsh.so/badge/dsh-opencode-go-usage-15.svg)](https://www.dsh.so/artifact/dsh-opencode-go-usage-15/)
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
+  <a href="https://github.com/verneuil/dsh-opencode-go-usage/releases/latest"><img src="https://img.shields.io/github/v/tag/verneuil/dsh-opencode-go-usage?label=version&color=4b8bf5" alt="version"></a>
+  <a href="https://dsh-plugin.org/plugins/verneuil/dsh-opencode-go-usage"><img src="https://dsh-plugin.org/badges/listed.svg" alt="Listed on dsh-plugin.org"></a>
+  <a href="https://www.dsh.so/artifact/dsh-opencode-go-usage-15/"><img src="https://www.dsh.so/badge/dsh-opencode-go-usage-15.svg" alt="dsh.so risk"></a>
+  <a href="https://awesome-dsh-plugin.com/p/verneuil/dsh-opencode-go-usage"><img src="https://awesome-dsh-plugin.com/badge.svg" alt="Awesome DSH Plugin"></a>
+</p>
 
-[中文](README.md) · **English** · [Changelog](CHANGELOG.md) · [Issues](https://github.com/verneuil/dsh-opencode-go-usage/issues)
+<p align="center">
+  <a href="README.md">中文</a> · <b>English</b> · <a href="CHANGELOG.md">Changelog</a> · <a href="https://github.com/verneuil/dsh-opencode-go-usage/issues">Issues</a>
+</p>
 
 ![Pill · light theme](screenshots/float-light.png)
 
