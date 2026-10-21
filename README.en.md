@@ -1,4 +1,4 @@
-# OCG Usage Monitor · dsh-opencode-go-usage
+# OCG Balance & Usage · dsh-opencode-go-usage
 
 [中文](README.md) · **English**
 

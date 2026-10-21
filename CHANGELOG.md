@@ -2,6 +2,11 @@
 
 记录每个版本相对上一版的变更，最新在最上。版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## 2.15.3
+- 修正了一些文本上的描述；
+- 提交了插件市场并增加了一些合规性声明；
+- 无任何功能性更新。
+
 ## 2.15.2
 - 把 `@deepseek-ai/schemastery` 声明为 `peerDependencies`（并标 `optional`，由宿主运行时提供，不会多装副本）
 
