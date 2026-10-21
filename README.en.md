@@ -3,7 +3,7 @@
 | ![Plugin icon](assets/icon.png) | **Merges your DeepSeek balance and your OpenCode Go usage across three windows (Rolling R / Weekly W / Monthly M) into a single floating pill**, with a settings page of the same name. |
 | :---: | --- |
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) [![version](https://img.shields.io/github/v/tag/verneuil/dsh-opencode-go-usage?label=version&color=4b8bf5)](https://github.com/verneuil/dsh-opencode-go-usage/releases/latest) [![Listed on dsh-plugin.org](https://dsh-plugin.org/badges/listed.svg)](https://dsh-plugin.org/plugins/verneuil/dsh-opencode-go-usage) [![Awesome DSH Plugin](https://awesome-dsh-plugin.com/badge.svg)](https://awesome-dsh-plugin.com/p/verneuil/dsh-opencode-go-usage)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) [![version](https://img.shields.io/github/v/tag/verneuil/dsh-opencode-go-usage?label=version&color=4b8bf5)](https://github.com/verneuil/dsh-opencode-go-usage/releases/latest) [![Listed on dsh-plugin.org](https://dsh-plugin.org/badges/listed.svg)](https://dsh-plugin.org/plugins/verneuil/dsh-opencode-go-usage) [![Awesome DSH Plugin](https://awesome-dsh-plugin.com/badge.svg)](https://awesome-dsh-plugin.com/p/verneuil/dsh-opencode-go-usage) [![dsh.so risk](https://www.dsh.so/badge/dsh-opencode-go-usage-15.svg)](https://www.dsh.so/artifact/dsh-opencode-go-usage-15/)
 
 [中文](README.md) · **English** · [Changelog](CHANGELOG.md) · [Issues](https://github.com/verneuil/dsh-opencode-go-usage/issues)
 
