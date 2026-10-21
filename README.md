@@ -1,43 +1,39 @@
 # OCG 余量查询 · dsh-opencode-go-usage
 
-**中文** · [English](README.en.md)
+把 **DeepSeek 官方余额** 与 **OpenCode Go** 三个用量窗口（**5 小时 R** / **本周 W** / **本月 M**）合并进**同一个悬浮胶囊**，另带一个同名设置页。
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Listed on dsh-plugin.org](https://dsh-plugin.org/badges/listed.svg)](https://dsh-plugin.org/plugins/verneuil/dsh-opencode-go-usage)
-[![Awesome DSH Plugin](https://awesome-dsh-plugin.com/badge.svg)](https://awesome-dsh-plugin.com/p/verneuil/dsh-opencode-go-usage)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) [![version](https://img.shields.io/github/v/tag/verneuil/dsh-opencode-go-usage?label=version&color=4b8bf5)](https://github.com/verneuil/dsh-opencode-go-usage/releases/latest) [![Listed on dsh-plugin.org](https://dsh-plugin.org/badges/listed.svg)](https://dsh-plugin.org/plugins/verneuil/dsh-opencode-go-usage) [![Awesome DSH Plugin](https://awesome-dsh-plugin.com/badge.svg)](https://awesome-dsh-plugin.com/p/verneuil/dsh-opencode-go-usage)
 
-一个 **DeepSeek Harness** 客户端插件：把 **DeepSeek 官方余额** 与 **OpenCode Go** 订阅的三个用量窗口 —— **5 小时（rolling）/ 本周 / 本月** —— 合并到**同一个悬浮胶囊**里，另带一个同名设置页。
+**中文** · [English](README.en.md) · [更新日志](CHANGELOG.md) · [反馈](https://github.com/verneuil/dsh-opencode-go-usage/issues)
 
-> *An unofficial [DeepSeek Harness](https://github.com/deepseek-ai) plugin that shows your DeepSeek balance and OpenCode Go usage (5-hour / weekly / monthly) in one floating pill, with click-to-refresh, border-flash feedback, drag-to-snap and a hover popover.*
+![浮窗 · 浅色主题](screenshots/float-light.png)
 
-## 截图
+> *An unofficial [DeepSeek Harness](https://github.com/deepseek-ai) plugin that shows your DeepSeek balance and OpenCode Go usage (Rolling / weekly / monthly) in one floating pill, with click-to-refresh, border-flash feedback, drag-to-snap and a hover popover.*
 
-> 五张均为**界面示意渲染**：按插件的真实样式与宿主主题令牌生成。
+## 目录
 
-| 浮窗 · 浅色                                 | 浮窗 · 深色                                |
-| --------------------------------------- | -------------------------------------- |
-| ![浮窗 · 浅色](screenshots/float-light.png) | ![浮窗 · 深色](screenshots/float-dark.png) |
-
-| 设置页 · 浅色                                    | 设置页 · 深色                                   |
-| ------------------------------------------- | ------------------------------------------ |
-| ![设置页 · 浅色](screenshots/settings-light.png) | ![设置页 · 深色](screenshots/settings-dark.png) |
-
-| 形态与配色总览（示意：更新中 / 成功 / 失败 / 三档配色 / 极简模式 / 最精简形态 / 关掉余额后变窄） |
-| -------------------------------------------- |
-| ![形态与配色总览](screenshots/states-light.png)     |
+- [特性](#特性) · [安装](#安装) · [使用](#使用) · [设置页](#设置页)
+- [截图](#截图) · [数据来源](#数据来源) · [构型](#构型)
+- [配置项](#配置项) · [稳健性设计](#稳健性设计) · [已知限制与免责声明](#已知限制与免责声明) · [许可](#许可)
 
 ## 特性
+
+**浮窗**
 
 - **一屏两套数据**：DeepSeek 官方余额（`¥` 金额）+ OpenCode Go 三窗口用量；**点击浮窗即刷新**（同时拉取，一侧失败不影响另一侧）。
 - **三颗圆环**：环心就是百分比（默认**已使用**，可在设置里切「剩余」；不显示 `%`），剩余 > 20% 绿 / ≤ 20% 琥珀 / ≤ 5% 红；底盘为同色 32% 透明，一眼成套。
 - **边框反馈**：更新中边框**呼吸式闪烁**，成功**长亮绿色**后淡出，失败**短促闪三下红** —— 闪的就是浮窗自己的边框，不存在「路径与边框对不齐」的问题。
-- **悬停浮层**：鼠标停在胶囊上显示「DS账户余额 + 三条进度条」，每条进度条下方带**重置倒计时**；贴近窗口底部时自动改为向上展开。
-- **极简模式**：三环**嵌套**（内 H / 中 W / 外 M）+ 余额**取整到元**显示在环旁，胶囊更紧凑；非极简模式为「余额 + 三颗独立圆环」。再关掉「官方余额」即为**最精简形态**：只留三环嵌套，占地最小。
+- **悬停浮层**：鼠标停在胶囊上显示「DS账户余额 + 三条进度条」；进度条末端带**圆形百分比钮**（贴住当前进度、随主题着色），条下带**重置倒计时**；贴近窗口底部时自动改为向上展开。
+- **极简模式**：三环**嵌套**（内 R / 中 W / 外 M）+ 余额**取整到元**显示在环旁，胶囊更紧凑；非极简模式为「余额 + 三颗独立圆环」。再关掉「官方余额」即为**最精简形态**：只留三环嵌套，占地最小。
 - **拖动吸附**：松手自动吸附到最近的参照线（输入框卡片边 / 窗口边）；窗口尺寸变化、右侧栏开合、对话宽度调整时都按锚线跟随，不会跑位。
 - **长宽恒定**：任何状态下浮窗尺寸都不变（反馈层是绝对定位叠加层，不参与布局）。
+
+**通用**
+
 - **零依赖**：纯原生 JS，**无构建步骤、无第三方运行时依赖**（只 `require('react')`，由宿主提供）。
 - **中英双语**：全部界面文案走客户端 locale 字典，随 DSH 语言设置即时切换（浮窗、设置页、菜单名与各项操作提示）。
 - **主题自适应**：颜色只取宿主主题令牌 `--dsw-alias-*`，明暗主题自动跟随；开关 / 按钮 / 输入框 / 徽章照抄宿主组件原文（只改类名前缀）。
+- **自带图标**：插件列表用彩色三环图标，设置导航里用自己的量程环图标（不再是默认齿轮）。
 
 ## 安装
 
@@ -45,13 +41,13 @@
 
 在 DSH 里打开 **插件管理页 → 「安装插件」对话框 → 粘贴下面任一 spec → 安装**（对话框调用 pnpm，一次只能装一个）：
 
-| 方式                | 粘贴的 spec                                                                                                     |
-| ----------------- | ------------------------------------------------------------------------------------------------------------ |
-| **GitHub 直装**（推荐） | `github:verneuil/dsh-opencode-go-usage`                                                                      |
-| **固定某个版本**        | `github:verneuil/dsh-opencode-go-usage#v2.10.0`（换成任意已发布 tag）                                                  |
-| **Release 包**     | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v2.10.0/dsh-opencode-go-usage-2.10.0.tgz` |
-| **Release 直链（始终最新）** | `https://github.com/verneuil/dsh-opencode-go-usage/releases/latest/download/dsh-opencode-go-usage.tgz` |
-| **离线 tgz**        | `file:D:/你的路径/dsh-opencode-go-usage-2.10.0.tgz`                                                               |
+| 方式                     | 粘贴的 spec                                                                                                     |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------ |
+| **GitHub 直装**（推荐）      | `github:verneuil/dsh-opencode-go-usage`                                                                      |
+| **固定某个版本**             | `github:verneuil/dsh-opencode-go-usage#v2.15.4`（换成任意已发布 tag）                                                  |
+| **Release 包**          | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v2.15.4/dsh-opencode-go-usage-2.15.4.tgz` |
+| **Release 直链（始终最新）**   | `https://github.com/verneuil/dsh-opencode-go-usage/releases/latest/download/dsh-opencode-go-usage.tgz`        |
+| **离线 tgz**             | `file:D:/你的路径/dsh-opencode-go-usage-2.15.4.tgz`                                                               |
 
 命令行等价写法（`dsh plugin` 会把声明了 `dsh.bundle` 的依赖自动加进 profile 的 bundles，无需手写 patch）：
 
@@ -65,7 +61,7 @@ dsh plugin --profile web add github:verneuil/dsh-opencode-go-usage
 
 - **只受理「组合包」**：插件管理页拒绝没有 bundle patch 的依赖，本包自带 `cordis.patch.yml`，符合要求。
 - **升级 = 卸载后重装**：插件管理页不提供版本选择器与升级按钮。卸载会移除依赖记录，重装时才会重新解析，因此**这是拿到新版的方式**；直接覆盖安装同一 spec 不会刷新到新提交。
-- 每个版本的改动见 [CHANGELOG.md](CHANGELOG.md)。
+- 每个版本的改动见 [CHANGELOG.md](CHANGELOG.md)（中英双语）。
 
 ## 使用
 
@@ -86,6 +82,20 @@ dsh plugin --profile web add github:verneuil/dsh-opencode-go-usage
 - **每个操作的提示就地出现在该行**（改间隔的提示在「自动刷新」行、开关窗的提示在「悬浮窗」行……），失败红色、成功绿色；提示放在标题行的槽位里，**出现与消失都不顶动排版**（实测同结构字段 `delta = 0`），**停留 3 秒后自动消失**。
 
 因为自带设置页，宿主侧调用了官方的 `settings.configure({ auto: false })` 关掉自动生成的表单页，避免出现两个重复的配置界面。
+
+## 截图
+
+> 五张均为**界面示意渲染**：按插件的真实样式与宿主主题令牌生成。
+
+| 浮窗 · 浅色                                    | 浮窗 · 深色                                   |
+| ------------------------------------------ | ----------------------------------------- |
+| ![浮窗 · 浅色](screenshots/float-light.png)   | ![浮窗 · 深色](screenshots/float-dark.png)   |
+| **设置页 · 浅色**                               | **设置页 · 深色**                              |
+| ![设置页 · 浅色](screenshots/settings-light.png) | ![设置页 · 深色](screenshots/settings-dark.png) |
+
+**形态与配色总览**（更新中 / 成功 / 失败 / 三档配色 / 极简模式 / 最精简形态 / 关掉余额后变窄）
+
+![形态与配色总览](screenshots/states-light.png)
 
 ## 目标：极简
 
@@ -112,12 +122,12 @@ Authorization: Bearer <DeepSeek API Key>
 
 ## 构型
 
-| 部分           | 位置                 | 说明                                                                                                   |
-| ------------ | ------------------ | ---------------------------------------------------------------------------------------------------- |
-| Bundle 清单    | `package.json`     | `dsh.bundle.patch` + `dsh.client`（platform web、immediately）+ `icon` + `locale/*.json` 显示元数据          |
-| Loader patch | `cordis.patch.yml` | 插入一行 `id: opencode-go-usage`（本行 id 同时是设置表单的 ns）                                                      |
-| 宿主半侧         | `index.js`         | `export const Config`（schemastery）+ `apply(ctx, config)`；拉取、解析、写回快照、自动刷新                             |
-| 客户端半侧        | `client.js`        | `window.__ModuleLoader__` 惰性工厂；只 `require('react')`，注册进 `shell.overlay`（浮窗）与 `settings.section`（设置页） |
+| 部分            | 位置                 | 说明                                                                                                   |
+| ------------- | ------------------ | ---------------------------------------------------------------------------------------------------- |
+| Bundle 清单     | `package.json`     | `dsh.bundle.patch` + `dsh.client`（platform web、immediately）+ `icon` + `locale/*.json` 显示元数据          |
+| Loader patch  | `cordis.patch.yml` | 插入一行 `id: opencode-go-usage`（本行 id 同时是设置表单的 ns）                                                      |
+| 宿主半侧          | `index.js`         | `export const Config`（schemastery）+ `apply(ctx, config)`；拉取、解析、写回快照、自动刷新                             |
+| 客户端半侧         | `client.js`        | `window.__ModuleLoader__` 惰性工厂；只 `require('react')`，注册进 `shell.overlay`（浮窗）与 `settings.section`（设置页） |
 
 ## 配置项
 
@@ -142,7 +152,7 @@ Authorization: Bearer <DeepSeek API Key>
 
 - **只占官方为浮层保留的席位** `shell.overlay`（`replaceRisk: none`，点击穿透层，条目自行 opt-in 指针事件）；用自有 `id` 注册，属于「加在既有条目旁边」，不替换任何官方条目。
 - **不遮蔽任何官方 UI**：不注册 `conversation.composer.dock`，不复刻官方组件。
-- **样式只用主题令牌** `--dsw-alias-*`：令牌改名最多让外观退化，不会让渲染崩溃；无阴影、无模糊、无字面色值。
+- **样式只用主题令牌** `--dsw-alias-*`：令牌改名最多让外观退化，不会让渲染崩溃；无字面色值。
 - **不引入任何 Harness 客户端包**（如 `dsh-client-ui-primitives`）：这类包随时会变，且普通 JS 插件没有类型检查；浮窗的控件全部自写。
 - **宿主 API 契约自检**：启动时校验本插件实际用到的宿主契约，不匹配时打印可读警告并安全跳过，而不是抛 `TypeError` 让整条目静默不激活。
 - **配置即通道**：宿主把派生快照写进本行 Config 的 volatile 字段，客户端经 `remote.settings.describe()` 读取；写回在 HMR 事务之外提交（避免 `HMR transactions cannot be nested`）。

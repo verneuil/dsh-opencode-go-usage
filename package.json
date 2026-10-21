@@ -1,6 +1,6 @@
 {
   "name": "dsh-opencode-go-usage",
-  "version": "2.15.3",
+  "version": "2.15.4",
   "main": "index.js",
   "peerDependencies": {
     "@deepseek-ai/schemastery": "*"

@@ -49,7 +49,7 @@ export const Config = z.object({
   showBalance: z.boolean().default(false).volatile(),
   // 用量进度口径：used = 显示已使用（默认），left = 显示剩余
   percentMode: z.string().default("used").volatile(),
-  // 极简模式（默认开）：三环嵌套（外 M / 中 W / 内 H）+ 环旁余额（只到元）
+  // 极简模式（默认开）：三环嵌套（外 M / 中 W / 内 R）+ 环旁余额（只到元）
   minimalMode: z.boolean().default(true).volatile(),
   // 浮窗锚定（「最近锚线」模型）：拖动松手时只记「锚线 + 偏移」，窗口或输入框
   // 尺寸变化时按锚线重算像素位置，而不是记住绝对坐标。
@@ -87,7 +87,7 @@ const OCG_CREDENTIALS = ["OPENCODE_GO_API_KEY", "OPENCODE_API_KEY"]
 const DS_CREDENTIALS = ["DEEPSEEK_API_KEY"]
 // 官方文档明确要求客户端自报身份（"Identify itself with its own user agent, such as
 // my-coding-agent/1.0, rather than a generic SDK or HTTP-library name"）；两个接口都带上。
-const USER_AGENT = "dsh-opencode-go-usage/2.15.3 (+DeepSeek Harness plugin)"
+const USER_AGENT = "dsh-opencode-go-usage/2.15.4 (+DeepSeek Harness plugin)"
 // 单请求总超时。跨国链路偶发慢连接，15s 偏紧，放宽到 20s（inflight 去重，不会叠加请求）。
 const REQUEST_TIMEOUT_MS = 20000
 

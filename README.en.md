@@ -1,41 +1,39 @@
 # OCG Balance & Usage · dsh-opencode-go-usage
 
-[中文](README.md) · **English**
+Merges your **DeepSeek balance** and your **OpenCode Go** usage across three windows (**Rolling R** / **Weekly W** / **Monthly M**) into a **single floating pill**, with a settings page of the same name.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Listed on dsh-plugin.org](https://dsh-plugin.org/badges/listed.svg)](https://dsh-plugin.org/plugins/verneuil/dsh-opencode-go-usage)
-[![Awesome DSH Plugin](https://awesome-dsh-plugin.com/badge.svg)](https://awesome-dsh-plugin.com/p/verneuil/dsh-opencode-go-usage)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE) [![version](https://img.shields.io/github/v/tag/verneuil/dsh-opencode-go-usage?label=version&color=4b8bf5)](https://github.com/verneuil/dsh-opencode-go-usage/releases/latest) [![Listed on dsh-plugin.org](https://dsh-plugin.org/badges/listed.svg)](https://dsh-plugin.org/plugins/verneuil/dsh-opencode-go-usage) [![Awesome DSH Plugin](https://awesome-dsh-plugin.com/badge.svg)](https://awesome-dsh-plugin.com/p/verneuil/dsh-opencode-go-usage)
 
-An unofficial **DeepSeek Harness** client plugin that merges your **DeepSeek account balance** and your **OpenCode Go** usage across three windows — **5-hour (rolling) / weekly / monthly** — into a **single floating pill**, and ships a settings page of the same name.
+[中文](README.md) · **English** · [Changelog](CHANGELOG.md) · [Issues](https://github.com/verneuil/dsh-opencode-go-usage/issues)
 
-## Screenshots
+![Pill · light theme](screenshots/float-light.png)
 
-> All five are **rendered illustrations** of the interface, built from the plugin's real stylesheet and the host theme tokens.
+> *An unofficial [DeepSeek Harness](https://github.com/deepseek-ai) plugin that shows your DeepSeek balance and OpenCode Go usage (Rolling / weekly / monthly) in one floating pill, with click-to-refresh, border-flash feedback, drag-to-snap and a hover popover.*
 
-| Pill · light                            | Pill · dark                           |
-| --------------------------------------- | ------------------------------------- |
-| ![Pill · light](screenshots/float-light.png) | ![Pill · dark](screenshots/float-dark.png) |
+## Contents
 
-| Settings · light                              | Settings · dark                             |
-| --------------------------------------------- | ------------------------------------------- |
-| ![Settings · light](screenshots/settings-light.png) | ![Settings · dark](screenshots/settings-dark.png) |
-
-| States & colour grades (illustration: refreshing / success / failure / three grade colours / minimal mode / most compact form / narrowed after hiding the balance) |
-| ------------------------------------------------------------ |
-| ![States and colour grades](screenshots/states-light.png)     |
+- [Features](#features) · [Installation](#installation) · [Usage](#usage) · [Settings page](#settings-page)
+- [Screenshots](#screenshots) · [Data sources](#data-sources) · [Anatomy](#anatomy)
+- [Configuration](#configuration) · [Robustness](#robustness) · [Known limitations & disclaimer](#known-limitations--disclaimer) · [License](#license)
 
 ## Features
+
+**The pill**
 
 - **Two datasets in one pill**: DeepSeek balance (`¥` amount) + OpenCode Go usage for three windows; **click the pill to refresh both** (fetched together — a failure on one side does not affect the other).
 - **Three rings**: each ring's centre shows the percentage — **Used** by default, switchable to **Left** in settings (no `%` sign); > 20% green, ≤ 20% amber, ≤ 5% red; the track is the same colour at 32% opacity, so every ring reads as one piece.
 - **Border feedback**: the pill's own border **pulses** while refreshing, **holds green** on success and **blinks red three times** on failure — the border *is* the animation, so nothing can drift out of alignment.
-- **Hover popover**: hovering the pill shows the DS balance plus three progress bars, each with its **reset countdown** underneath; it flips upwards near the bottom of the window.
-- **Minimal mode**: three **nested** rings (H inner / W middle / M outer) with the balance **rounded to whole yuan** shown beside them — a more compact pill. Turning the balance off as well gives the **most compact form**: nested rings only.
+- **Hover popover**: hovering the pill shows the DS balance plus three progress bars; each bar carries a **round percentage knob** at its current position (theme-coloured, lightweight) with the **reset countdown** underneath; it flips upwards near the bottom of the window.
+- **Minimal mode**: three **nested** rings (R inner / W middle / M outer) with the balance **rounded to whole yuan** shown beside them — a more compact pill. Turning the balance off as well gives the **most compact form**: nested rings only.
 - **Drag to snap**: on release the pill snaps to the nearest reference line (composer card edge / window edge) and keeps following it when the window resizes, the side panel opens, or the chat width changes.
 - **Fixed size**: the pill never changes size in any state (the feedback layer is an absolutely positioned overlay that does not participate in layout).
+
+**General**
+
 - **Zero dependencies**: plain JavaScript — **no build step, no third-party runtime dependencies** (only `require('react')`, provided by the host).
 - **Bilingual UI**: every interface string goes through the client locale dictionaries and follows the DSH language setting instantly (pill, settings page, menu label and all action messages).
 - **Theme aware**: colours come only from host theme tokens (`--dsw-alias-*`), so light/dark follow automatically; switches, buttons, inputs and badges are copied from the host's own components (only the class prefix is renamed).
+- **Ships its own icons**: a colourful three-ring icon in the plugin list, and its own gauge glyph in the settings navigation (no default gear).
 
 ## Installation
 
@@ -43,12 +41,19 @@ An unofficial **DeepSeek Harness** client plugin that merges your **DeepSeek acc
 
 In DSH, open the **plugin manager → “Install plugin” dialog → paste one of the specs below → install** (the dialog drives pnpm and installs one spec at a time):
 
-| Method                    | Spec to paste                                                                                                    |
-| ------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| **Straight from GitHub** (recommended) | `github:verneuil/dsh-opencode-go-usage`                                                              |
-| **Pin a version**         | `github:verneuil/dsh-opencode-go-usage#v2.10.0` (replace with any published tag)                                    |
-| **Release tarball**       | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v2.10.0/dsh-opencode-go-usage-2.10.0.tgz` |
-| **Offline tgz**           | `file:D:/your/path/dsh-opencode-go-usage-2.10.0.tgz`                                                              |
+| Method                                     | Spec to paste                                                                                                    |
+| ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------- |
+| **Straight from GitHub** (recommended)      | `github:verneuil/dsh-opencode-go-usage`                                                                          |
+| **Pin a version**                          | `github:verneuil/dsh-opencode-go-usage#v2.15.4` (replace with any published tag)                                    |
+| **Release tarball**                        | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v2.15.4/dsh-opencode-go-usage-2.15.4.tgz` |
+| **Release direct link (always latest)**     | `https://github.com/verneuil/dsh-opencode-go-usage/releases/latest/download/dsh-opencode-go-usage.tgz`         |
+| **Offline tgz**                            | `file:D:/your/path/dsh-opencode-go-usage-2.15.4.tgz`                                                              |
+
+The same thing from a terminal (`dsh plugin` adds any dependency that declares `dsh.bundle` to the profile's bundles, so no patch needs to be written by hand):
+
+```sh
+dsh plugin --profile web add github:verneuil/dsh-opencode-go-usage
+```
 
 A spec without `#` installs the **latest commit of the default branch** (pnpm resolves it to that commit and records it in the lockfile); with `#` the tag is pinned instead.
 
@@ -56,19 +61,19 @@ Follow the on-screen prompt to reload afterwards (replacing an installed JavaScr
 
 - **Bundles only**: the plugin manager rejects dependencies that have no bundle patch; this package ships `cordis.patch.yml`, so it qualifies.
 - **Upgrading = uninstall, then install again**: the plugin manager offers no version picker and no upgrade button. Uninstalling removes the dependency record, so only a fresh install re-resolves to the newest commit — **that is how you get a new version**. Installing the same spec over an existing install will not move to a newer commit.
-- Per-version changes are recorded in [CHANGELOG.md](CHANGELOG.md) (Chinese).
+- Per-version changes are recorded in [CHANGELOG.md](CHANGELOG.md) (Chinese and English).
 
 ## Usage
 
 - **Click the pill** = refresh the balance and the usage immediately (or just wait for the automatic refresh).
 - **Drag the pill** = move it; it snaps on release. The “Reset position” button in the settings page restores the default position (top-left of the window).
-- **Settings page** = `Settings → Plugins → OCG 余量查询`.
+- **Settings page** = `Settings → Plugins → OCG Usage`.
 
 ## Settings page
 
-- The **manual refresh** button sits at the right end of the “OpenCode Go 用量详情” heading row, with the refresh time / result message to its left (after a successful refresh it shows “已更新（time）” and **falls back to “上次更新: …” after 3 seconds**).
+- The **manual refresh** button sits at the right end of the “OpenCode Go usage” heading row, with the refresh time / result message to its left (after a successful refresh it shows “Updated (time)” and **falls back to “Last updated: …” after 3 seconds**).
 - **Usage details**: a progress bar, the percentage (basis is selectable), reset countdown and API status for each of the three windows.
-- **Progress basis** (top-right of the usage card): **Used** / **Left** — the pill and the settings rows follow; defaults to Left.
+- **Progress basis** (top-right of the usage card): **Used** / **Left** — the pill and the settings rows follow; defaults to **Used**.
 - **Auto-refresh interval** (minutes, 0.5 – 1440).
 - **Floating pill**: four things in one row — the “Minimal” checkbox, the “Balance” checkbox (turn it off and the pill keeps only the three rings and gets narrower), the “Reset position” button, and the master switch (defaults: Minimal on, Balance off).
 - **Restore defaults** (bottom-right of the settings section): one click writes back “Used / 5 min / Minimal / no balance / top-left default position” — the same set a fresh install starts with.
@@ -77,6 +82,20 @@ Follow the on-screen prompt to reload afterwards (replacing an installed JavaScr
 - **Per-row feedback**: each action's message appears in the row it belongs to (the interval message in the “auto-refresh” row, the toggle message in the “floating pill” row, and so on) — red on failure, green on success. Messages live in a slot on the title row, so **showing and hiding them does not shift the layout** (measured `delta = 0` for identically structured fields) and they **disappear after 3 seconds**.
 
 Because the plugin ships its own settings page, the host side calls the official `settings.configure({ auto: false })` to suppress the auto-generated form — otherwise there would be two duplicate configuration UIs.
+
+## Screenshots
+
+> All five are **rendered illustrations** of the interface, built from the plugin's real stylesheet and the host theme tokens.
+
+| Pill · light                                  | Pill · dark                                 |
+| --------------------------------------------- | ------------------------------------------- |
+| ![Pill · light](screenshots/float-light.png)   | ![Pill · dark](screenshots/float-dark.png)   |
+| **Settings · light**                          | **Settings · dark**                         |
+| ![Settings · light](screenshots/settings-light.png) | ![Settings · dark](screenshots/settings-dark.png) |
+
+**States and colour grades** (refreshing / success / failure / three grade colours / minimal mode / most compact form / narrowed after hiding the balance)
+
+![States and colour grades](screenshots/states-light.png)
 
 ## Design goal: minimal
 
@@ -93,7 +112,7 @@ GET https://api.deepseek.com/user/balance                  # DeepSeek balance
 Authorization: Bearer <DeepSeek API Key>
 ```
 
-The usage endpoint returns `{ usage: { rolling, weekly, monthly } }`, where each window carries `status` / `percent` (**used** percentage) / `resetsAt`; the balance endpoint returns `balance_infos[]` (the CNY entry is preferred). The UI defaults to the **percentage left** and can be switched to **used** in settings; the internal value stays “used”.
+The usage endpoint returns `{ usage: { rolling, weekly, monthly } }`, where each window carries `status` / `percent` (**used** percentage) / `resetsAt`; the balance endpoint returns `balance_infos[]` (the CNY entry is preferred). The UI shows **Used** by default and can be switched to **Left** in settings; the internal value always stays “used”.
 The host half performs the fetching and parsing (neither key ever leaves the host process); the client half only reads the configuration projection the host writes.
 
 **Key resolution** (independent per side, in priority order):
@@ -103,12 +122,12 @@ The host half performs the fetching and parsing (neither key ever leaves the hos
 
 ## Anatomy
 
-| Part          | Location            | Description                                                                                                            |
-| ------------- | ------------------- | ---------------------------------------------------------------------------------------------------------------------- |
-| Bundle manifest | `package.json`    | `dsh.bundle.patch` + `dsh.client` (platform web, immediately) + `icon` + `locale/*.json` display metadata                |
-| Loader patch  | `cordis.patch.yml`  | Inserts one row, `id: opencode-go-usage` (this row id is also the namespace of the settings form)                       |
-| Host half     | `index.js`          | `export const Config` (schemastery) + `apply(ctx, config)`: fetching, parsing, writing back snapshots, auto-refresh      |
-| Client half   | `client.js`         | A `window.__ModuleLoader__` lazy factory; only `require('react')`; registers into `shell.overlay` (pill) and `settings.section` (settings page) |
+| Part            | Location            | Description                                                                                                            |
+| --------------- | ------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| Bundle manifest | `package.json`      | `dsh.bundle.patch` + `dsh.client` (platform web, immediately) + `icon` + `locale/*.json` display metadata                |
+| Loader patch    | `cordis.patch.yml`  | Inserts one row, `id: opencode-go-usage` (this row id is also the namespace of the settings form)                       |
+| Host half       | `index.js`          | `export const Config` (schemastery) + `apply(ctx, config)`: fetching, parsing, writing back snapshots, auto-refresh      |
+| Client half     | `client.js`         | A `window.__ModuleLoader__` lazy factory; only `require('react')`; registers into `shell.overlay` (pill) and `settings.section` (settings page) |
 
 ## Configuration
 
@@ -133,7 +152,7 @@ The settings page covers the common options; the fields below can also be edited
 
 - **Only takes a seat the official UI reserves for overlays**: `shell.overlay` (`replaceRisk: none`, a click-through layer where an entry opts into pointer events itself); registering under its own `id` means “added next to existing entries”, replacing nothing.
 - **No official UI is covered**: it does not register `conversation.composer.dock` and does not clone official components.
-- **Only theme tokens for styling** (`--dsw-alias-*`): a renamed token can degrade the look but never break rendering; no shadows, no blur, no literal colour values.
+- **Only theme tokens for styling** (`--dsw-alias-*`): a renamed token can degrade the look but never break rendering; no literal colour values.
 - **No Harness client package is imported** (such as `dsh-client-ui-primitives`): those packages change without notice and a plain-JS plugin has no type checking, so every control on the pill is written by hand.
 - **Host API contract self-check**: at startup the plugin verifies the host contracts it actually uses, prints a readable warning and skips safely on a mismatch, instead of throwing a `TypeError` that silently deactivates the whole row.
 - **Config as the channel**: the host writes derived snapshots into volatile fields of this row's config and the client reads them through `remote.settings.describe()`; writes are committed outside the HMR transaction (avoiding `HMR transactions cannot be nested`).
