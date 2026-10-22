@@ -32,7 +32,7 @@
 - **Two datasets in one pill**: DeepSeek balance (`¥` amount) + OpenCode Go usage for three windows; **click the pill to refresh both** (fetched together — a failure on one side does not affect the other).
 - **Three rings**: each ring's centre shows the percentage — **Used** by default, switchable to **Left** in settings (no `%` sign); > 20% green, ≤ 20% amber, ≤ 5% red; the track is the same colour at 32% opacity, so every ring reads as one piece.
 - **Border feedback**: the pill's own border **pulses** while refreshing, **holds green** on success and **blinks red three times** on failure — the border *is* the animation, so nothing can drift out of alignment.
-- **Hover popover**: hovering the pill shows the DS balance plus three progress bars; each bar carries a **round percentage knob** at its current position (theme-coloured, lightweight) with the **reset countdown** underneath; it flips upwards near the bottom of the window.
+- **Hover popover**: hovering the pill shows **two sections** — the DeepSeek balance (incl. granted balance) on top, then a hairline and the “OpenCode Go plan usage / plan remaining” heading (it follows the progress basis) with three progress bars; each bar carries a **round percentage knob** at its current position (theme-coloured, lightweight), with the window name (Rolling / Weekly / Monthly) on the left and the **reset countdown** on the right of the row beneath it; it flips upwards near the bottom of the window.
 - **Minimal mode**: three **nested** rings (R inner / W middle / M outer) with the balance **rounded to whole yuan** shown beside them — a more compact pill. Turning the balance off as well gives the **most compact form**: nested rings only.
 - **Drag to snap**: on release the pill snaps to the nearest reference line (composer card edge / window edge) and keeps following it when the window resizes, the side panel opens, or the chat width changes.
 - **Fixed size**: the pill never changes size in any state (the feedback layer is an absolutely positioned overlay that does not participate in layout).
@@ -80,15 +80,31 @@ Follow the on-screen prompt to reload afterwards (replacing an installed JavaScr
 
 ## Settings page
 
-- The **manual refresh** button sits at the right end of the “OpenCode Go usage” heading row, with the refresh time / result message to its left (after a successful refresh it shows “Updated (time)” and **falls back to “Last updated: …” after 3 seconds**).
+The settings page has three tabs — **Usage** (default) / **Floating pill** / **Keys** — with **Restore defaults** pinned to the right of the tab bar, available from every tab. The GitHub icon next to the page title opens this repository.
+
+**Usage**
+
+- The **OpenCode icon** sits right next to the “OpenCode Go usage” heading; clicking it opens the [OpenCode account page](https://opencode.ai/console).
 - **Usage details**: a progress bar, the percentage (basis is selectable), reset countdown and API status for each of the three windows.
 - **Progress basis** (top-right of the usage card): **Used** / **Left** — the pill and the settings rows follow; defaults to **Used**.
-- **Auto-refresh interval** (minutes, 0.5 – 1440).
-- **Floating pill**: four things in one row — the “Minimal” checkbox, the “Balance” checkbox (turn it off and the pill keeps only the three rings and gets narrower), the “Reset position” button, and the master switch (defaults: Minimal on, Balance off).
-- **Restore defaults** (bottom-right of the settings section): one click writes back “Used / 5 min / Minimal / no balance / top-left default position” — the same set a fresh install starts with.
-- **Transitions**: switching Minimal, the progress basis or the balance fades and scales the content in, with animated ring arcs and numbers — no hard cut.
+- Two rows below the card: first **manual refresh + last-updated time** (after a successful refresh it shows “Updated (time)” and **falls back to “Last updated: …” after 3 seconds**), then the **auto-refresh interval** (minutes, 0.5 – 1440).
+
+**Floating pill**
+
+- **Pill master switch**: turning it off greys out the three rows below and makes them non-interactive.
+- **Show the DeepSeek balance** (switch): the amount includes bonus credit; turning it off leaves only the three rings and narrows the pill.
+- **Minimal mode** (switch): nested rings (R / W / M) with the rounded balance shown beside them.
+- **Reset the pill position**: back to the default position (top-left of the window).
+
+**Keys**
+
 - **Manual overrides for both API keys** (leave blank to use the DSH credential store; clear them at any time to go back to automatic).
-- **Per-row feedback**: each action's message appears in the row it belongs to (the interval message in the “auto-refresh” row, the toggle message in the “floating pill” row, and so on) — red on failure, green on success. Messages live in a slot on the title row, so **showing and hiding them does not shift the layout** (measured `delta = 0` for identically structured fields) and they **disappear after 3 seconds**.
+
+**Shared behaviour**
+
+- **Restore defaults** (right end of the tab bar): one click writes back “Used / 5 min / Minimal / no balance / top-left default position” — the same set a fresh install starts with.
+- **Transitions**: switching Minimal, the progress basis or the balance fades and scales the content in, with animated ring arcs and numbers — no hard cut.
+- **Per-row feedback**: each action's message appears in the row it belongs to (the balance switch reports in the “Show the DeepSeek balance” row, the minimal switch in the “Minimal mode” row, and so on) — red on failure, green on success. Messages live in a slot on the title row, so **showing and hiding them does not shift the layout** and they **disappear after 3 seconds**.
 
 Because the plugin ships its own settings page, the host side calls the official `settings.configure({ auto: false })` to suppress the auto-generated form — otherwise there would be two duplicate configuration UIs.
 

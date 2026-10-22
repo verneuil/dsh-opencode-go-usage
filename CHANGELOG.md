@@ -3,6 +3,20 @@
 记录每个版本相对上一版的变更，最新在最上。版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 Every release's changes, newest first. Versioning follows [Semantic Versioning](https://semver.org/).
 
+## 2.16.0
+- 设置页UI更新；
+- 设置增加一键跳转Opencode官方控制台的图标按钮；
+- 浮窗的鼠标悬停浮层UI更新优化；
+- 优化一些文案说明的准确性；
+- 对部分插件安装环境进行针对性优化，提升插件稳定性。
+
+**English**
+- Settings page UI updated;
+- Settings gained an icon button that jumps straight to the OpenCode console;
+- The pill's hover popover got a UI refresh;
+- Improved the accuracy of several strings;
+- Targeted optimisations for some plugin install environments, improving stability.
+
 ## 2.15.4
 - 修复切到英文界面后插件文案仍显示中文的问题；
 - 优化部分中英文描述文案的准确性；

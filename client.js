@@ -61,18 +61,22 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
     // 余额只在「余额自己」出错时才转黄：用量侧的失败不该把健康的余额也染黄（两路互相独立）
     '.ocgu-bal[data-balwarn="true"]{color:var(--dsw-alias-state-warn-primary)}' +
     '.ocgu-sep{flex:none;width:1px;height:13px;background:var(--dsw-alias-border-l2);margin-right:3px}' +
-    // 悬停临时浮层：余额 + 三条进度（条下带重置倒计时）；百分比做成贴在进度位置的圆形数字钮
-    '.ocgu-tip{position:absolute;left:0;z-index:6;pointer-events:none;display:flex;flex-direction:column;gap:10px;padding:12px 14px;border-radius:14px;background:var(--dsw-alias-bg-layer-2);border:1px solid var(--dsw-alias-border-l2);font-size:11.5px;line-height:1.3;white-space:nowrap;animation:ocgu-tip-in .12s ease-out}' +
+    // 悬停临时浮层：余额 + 三条进度（窗口名与重置倒计时同一行、左名右时）；百分比做成贴在进度位置的圆形数字钮
+    '.ocgu-tip{position:absolute;left:0;z-index:6;pointer-events:none;display:flex;flex-direction:column;gap:8px;padding:12px 14px;border-radius:14px;background:var(--dsw-alias-bg-layer-2);border:1px solid var(--dsw-alias-border-l2);font-size:11.5px;line-height:1.3;white-space:nowrap;animation:ocgu-tip-in .12s ease-out}' +
     '.ocgu-tip[data-pos="down"]{top:calc(100% + 8px)}' +
     '.ocgu-tip[data-pos="up"]{bottom:calc(100% + 8px)}' +
     '@keyframes ocgu-tip-in{from{opacity:0}to{opacity:1}}' +
-    '.ocgu-tip-bal{font-size:12px;font-weight:600;font-variant-numeric:tabular-nums}' +
-    '.ocgu-tip-row{display:flex;align-items:flex-start;gap:9px}' +
-    '.ocgu-tip-k{flex:none;width:11px;text-align:center;font-size:10px;line-height:18px;color:var(--dsw-alias-label-tertiary)}' +
-    '.ocgu-tip-main{display:flex;flex-direction:column;gap:4px;min-width:0}' +
-    // 进度条：200×10（更长更粗）；数字钮与条同处一行并绝对定位，才不会被条的 overflow:hidden 裁掉
-    '.ocgu-tip-line{position:relative;display:flex;align-items:center;width:200px;height:18px}' +
-    '.ocgu-tip-track{position:relative;flex:none;width:100%;height:10px;border-radius:999px;background:color-mix(in srgb,var(--dsw-alias-label-tertiary) 22%,transparent);overflow:hidden}' +
+    '.ocgu-tip-bal{font-size:10.5px;font-weight:600;font-variant-numeric:tabular-nums}' +
+    // 余额与下方用量之间的区隔：通栏细线（负边距抵消浮层左右内边距）+ 用量小标题
+    '.ocgu-tip-sep{height:1px;margin:0 -14px;background:var(--dsw-alias-border-l2)}' +
+    '.ocgu-tip-title{font-size:10.5px;font-weight:600;color:var(--dsw-alias-label-secondary)}' +
+    '.ocgu-tip-row{display:flex;flex-direction:column;gap:4px}' +
+    // 窗口名与重置时间同一行：名字左对齐、倒计时右对齐；不再占左侧字母列，进度条得以整幅拉长
+    '.ocgu-tip-meta{display:flex;align-items:baseline;justify-content:space-between;gap:12px;font-size:10px}' +
+    '.ocgu-tip-win{color:var(--dsw-alias-label-secondary)}' +
+    // 进度条：240×10，宽度即浮层内容宽（左右留白＝浮层内边距，与边框等距）；数字钮绝对定位不被裁掉
+    '.ocgu-tip-line{position:relative;display:flex;align-items:center;width:240px;height:18px}' +
+    '.ocgu-tip-track{position:relative;flex:none;width:100%;height:12px;border-radius:999px;background:color-mix(in srgb,var(--dsw-alias-label-tertiary) 22%,transparent);overflow:hidden}' +
     '.ocgu-tip-fill{position:absolute;left:0;top:0;bottom:0;border-radius:999px;background:var(--dsw-alias-state-success-primary);transition:width .45s cubic-bezier(.22,.9,.28,1)}' +
     '.ocgu-tip-fill[data-level="warn"]{background:var(--dsw-alias-state-warn-primary)}' +
     '.ocgu-tip-fill[data-level="danger"]{background:var(--dsw-alias-state-error-primary)}' +
@@ -171,6 +175,21 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
     '.ocgu-subrow .ocgu-sub{margin:0;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}' +
     '.ocgu-subrow-right{display:flex;align-items:center;gap:10px;flex:none}' +
     '.ocgu-subrow-right .ocgu-msg{max-width:none}' +
+    // 标签栏：左侧三个标签（复用 .ocgu-seg 分段控件），右侧常驻「恢复默认设置」+ 结果提示
+    '.ocgu-tabs{display:flex;align-items:center;gap:12px;margin:18px 0 2px}' +
+    '.ocgu-tabs .ocgu-seg{flex:0 0 auto;gap:4px;padding:2px}' +
+    // 标签：更宽、高度压到与「恢复默认设置」按钮等高（按钮 28px = 24px 标签 + 上下各 2px 容器内边距）
+    '.ocgu-tabs .ocgu-seg-item{height:24px;padding:0 22px;font-size:13px;line-height:1;border-radius:7px}' +
+    '.ocgu-tabs .ocgu-msg{margin-left:auto}' +
+    // 标题行（标题 + 右侧图标按钮）
+    '.ocgu-title-row{display:flex;align-items:center;gap:10px}' +
+    // 无边框图标按钮（标题右侧）：默认透明无框，hover 只给一点底色
+    '.ocgu-iconbtn{flex:none;display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;padding:0;border:0;background:transparent;color:var(--dsw-alias-label-secondary);cursor:pointer;border-radius:6px;transition:background-color .18s ease,color .18s ease}' +
+    '.ocgu-iconbtn:hover{background:color-mix(in srgb,var(--dsw-alias-label-tertiary) 12%,transparent);color:var(--dsw-alias-label-primary)}' +
+    '.ocgu-iconbtn svg{display:block}' +
+    // 悬浮窗总开关关闭时：下辖条目整行变灰且不可操作
+    '.ocgu-field[data-disabled="1"]{opacity:.45}' +
+    '.ocgu-field[data-disabled="1"] .ocgu-field-control{pointer-events:none}' +
     // 宿主 checkbox 模块原文：checkbox{inline-flex;gap:6px;cursor:pointer}
     //   input{flex:0 0 auto;width:16px;height:16px;margin:0;accent-color:brand-primary}
     //   input:focus-visible{outline:focus-ring;outline-offset:2px}  :has(input:disabled){opacity:.5}
@@ -458,11 +477,13 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
       'title.resetPos': '把浮窗放回默认位置（窗口左上角）',
       'btn.resetAll': '恢复默认设置',
       'title.resetAll': '一键恢复：已使用 / 5 分钟 / 极简模式 / 不显示余额 / 默认位置',
-      'aria.widget': '显示悬浮窗',
+      'aria.widget': '显示浮窗',
       'label.balance': '官方余额',
       'label.minimal': '极简模式',
-      'title.minimal': '三环嵌套（R / W / M），余额取整显示在环心',
-      'tip.balance': 'DS账户余额：{bal}',
+      'title.minimal': '三环嵌套（R / W / M），余额取整显示在环旁',
+      'tip.balance': 'DeepSeek余额（包含赠金）：{bal}',
+      'tip.usageTitleUsed': 'OpenCode Go 套餐用量：',
+      'tip.usageTitleLeft': 'OpenCode Go 套餐余量：',
       'title.balance': '是否在浮窗上显示 DeepSeek 官方余额',
       'float.groupTitle': 'OpenCode Go · {win}（{mini}）',
       'float.ring': 'OpenCode Go {win} {mode} {pct}%',
@@ -494,6 +515,18 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
       'anchor.view-bottom': '窗口底部',
       'settings.title': 'OCG 余量查询',
       'settings.intro': 'OpenCode Go 的 5 小时 / 本周 / 本月用量。点击浮窗即刷新，拖动可移动位置。',
+      'tab.usage': '用量',
+      'tab.widget': '浮窗',
+      'tab.general': 'Key管理',
+      'aria.tabs': '设置分组',
+      'title.console': '打开 OpenCode 账户页（opencode.ai/console）',      'field.widget.master': '浮窗总开关',
+      'field.balance': '显示 DeepSeek 官方余额',
+      'field.balance.hint': '是否在浮窗上显示 DeepSeek 官方余额；该金额包含赠金',
+      'field.minimal': '极简模式',
+      'field.pos': '重置浮窗位置',
+      'msg.minimalOn': '已开启极简模式',
+      'msg.minimalOff': '已关闭极简模式',
+      'aria.github': '打开 GitHub 项目主页',
       'settings.usageTitle': 'OpenCode Go 用量详情',
       'settings.lastUpdated': '上次更新：{time}（{rel}）',
       'settings.lastUpdatedEmpty': '上次更新：--',
@@ -511,7 +544,6 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
       'field.interval': '自动刷新',
       'field.interval.hint': '自动刷新间隔（当前 {n} 分钟，0.5 ~ 1440）；手动刷新不受此限。',
       'field.interval.aria': '自动刷新间隔（分钟）',
-      'field.widget': '悬浮窗',
       'field.widget.shown': '显示中（{anchor}）',
       'field.widget.hidden': '已隐藏（后台仍按间隔刷新）',
       'field.dsKey': 'DeepSeek API Key（可选覆盖）',
@@ -527,8 +559,8 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
       'msg.invalidMinutes': '请输入有效的分钟数（0.5 ~ 1440）',
       'msg.timeout': '刷新超时',
       'msg.intervalSet': '自动刷新间隔已设为 {n} 分钟',
-      'msg.widgetShown': '悬浮窗已显示',
-      'msg.widgetHidden': '悬浮窗已隐藏',
+      'msg.widgetShown': '浮窗已显示',
+      'msg.widgetHidden': '浮窗已隐藏',
       'msg.balanceShown': '浮窗已显示余额',
       'msg.balanceHidden': '浮窗已隐藏余额',
       'msg.posReset': '浮窗已回到默认位置',
@@ -537,7 +569,7 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
       'status.manual': '手动配置',
       'status.loading': '检测中',
       'status.missing': '未配置',
-      'label.float': 'OCG 余量悬浮窗'
+      'label.float': 'OCG 余量浮窗'
     },
     en: {
       'win.rolling': 'Rolling',
@@ -554,8 +586,10 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
       'aria.widget': 'Show floating pill',
       'label.balance': 'Balance',
       'label.minimal': 'Minimal',
-      'title.minimal': 'Nested rings (R / W / M) with the rounded balance in the centre',
-      'tip.balance': 'DS Balance : {bal}',
+      'title.minimal': 'Nested rings (R / W / M) with the rounded balance beside them',
+      'tip.balance': 'DeepSeek Balance+Bonus : {bal}',
+      'tip.usageTitleUsed': 'OpenCode Go plan usage:',
+      'tip.usageTitleLeft': 'OpenCode Go plan remaining:',
       'title.balance': 'Whether to show the DS balance on the pill',
       'float.groupTitle': 'OpenCode Go · {win} ({mini})',
       'float.ring': 'OpenCode Go {win} {mode} {pct}%',
@@ -587,6 +621,19 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
       'anchor.view-bottom': 'window bottom',
       'settings.title': 'OCG Usage',
       'settings.intro': 'OpenCode Go usage for the Rolling, weekly and monthly windows. Click the pill to refresh; drag it to move.',
+      'tab.usage': 'Usage',
+      'tab.widget': 'Floating pill',
+      'tab.general': 'Keys',
+      'aria.tabs': 'Settings groups',
+      'title.console': 'Open the OpenCode account page (opencode.ai/console)',
+      'field.widget.master': 'Floating pill',
+      'field.balance': 'Show the DeepSeek balance',
+      'field.balance.hint': 'Whether to show the DeepSeek balance on the pill; the amount includes bonus credit',
+      'field.minimal': 'Minimal mode',
+      'field.pos': 'Reset the pill position',
+      'msg.minimalOn': 'Minimal mode on',
+      'msg.minimalOff': 'Minimal mode off',
+      'aria.github': 'Open the GitHub project page',
       'settings.usageTitle': 'OpenCode Go usage details',
       'settings.lastUpdated': 'Last updated: {time} ({rel})',
       'settings.lastUpdatedEmpty': 'Last updated: --',
@@ -604,7 +651,6 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
       'field.interval': 'Auto-refresh',
       'field.interval.hint': 'Auto-refresh interval (currently {n} min, 0.5–1440); manual refresh is not limited by this.',
       'field.interval.aria': 'Auto-refresh interval (minutes)',
-      'field.widget': 'Floating pill',
       'field.widget.shown': 'Shown ({anchor})',
       'field.widget.hidden': 'Hidden (still refreshing on schedule)',
       'field.dsKey': 'DeepSeek API key (optional override)',
@@ -1109,25 +1155,28 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
         var twHas = hasData && !!(tw.status || tw.resetsAt);
         var td = dispOf(tw.percent, mode);
         return React.createElement('div', { key: w.key, className: 'ocgu-tip-row' },
-          React.createElement('span', { className: 'ocgu-tip-k' }, w.mini),
-          React.createElement('div', { className: 'ocgu-tip-main' },
-            React.createElement('div', { className: 'ocgu-tip-line' },
-              React.createElement('span', { className: 'ocgu-tip-track' },
-                React.createElement('span', {
-                  className: 'ocgu-tip-fill', 'data-level': twHas ? td.level : 'empty',
-                  style: { width: (twHas ? td.value : 0) + '%' }
-                })),
-              // 圆形数字钮：贴住进度当前位置，保留 % 号（无数据时不出现）
-              twHas ? React.createElement('span', {
-                className: 'ocgu-tip-knob', 'data-level': td.level, style: { left: td.value + '%' }
-              }, td.value + '%') : null),
-            // 条下跟一条重置倒计时
-            React.createElement('div', { className: 'ocgu-tip-cd' }, fmtCountdown(tw.resetsAt, t) || t('cd.unknown'))));
+          React.createElement('div', { className: 'ocgu-tip-line' },
+            React.createElement('span', { className: 'ocgu-tip-track' },
+              React.createElement('span', {
+                className: 'ocgu-tip-fill', 'data-level': twHas ? td.level : 'empty',
+                style: { width: (twHas ? td.value : 0) + '%' }
+              })),
+            // 圆形数字钮：贴住进度当前位置，保留 % 号（无数据时不出现）
+            twHas ? React.createElement('span', {
+              className: 'ocgu-tip-knob', 'data-level': td.level, style: { left: td.value + '%' }
+            }, td.value + '%') : null),
+          // 窗口名与重置倒计时同一行：名字左对齐、倒计时右对齐（不再占左侧字母列）
+          React.createElement('div', { className: 'ocgu-tip-meta' },
+            React.createElement('span', { className: 'ocgu-tip-win' }, t('win.' + w.key)),
+            React.createElement('span', { className: 'ocgu-tip-cd' }, fmtCountdown(tw.resetsAt, t) || t('cd.unknown'))));
       });
       children.push(React.createElement('div', {
         key: 'tip', className: 'ocgu-tip', 'data-pos': tipUp ? 'up' : 'down', 'aria-hidden': 'true'
       },
         React.createElement('div', { className: 'ocgu-tip-bal' }, t('tip.balance', { bal: balanceText(value) })),
+        React.createElement('div', { className: 'ocgu-tip-sep' }),
+        // 板块二标题随进度口径切换：已使用 = 套餐用量 / 剩余 = 套餐余量
+        React.createElement('div', { className: 'ocgu-tip-title' }, t(mode === 'left' ? 'tip.usageTitleLeft' : 'tip.usageTitleUsed')),
         tipRows));
     }
 
@@ -1169,7 +1218,8 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
       : null;
     return React.createElement('div', {
       className: 'ocgu-field',
-      'data-layout': props.layout === 'block' ? 'block' : 'inline'
+      'data-layout': props.layout === 'block' ? 'block' : 'inline',
+      'data-disabled': props.disabled ? '1' : '0'
     },
       React.createElement('div', { className: 'ocgu-field-main' },
         React.createElement('div', { className: 'ocgu-field-titlerow' },
@@ -1358,17 +1408,18 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
     // 浮窗上是否显示 DeepSeek 余额（关掉后只留 OCG 三组环，浮窗变窄）
     var toggleBalance = function () {
       updateNs(remote, viewRef.current, { showBalance: !(value.showBalance !== false) }, function (err, nv) {
-        if (err || !nv) { say('widget', t('msg.saveFailed', { err: err || t('msg.unknownErr') }), 'error'); return; }
+        if (err || !nv) { say('balance', t('msg.saveFailed', { err: err || t('msg.unknownErr') }), 'error'); return; }
         apply(nv);
-        say('widget', nsValue(nv).showBalance === false ? t('msg.balanceHidden') : t('msg.balanceShown'));
+        say('balance', nsValue(nv).showBalance === false ? t('msg.balanceHidden') : t('msg.balanceShown'));
       });
     };
 
     // 极简模式：三环嵌套（R/W/M）+ 环心余额；关掉即回「余额 + 三颗独立圆环」
     var toggleMinimal = function () {
       updateNs(remote, viewRef.current, { minimalMode: !(value.minimalMode === true) }, function (err, nv) {
-        if (err || !nv) { say('widget', t('msg.saveFailed', { err: err || t('msg.unknownErr') }), 'error'); return; }
+        if (err || !nv) { say('minimal', t('msg.saveFailed', { err: err || t('msg.unknownErr') }), 'error'); return; }
         apply(nv);
+        say('minimal', nsValue(nv).minimalMode === true ? t('msg.minimalOn') : t('msg.minimalOff'));
       });
     };
 
@@ -1383,9 +1434,9 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
 
     var resetPos = function () {
       updateNs(remote, viewRef.current, DEFAULT_ANCHORS, function (err, nv) {
-        if (err || !nv) { say('widget', t('msg.saveFailed', { err: err || t('msg.unknownErr') }), 'error'); return; }
+        if (err || !nv) { say('pos', t('msg.saveFailed', { err: err || t('msg.unknownErr') }), 'error'); return; }
         apply(nv);
-        say('widget', t('msg.posReset'));
+        say('pos', t('msg.posReset'));
       });
     };
 
@@ -1439,27 +1490,83 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
       });
     });
 
+    // ── 标签页与控件助手 ──
+    var tabState = React.useState('usage');
+    var tab = tabState[0], setTab = tabState[1];
+    var tabButton = function (id, key) {
+      return React.createElement('button', {
+        key: id, type: 'button', className: 'ocgu-seg-item', role: 'tab',
+        'aria-selected': tab === id ? 'true' : 'false', 'data-on': tab === id ? '1' : '0',
+        onClick: function () { setTab(id); }
+      }, t(key));
+    };
+    // 开关控件（照抄宿主实现）：disabled 时按钮禁用，整行另由 data-disabled 变灰
+    var sw = function (on, onToggle, label, disabled) {
+      return React.createElement('button', {
+        key: 'sw', type: 'button', className: 'ocgu-switch',
+        role: 'switch', 'aria-checked': on ? 'true' : 'false', 'aria-label': label,
+        disabled: !!disabled, onClick: disabled ? undefined : onToggle
+      }, React.createElement('span', { className: 'ocgu-thumb' }));
+    };
+    var openConsole = function () {
+      try { window.open('https://opencode.ai/console', '_blank', 'noopener'); } catch (e) { /* 打不开不影响其它功能 */ }
+    };
+    var openRepo = function () {
+      try { window.open('https://github.com/verneuil/dsh-opencode-go-usage', '_blank', 'noopener'); } catch (e) { /* 同上 */ }
+    };
+    // GitHub 官方 mark（16×16，用 currentColor 跟随主题）
+    var githubIcon = function () {
+      return React.createElement('svg', {
+        width: '16', height: '16', viewBox: '0 0 16 16', 'aria-hidden': 'true', focusable: 'false', fill: 'currentColor'
+      }, React.createElement('path', {
+        d: 'M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8Z'
+      }));
+    };
+    // OpenCode 官方 favicon（opencode.ai/favicon.svg，512×512 原样缩到 18×18）
+    var opencodeIcon = function () {
+      return React.createElement('svg', {
+        width: '18', height: '18', viewBox: '0 0 512 512', 'aria-hidden': 'true', focusable: 'false'
+      },
+        React.createElement('rect', { width: '512', height: '512', fill: '#131010' }),
+        React.createElement('path', { d: 'M320 224V352H192V224H320Z', fill: '#5A5858' }),
+        React.createElement('path', {
+          fillRule: 'evenodd', clipRule: 'evenodd',
+          d: 'M384 416H128V96H384V416ZM320 160H192V352H320V160Z', fill: '#ffffff'
+        }));
+    };
+
     return React.createElement('div', { style: { padding: '4px 0 20px' } },
-      React.createElement('div', { className: 'ocgu-sec' }, t('settings.title')),
+      React.createElement('div', { className: 'ocgu-title-row' },
+        React.createElement('div', { className: 'ocgu-sec' }, t('settings.title')),
+        React.createElement('button', {
+          className: 'ocgu-iconbtn', onClick: openRepo,
+          title: t('aria.github'), 'aria-label': t('aria.github')
+        }, githubIcon())),
       React.createElement('div', { className: 'ocgu-hint', style: { marginTop: '4px' } },
         t('settings.intro')),
-      // ── OpenCode Go 用量详情 ──
-      // 刷新按钮挂在这一行右侧（时间/提示在按钮左边）：时间→提示的替换规则不变（3 秒后回落到「上次更新」）
+      // ── 标签栏（左：用量 / 通用 / 悬浮窗）＋ 常驻「恢复默认设置」（最右）──
+      React.createElement('div', { className: 'ocgu-tabs' },
+        React.createElement('div', { className: 'ocgu-seg', role: 'tablist', 'aria-label': t('aria.tabs') },
+          tabButton('usage', 'tab.usage'),
+          tabButton('widget', 'tab.widget'),
+          tabButton('general', 'tab.general')),
+        React.createElement('span', {
+          className: 'ocgu-msg', 'data-tone': msgOf('resetAll') ? toneOf('resetAll') : 'muted',
+          role: 'status', 'aria-live': 'polite', title: msgOf('resetAll') || ''
+        }, msgOf('resetAll')),
+        React.createElement('button', {
+          className: 'ocgu-btn', 'data-kind': 'outline', onClick: resetAll, title: t('title.resetAll')
+        }, t('btn.resetAll'))),
+
+      // ── 标签一：用量（用量详情 + 官网入口 + 自动刷新间隔 + 手动刷新）──
+      tab === 'usage' ? React.createElement('div', null,
+      // 标题行：标题 + 紧跟其后的 OpenCode 官方图标（左对齐，不靠右）
       React.createElement('div', { className: 'ocgu-subrow' },
-        React.createElement('div', { className: 'ocgu-sub' }, t('settings.usageTitle')),
-        React.createElement('div', { className: 'ocgu-subrow-right' },
-          React.createElement('span', {
-            className: 'ocgu-msg',
-            'data-tone': refreshMsg ? toneOf('refresh') : 'muted',
-            role: 'status', 'aria-live': 'polite',
-            title: refreshMsg || ''
-          }, refreshMsg || (hasData
-            ? t('settings.lastUpdated', { time: fmtTime(value.lastUpdated), rel: fmtRelative(value.lastUpdated, t) })
-            : t('settings.lastUpdatedEmpty'))),
-          React.createElement('button', {
-            onClick: refresh, disabled: loading, className: 'ocgu-btn', 'data-kind': 'primary',
-            title: t('settings.refreshTitle')
-          }, loading ? t('settings.refreshing') : t('settings.manualRefresh')))),
+        React.createElement('div', { className: 'ocgu-sub', style: { flex: '0 1 auto' } }, t('settings.usageTitle')),
+        React.createElement('button', {
+          className: 'ocgu-iconbtn', onClick: openConsole,
+          title: t('title.console'), 'aria-label': t('title.console')
+        }, opencodeIcon())),
       React.createElement('div', { className: 'ocgu-card', style: { marginTop: '10px' } },
         React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' } },
           React.createElement('span', { className: 'ocgu-badge', 'data-tone': badgeTone(ocgKeyStatus) }, statusText(ocgKeyStatus)),
@@ -1487,9 +1594,23 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
         React.createElement('div', { className: 'ocgu-hint', style: { marginTop: '6px' } },
           t(mode === 'used' ? 'settings.cardHintUsed' : 'settings.cardHint')),
         value.usageError ? React.createElement('div', { className: 'ocgu-err' }, value.usageError) : null),
-
-      // ── 操作项 ──
-      React.createElement('div', { className: 'ocgu-sub' }, t('settings.section')),
+      // 进度条下方第一行：手动刷新 + 更新时间（时间→提示的替换规则不变：3 秒后回落到「上次更新」）
+      React.createElement('div', {
+        style: { display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '10px', marginTop: '10px' }
+      },
+        React.createElement('span', {
+          className: 'ocgu-msg',
+          'data-tone': refreshMsg ? toneOf('refresh') : 'muted',
+          role: 'status', 'aria-live': 'polite',
+          title: refreshMsg || ''
+        }, refreshMsg || (hasData
+          ? t('settings.lastUpdated', { time: fmtTime(value.lastUpdated), rel: fmtRelative(value.lastUpdated, t) })
+          : t('settings.lastUpdatedEmpty'))),
+        React.createElement('button', {
+          onClick: refresh, disabled: loading, className: 'ocgu-btn', 'data-kind': 'primary',
+          title: t('settings.refreshTitle')
+        }, loading ? t('settings.refreshing') : t('settings.manualRefresh'))),
+      // 再下面：自动刷新间隔
       React.createElement(FieldRow, {
         title: t('field.interval'),
         hint: t('field.interval.hint', { n: refreshMinutes }),
@@ -1510,45 +1631,60 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
         ],
         nowrap: true
       }),
-      React.createElement(FieldRow, {
-        title: t('field.widget'),
-        // 顶部说明已经讲了「点击浮窗即刷新 / 拖动可移动」，这里只说状态与位置
-        hint: value.widgetVisible
-          ? t('field.widget.shown', { anchor: anchorLabel(ax, ay, t) })
-          : t('field.widget.hidden'),
-        msg: msgOf('widget'),
-        tone: toneOf('widget'),
-        nowrap: true,
-        // 右侧控件从左到右：极简模式 → 官方余额 → 重置位置 → 总开关
-        control: [
-          React.createElement('label', {
-            key: 'min', className: 'ocgu-check', title: t('title.minimal')
-          },
-            React.createElement('input', {
-              type: 'checkbox', checked: value.minimalMode === true,
-              onChange: toggleMinimal, 'aria-label': t('label.minimal')
-            }),
-            t('label.minimal')),
-          React.createElement('label', {
-            key: 'bal', className: 'ocgu-check', title: t('title.balance')
-          },
-            React.createElement('input', {
-              type: 'checkbox', checked: value.showBalance !== false,
-              onChange: toggleBalance, 'aria-label': t('label.balance')
-            }),
-            t('label.balance')),
-          React.createElement('button', {
-            key: 'pos', onClick: resetPos, disabled: isDefaultPos, className: 'ocgu-btn', 'data-kind': 'outline',
-            title: t('title.resetPos')
-          }, isDefaultPos ? t('btn.atDefault') : t('btn.resetPos')),
-          React.createElement('button', {
-            key: 'sw', type: 'button', className: 'ocgu-switch',
-            role: 'switch', 'aria-checked': value.widgetVisible ? 'true' : 'false',
-            'aria-label': t('aria.widget'),
-            onClick: toggleWidget
-          }, React.createElement('span', { className: 'ocgu-thumb' }))
-        ]
-      }),
+
+      ) : null,
+
+      // ── 标签三：Key 管理（两把 Key）──
+      tab === 'general' ? React.createElement('div', null,
+      React.createElement('div', { className: 'ocgu-sub' }, t('settings.section')),
+      ) : null,
+
+      // ── 标签三：悬浮窗（总开关 + 三项；总开关关闭后三项变灰且不可操作）──
+      tab === 'widget' ? React.createElement('div', null,
+        React.createElement('div', { className: 'ocgu-sub' }, t('tab.widget')),
+        React.createElement(FieldRow, {
+          title: t('field.widget.master'),
+          hint: value.widgetVisible
+            ? t('field.widget.shown', { anchor: anchorLabel(ax, ay, t) })
+            : t('field.widget.hidden'),
+          msg: msgOf('widget'),
+          tone: toneOf('widget'),
+          nowrap: true,
+          control: [sw(value.widgetVisible === true, toggleWidget, t('aria.widget'), false)]
+        }),
+        React.createElement(FieldRow, {
+          title: t('field.balance'),
+          hint: t('field.balance.hint'),
+          msg: msgOf('balance'),
+          tone: toneOf('balance'),
+          nowrap: true,
+          disabled: !value.widgetVisible,
+          control: [sw(value.showBalance !== false, toggleBalance, t('label.balance'), !value.widgetVisible)]
+        }),
+        React.createElement(FieldRow, {
+          title: t('field.minimal'),
+          hint: t('title.minimal'),
+          msg: msgOf('minimal'),
+          tone: toneOf('minimal'),
+          nowrap: true,
+          disabled: !value.widgetVisible,
+          control: [sw(value.minimalMode === true, toggleMinimal, t('label.minimal'), !value.widgetVisible)]
+        }),
+        React.createElement(FieldRow, {
+          title: t('field.pos'),
+          hint: t('title.resetPos'),
+          msg: msgOf('pos'),
+          tone: toneOf('pos'),
+          nowrap: true,
+          disabled: !value.widgetVisible,
+          control: [React.createElement('button', {
+            key: 'pos', onClick: resetPos, disabled: isDefaultPos || !value.widgetVisible,
+            className: 'ocgu-btn', 'data-kind': 'outline', title: t('title.resetPos')
+          }, isDefaultPos ? t('btn.atDefault') : t('btn.resetPos'))]
+        })) : null,
+
+      // 通用标签续（两把 Key 仍属「通用」）
+      tab === 'general' ? React.createElement('div', null,
       React.createElement(FieldRow, {
         layout: 'block',
         title: t('field.dsKey'),
@@ -1600,17 +1736,7 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
         ],
         nowrap: true
       }),
-      // 一键恢复默认设置（区块最底部、右下角）
-      React.createElement('div', {
-        style: { display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '10px', marginTop: '20px' }
-      },
-        React.createElement('span', {
-          className: 'ocgu-msg', 'data-tone': msgOf('resetAll') ? toneOf('resetAll') : 'muted',
-          role: 'status', 'aria-live': 'polite', title: msgOf('resetAll') || ''
-        }, msgOf('resetAll')),
-        React.createElement('button', {
-          className: 'ocgu-btn', 'data-kind': 'outline', onClick: resetAll, title: t('title.resetAll')
-        }, t('btn.resetAll'))));
+      ) : null);
   }
 
   // ---------- 挂载 ----------
