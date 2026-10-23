@@ -3,6 +3,16 @@
 记录每个版本相对上一版的变更，最新在最上。版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 Every release's changes, newest first. Versioning follows [Semantic Versioning](https://semver.org/).
 
+## 3.0.4
+- 把「安全与隐私」小节同步进 npm 包（README 中英两版，内容与仓库一致）；
+- 截图更新为当前版本；
+- 插件行为无任何改动。
+
+**English**
+- Synced the "Security & privacy" section into the npm package (both READMEs, identical to the repository);
+- Screenshots updated to the current version;
+- No functional change.
+
 ## 3.0.3
 - npm 侧重新发布（内容与 3.0.2 一致，另含 README 中 npm 安装命令的补全）；
 - 插件行为无任何改动。
