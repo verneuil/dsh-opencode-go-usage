@@ -3,6 +3,15 @@
 记录每个版本相对上一版的变更，最新在最上。版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 Every release's changes, newest first. Versioning follows [Semantic Versioning](https://semver.org/).
 
+## 3.0.2
+- 把文档与截图同步进 npm 包（README 补上 npm 安装方式与徽章；截图中的版本号更新为当前版本）；
+- 插件行为与 3.0.1 一致，无功能改动。
+
+**English**
+- Synced the docs and screenshots into the npm package (npm install hint and badge in the README;
+  the version shown in the screenshots updated to the current release);
+- Behaviour is identical to 3.0.1 — no functional change.
+
 ## 3.0.1
 - 包名改为 `@verneuil/dsh-opencode-go-usage`，以便发布到 npm（GitHub 直装方式完全不变）；
 - 插件行为与 3.0.0 一致，无功能改动。
