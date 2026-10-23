@@ -3,6 +3,14 @@
 记录每个版本相对上一版的变更，最新在最上。版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 Every release's changes, newest first. Versioning follows [Semantic Versioning](https://semver.org/).
 
+## 3.0.3
+- npm 侧重新发布（内容与 3.0.2 一致，另含 README 中 npm 安装命令的补全）；
+- 插件行为无任何改动。
+
+**English**
+- Republished the npm package (same content as 3.0.2, plus the completed npm install command in the README);
+- No functional change.
+
 ## 3.0.2
 - 把文档与截图同步进 npm 包（README 补上 npm 安装方式与徽章；截图中的版本号更新为当前版本）；
 - 插件行为与 3.0.1 一致，无功能改动。

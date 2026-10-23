@@ -67,11 +67,11 @@
 | 方式                   | 粘贴的 spec                                                                                                       |
 | -------------------- | -------------------------------------------------------------------------------------------------------------- |
 | **GitHub 直装**（推荐）    | `github:verneuil/dsh-opencode-go-usage`                                                                        |
-| **npm 安装**                 | `@verneuil/dsh-opencode-go-usage`                                                                                  |
-| **固定某个版本**           | `github:verneuil/dsh-opencode-go-usage#v3.0.2`（换成任意已发布 tag）                                                   |
-| **Release 包**        | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v3.0.2/dsh-opencode-go-usage-3.0.2.tgz` |
+| **npm 安装**                 | `dsh plugin --profile web add @verneuil/dsh-opencode-go-usage`                                                                 |
+| **固定某个版本**           | `github:verneuil/dsh-opencode-go-usage#v3.0.3`（换成任意已发布 tag）                                                   |
+| **Release 包**        | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v3.0.3/dsh-opencode-go-usage-3.0.3.tgz` |
 | **Release 直链（始终最新）** | `https://github.com/verneuil/dsh-opencode-go-usage/releases/latest/download/dsh-opencode-go-usage.tgz`         |
-| **离线 tgz**           | `file:D:/你的路径/dsh-opencode-go-usage-3.0.2.tgz`                                                                |
+| **离线 tgz**           | `file:D:/你的路径/dsh-opencode-go-usage-3.0.3.tgz`                                                                |
 
 命令行等价写法（`dsh plugin` 会把声明了 `dsh.bundle` 的依赖自动加进 profile 的 bundles，无需手写 patch）：
 
@@ -98,7 +98,7 @@ dsh plugin --profile web add github:verneuil/dsh-opencode-go-usage
 
 标签栏右侧常驻 **恢复默认设置**，任何标签下都能一键写回。
 
-页面顶部标题右侧是 **GitHub 图标 + 当前版本号**（如 `v3.0.2`），点击图标打开本插件仓库。
+页面顶部标题右侧是 **GitHub 图标 + 当前版本号**（如 `v3.0.3`），点击图标打开本插件仓库。
 
 **用量数据**
 
