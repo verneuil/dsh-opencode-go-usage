@@ -1,4 +1,4 @@
-window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) => {
+window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (require) => {
   var module = { exports: {} };
   var exports = module.exports;
   var React = require('react');

@@ -6,6 +6,7 @@
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
   <a href="https://github.com/verneuil/dsh-opencode-go-usage/releases/latest"><img src="https://img.shields.io/github/v/tag/verneuil/dsh-opencode-go-usage?label=version&color=4b8bf5" alt="version"></a>
+  <a href="https://www.npmjs.com/package/@verneuil/dsh-opencode-go-usage"><img src="https://img.shields.io/npm/v/@verneuil/dsh-opencode-go-usage?label=npm&color=cb3837" alt="npm"></a>
   <a href="https://dsh-plugin.org/plugins/verneuil/dsh-opencode-go-usage"><img src="https://dsh-plugin.org/badges/listed.svg" alt="Listed on dsh-plugin.org"></a>
   <a href="https://www.dsh.so/artifact/dsh-opencode-go-usage-15/"><img src="https://www.dsh.so/badge/dsh-opencode-go-usage-15.svg" alt="dsh.so risk"></a>
   <a href="https://awesome-dsh-plugin.com/p/verneuil/dsh-opencode-go-usage"><img src="https://awesome-dsh-plugin.com/badge.svg" alt="Awesome DSH Plugin"></a>
@@ -66,10 +67,11 @@
 | 方式                   | 粘贴的 spec                                                                                                       |
 | -------------------- | -------------------------------------------------------------------------------------------------------------- |
 | **GitHub 直装**（推荐）    | `github:verneuil/dsh-opencode-go-usage`                                                                        |
-| **固定某个版本**           | `github:verneuil/dsh-opencode-go-usage#v3.0.0`（换成任意已发布 tag）                                                   |
-| **Release 包**        | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v3.0.0/dsh-opencode-go-usage-3.0.0.tgz` |
+| **npm 安装**                 | `@verneuil/dsh-opencode-go-usage`                                                                                  |
+| **固定某个版本**           | `github:verneuil/dsh-opencode-go-usage#v3.0.1`（换成任意已发布 tag）                                                   |
+| **Release 包**        | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v3.0.1/dsh-opencode-go-usage-3.0.1.tgz` |
 | **Release 直链（始终最新）** | `https://github.com/verneuil/dsh-opencode-go-usage/releases/latest/download/dsh-opencode-go-usage.tgz`         |
-| **离线 tgz**           | `file:D:/你的路径/dsh-opencode-go-usage-3.0.0.tgz`                                                                |
+| **离线 tgz**           | `file:D:/你的路径/dsh-opencode-go-usage-3.0.1.tgz`                                                                |
 
 命令行等价写法（`dsh plugin` 会把声明了 `dsh.bundle` 的依赖自动加进 profile 的 bundles，无需手写 patch）：
 
@@ -96,7 +98,7 @@ dsh plugin --profile web add github:verneuil/dsh-opencode-go-usage
 
 标签栏右侧常驻 **恢复默认设置**，任何标签下都能一键写回。
 
-页面顶部标题右侧是 **GitHub 图标 + 当前版本号**（如 `v3.0.0`），点击图标打开本插件仓库。
+页面顶部标题右侧是 **GitHub 图标 + 当前版本号**（如 `v3.0.1`），点击图标打开本插件仓库。
 
 **用量数据**
 

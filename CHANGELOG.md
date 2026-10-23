@@ -3,6 +3,14 @@
 记录每个版本相对上一版的变更，最新在最上。版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 Every release's changes, newest first. Versioning follows [Semantic Versioning](https://semver.org/).
 
+## 3.0.1
+- 包名改为 `@verneuil/dsh-opencode-go-usage`，以便发布到 npm（GitHub 直装方式完全不变）；
+- 插件行为与 3.0.0 一致，无功能改动。
+
+**English**
+- Renamed the package to `@verneuil/dsh-opencode-go-usage` so it can be published to npm (the GitHub install path is unchanged);
+- Behaviour is identical to 3.0.0 — no functional change.
+
 ## 3.0.0
 新功能：
 - 新增OpenCode Go模型配额金额显示。提供「配额参考模型选择」，按 OpenCode Go 各模型的月度配额折算该模型的已消耗与剩余金额，可选全部官方模型（默认 DeepSeek V4.1 Flash），模型清单随官方文档定时抓取更新，也可以手动刷新，获取失败时回退内置列表和配额数据；

@@ -6,6 +6,7 @@
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
   <a href="https://github.com/verneuil/dsh-opencode-go-usage/releases/latest"><img src="https://img.shields.io/github/v/tag/verneuil/dsh-opencode-go-usage?label=version&color=4b8bf5" alt="version"></a>
+  <a href="https://www.npmjs.com/package/@verneuil/dsh-opencode-go-usage"><img src="https://img.shields.io/npm/v/@verneuil/dsh-opencode-go-usage?label=npm&color=cb3837" alt="npm"></a>
   <a href="https://dsh-plugin.org/plugins/verneuil/dsh-opencode-go-usage"><img src="https://dsh-plugin.org/badges/listed.svg" alt="Listed on dsh-plugin.org"></a>
   <a href="https://www.dsh.so/artifact/dsh-opencode-go-usage-15/"><img src="https://www.dsh.so/badge/dsh-opencode-go-usage-15.svg" alt="dsh.so risk"></a>
   <a href="https://awesome-dsh-plugin.com/p/verneuil/dsh-opencode-go-usage"><img src="https://awesome-dsh-plugin.com/badge.svg" alt="Awesome DSH Plugin"></a>
@@ -66,10 +67,11 @@ In DSH, open the **plugin manager → “Install plugin” dialog → paste one 
 | Method                                     | Spec to paste                                                                                                    |
 | ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------- |
 | **Straight from GitHub** (recommended)      | `github:verneuil/dsh-opencode-go-usage`                                                                          |
-| **Pin a version**                          | `github:verneuil/dsh-opencode-go-usage#v3.0.0` (replace with any published tag)                                    |
-| **Release tarball**                        | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v3.0.0/dsh-opencode-go-usage-3.0.0.tgz`    |
+| **From npm**                              | `@verneuil/dsh-opencode-go-usage`                                                                                  |
+| **Pin a version**                          | `github:verneuil/dsh-opencode-go-usage#v3.0.1` (replace with any published tag)                                    |
+| **Release tarball**                        | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v3.0.1/dsh-opencode-go-usage-3.0.1.tgz`    |
 | **Release URL (always latest)**            | `https://github.com/verneuil/dsh-opencode-go-usage/releases/latest/download/dsh-opencode-go-usage.tgz`            |
-| **Offline tgz**                            | `file:D:/your/path/dsh-opencode-go-usage-3.0.0.tgz`                                                             |
+| **Offline tgz**                            | `file:D:/your/path/dsh-opencode-go-usage-3.0.1.tgz`                                                             |
 
 The equivalent command line (`dsh plugin` automatically adds dependencies that declare `dsh.bundle` to the profile's bundles — no hand-written patch needed):
 
@@ -96,7 +98,7 @@ The settings page has three tabs: **Usage data** (default) / **Floating pill** /
 
 **Restore defaults** sits permanently at the right end of the tab bar and writes everything back from any tab.
 
-Next to the page title sit the **GitHub icon and the current version** (e.g. `v3.0.0`); clicking the icon opens this repository.
+Next to the page title sit the **GitHub icon and the current version** (e.g. `v3.0.1`); clicking the icon opens this repository.
 
 **Usage data**
 

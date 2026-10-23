@@ -3,4 +3,4 @@
 # client.js 的 NS 常量、服务端投影里的 ns 都由它决定，三处必须一致，改名要一起改。
 - insert:
     - id: opencode-go-usage
-      name: 'dsh-opencode-go-usage'
+      name: '@verneuil/dsh-opencode-go-usage'
