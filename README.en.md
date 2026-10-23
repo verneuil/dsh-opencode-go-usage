@@ -224,6 +224,14 @@ The settings page covers the common options; the fields below can also be edited
 - **Manual refresh means a full refetch**: the button (or a pill click) bypasses the TTL and forces the model table and the rate to be re-fetched, so both footnote times follow your manual refresh.
 - While no key is available yet, resolution retries in steps (3/8/20/40/60/120 seconds), and three misses are tolerated once a good snapshot exists — avoiding a false “not configured” reading right after startup.
 
+## Security & privacy
+
+- **Keys never leave your machine except to the official endpoints**: the API key is held by DSH settings storage and is only sent as a request header; it is never written into URLs, logs or the usage snapshot, and never projected to the client (the client only sees "configured?" and a masked form).
+- **Only four fixed hosts are contacted at runtime**: `api.deepseek.com` (balance), `opencode.ai` (usage and the official model table), plus `open.er-api.com` and `api.frankfurter.app` (exchange rates, only when the currency mode is "auto").
+- **No telemetry**: no usage data is collected and nothing is sent to a service of ours; there are no runtime npm dependencies (only the peer dependency provided by DSH).
+- **Credential hardening**: every request that carries a key disables redirects (`redirect: "error"`) so credentials cannot be forwarded to another host.
+- **Reporting**: please use [GitHub Issues](https://github.com/verneuil/dsh-opencode-go-usage/issues); **never paste a key into an issue**.
+
 ## Known limitations & disclaimer
 
 - **Unofficial plugin**: this project has **no affiliation whatsoever** with DeepSeek or OpenCode; neither endpoint is a long-term frozen public contract, so a major upstream change can break it (the parser already tolerates common variants such as “remaining percentage / used amount and quota / seconds to reset”, and on failure the host puts a readable message in `usageError`).
