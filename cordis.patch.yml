@@ -1,3 +1,6 @@
+# 插入本插件的 loader row。
+# 注意：这个 id 同时充当客户端设置表单的命名空间（ns）：
+# client.js 的 NS 常量、服务端投影里的 ns 都由它决定，三处必须一致，改名要一起改。
 - insert:
     - id: opencode-go-usage
       name: 'dsh-opencode-go-usage'

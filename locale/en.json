@@ -1,6 +1,6 @@
 {
   "meta": {
     "title": "OCG Balance & Usage",
-    "description": "DeepSeek balance and OpenCode Go usage (Rolling / weekly / monthly) in one floating pill."
+    "description": "DeepSeek balance or OpenCode Go quota left, plus OpenCode Go usage (Rolling / weekly / monthly) in one floating pill."
   }
 }

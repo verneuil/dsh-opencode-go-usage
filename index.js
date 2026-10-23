@@ -1,4 +1,5 @@
 import z from "@deepseek-ai/schemastery"
+import { GO_DATA_SNAPSHOT, fetchGoModelsLive, fetchFxLive, USER_AGENT as GO_USER_AGENT } from "./go-fetch.js"
 
 export const name = "opencode-go-usage"
 export const inject = ["settings", "timer"]
@@ -45,10 +46,19 @@ export const Config = z.object({
   refreshMinutes: z.number().default(5).volatile(),
   // 浮窗显示开关
   widgetVisible: z.boolean().default(true).volatile(),
-  // 浮窗上是否显示 DeepSeek 账户余额（默认关：极简形态只留三环）
+  // 浮窗上是否显示左侧那一行余额（默认关：极简形态只留三环）
   showBalance: z.boolean().default(false).volatile(),
+  // 浮窗左侧余额的数据来源：deepseek = DeepSeek 官方余额；quota = 按参考模型折算的 OCG 配额剩余
+  pillBalanceSource: z.string().default("deepseek").volatile(),
+  // 鼠标悬停浮层里两段余额各自是否显示（都不选则浮层只留进度条）
+  tipShowBalance: z.boolean().default(true).volatile(),
+  tipShowQuota: z.boolean().default(true).volatile(),
   // 用量进度口径：used = 显示已使用（默认），left = 显示剩余
   percentMode: z.string().default("used").volatile(),
+  // 配额参考模型（模型 ID）：用「月度已用百分比 × 该模型的 Go 档月度配额」折算金额
+  quotaRefModel: z.string().default("deepseek-v4.1-flash").volatile(),
+  // 计价币种：auto = 中文界面用 ¥ / 英文界面用 $；cny / usd 为强制
+  currencyMode: z.string().default("auto").volatile(),
   // 极简模式（默认开）：三环嵌套（外 M / 中 W / 内 R）+ 环旁余额（只到元）
   minimalMode: z.boolean().default(true).volatile(),
   // 浮窗锚定（「最近锚线」模型）：拖动松手时只记「锚线 + 偏移」，窗口或输入框
@@ -78,6 +88,25 @@ export const Config = z.object({
   balance: BalanceInfo.default({}).volatile(),
   // 本轮刷新的时间（余额与用量同一轮更新）
   lastUpdated: z.string().default("").volatile(),
+  // 当前插件版本（设置页标题右侧显示的小字）
+  pluginVersion: z.string().default("").volatile(),
+  // ── OpenCode Go 模型表（Go 档月度配额，美元）与 USD/CNY 汇率 ──
+  // 抓取成功 source = live；失败回退内置快照 source = snapshot，并把错误原样留在 error 里
+  // go：>0 = 月度配额美元数；0 = 免费模型；-1 = 无限制
+  goModels: z.array(z.object({
+    id: z.string().default(""),
+    name: z.string().default(""),
+    go: z.number().default(0),
+  })).default([]).volatile(),
+  goModelsAt: z.string().default("").volatile(),
+  goModelsSource: z.string().default("").volatile(),
+  goModelsError: z.string().default("").volatile(),
+  fxUsdCny: z.number().default(0).volatile(),
+  fxAt: z.string().default("").volatile(),
+  // 汇率数据本身的日期（第三方源提供：er-api 给 UTC 时间戳，frankfurter 给 ECB 参考日）
+  fxRateDate: z.string().default("").volatile(),
+  fxSource: z.string().default("").volatile(),
+  fxError: z.string().default("").volatile(),
 })
 
 const OCG_ENDPOINT = "https://opencode.ai/zen/go/v1/usage"
@@ -87,7 +116,9 @@ const OCG_CREDENTIALS = ["OPENCODE_GO_API_KEY", "OPENCODE_API_KEY"]
 const DS_CREDENTIALS = ["DEEPSEEK_API_KEY"]
 // 官方文档明确要求客户端自报身份（"Identify itself with its own user agent, such as
 // my-coding-agent/1.0, rather than a generic SDK or HTTP-library name"）；两个接口都带上。
-const USER_AGENT = "dsh-opencode-go-usage/2.16.0 (+DeepSeek Harness plugin)"
+const USER_AGENT = GO_USER_AGENT
+// 版本号唯一来源：从 UA 里解析，避免在第四处再写一遍字面量
+const PLUGIN_VERSION = (USER_AGENT.match(/dsh-opencode-go-usage\/([0-9.]+)/) || [, ""])[1]
 // 单请求总超时。跨国链路偶发慢连接，15s 偏紧，放宽到 20s（inflight 去重，不会叠加请求）。
 const REQUEST_TIMEOUT_MS = 20000
 
@@ -109,7 +140,8 @@ function describeError(e) {
 
 function maskKey(key) {
   if (!key) return ""
-  if (key.length < 8) return "****"
+  // 短 Key 只留尾 2 位：8~11 位的 Key 若用「前 3 + 后 4」会暴露 7 位
+  if (key.length < 12) return "****" + key.slice(-2)
   return key.slice(0, 3) + "****" + key.slice(-4)
 }
 
@@ -339,7 +371,7 @@ export function apply(ctx, config) {
   async function resolveKey(manual, names) {
     if (manual) return { key: manual, status: "manual", hint: maskKey(manual), answered: true }
     const credentials = ctx.get("credentials")
-    if (credentials === undefined || typeof credentials.resolve !== "function") {
+    if (!credentials || typeof credentials.resolve !== "function") {
       return { key: "", status: "missing", hint: "", answered: false }
     }
     let threw = false
@@ -365,7 +397,7 @@ export function apply(ctx, config) {
     if (missingRetries >= MISSING_RETRY_DELAYS.length) return
     const delay = MISSING_RETRY_DELAYS[missingRetries]
     missingRetries++
-    retryDisposers.push(ctx.timeout(function () { refreshAll() }, delay))
+    retryDisposers.push(ctx.timeout(function () { refreshAll().catch(function () {}) }, delay))
     trimRetries()
   }
   function trimRetries() {
@@ -380,7 +412,7 @@ export function apply(ctx, config) {
     if (fetchRetryStep >= FETCH_RETRY_DELAYS.length) return
     const delay = FETCH_RETRY_DELAYS[fetchRetryStep]
     fetchRetryStep++
-    retryDisposers.push(ctx.timeout(function () { refreshAll() }, delay))
+    retryDisposers.push(ctx.timeout(function () { refreshAll().catch(function () {}) }, delay))
     trimRetries()
   }
 
@@ -411,8 +443,52 @@ export function apply(ctx, config) {
   let ocgMisses = 0
   let dsMisses = 0
 
+  // 模型表与汇率的进程内缓存：自动刷新按 TTL 复用，手动刷新（force）与 Key 变更强制重抓。
+  // 抓取失败一律回退内置快照，并把错误原样带出去 —— 界面要明确点名是哪一项失败。
+  const GO_TTL_MS = 24 * 3600 * 1000
+  const FX_TTL_MS = 3600 * 1000
+  let goCache = null
+  let fxCache = null
+
+  async function ensureGoModels(force) {
+    if (!force && goCache && !goCache.error && Date.now() - goCache.atMs < GO_TTL_MS) return goCache
+    try {
+      const r = await fetchGoModelsLive(REQUEST_TIMEOUT_MS)
+      goCache = { models: r.models, at: r.at, atMs: Date.now(), source: "live", error: "" }
+    } catch (e) {
+      goCache = {
+        models: GO_DATA_SNAPSHOT.models.map(function (x) { return { id: x.id, name: x.name, go: x.go === null ? -1 : x.go } }),
+        at: GO_DATA_SNAPSHOT.snapshotDate,
+        atMs: Date.now(),
+        source: "snapshot",
+        error: describeError(e),
+      }
+    }
+    return goCache
+  }
+
+  async function ensureFx(force) {
+    if (!force && fxCache && !fxCache.error && Date.now() - fxCache.atMs < FX_TTL_MS) return fxCache
+    try {
+      const r = await fetchFxLive(REQUEST_TIMEOUT_MS)
+      // at 用「本插件抓取成功的时刻」：第三方汇率的 date 是它自己的更新日（多为一天一次），
+      // 直接拿来显示会让人误以为手动刷新没生效；它另存 rateDate，仅在小字提示里说明数据日期。
+      fxCache = { usdCny: r.usdCny, rateDate: r.date, at: new Date().toISOString(), atMs: Date.now(), source: "live", error: "" }
+    } catch (e) {
+      fxCache = {
+        usdCny: GO_DATA_SNAPSHOT.fx.usdCny,
+        rateDate: GO_DATA_SNAPSHOT.fx.date,
+        at: new Date().toISOString(),
+        atMs: Date.now(),
+        source: "snapshot",
+        error: describeError(e),
+      }
+    }
+    return fxCache
+  }
+
   let inflight = null
-  async function refreshAll() {
+  async function refreshAll(force) {
     if (inflight) return inflight
     inflight = (async function () {
       const cfg = readCfg()
@@ -423,11 +499,31 @@ export function apply(ctx, config) {
       const ocg = resolved[0]
       const ds = resolved[1]
 
+      // 模型表与汇率不依赖任何 Key：先抓落，保证「配额」与「币种换算」在任何情况下都有数据。
+      // 手动刷新走 force（强制重抓），自动刷新按 TTL（模型表 24h / 汇率 1h）复用缓存。
+      const go = await ensureGoModels(force)
+      const fx = await ensureFx(force)
+      const auxPatch = {
+        pluginVersion: PLUGIN_VERSION,
+        goModels: go.models,
+        goModelsAt: go.at,
+        goModelsSource: go.source,
+        goModelsError: go.error,
+        fxUsdCny: fx.usdCny,
+        fxAt: fx.at,
+        fxRateDate: fx.rateDate || "",
+        fxSource: fx.source,
+        fxError: fx.error,
+      }
+
       // 两侧凭据都还没就绪：既不落盘也不改客户端状态，只按阶梯重试。
       // 否则会把上一次的良好快照覆盖成「未配置 Key」，浮窗一直报错。
       const ocgNotReady = !ocg.key && !ocg.answered
       const dsNotReady = !ds.key && !ds.answered
       if (ocgNotReady && dsNotReady) {
+        // 两把 Key 都没就绪：用量/余额字段一律不碰（避免把上一次的良好快照覆盖成「未配置」），
+        // 但模型表与汇率仍要落盘 —— 「配额参考模型」下拉框必须始终有可选项。
+        await writeBack(auxPatch)
         scheduleMissingRetry()
         return
       }
@@ -517,6 +613,10 @@ export function apply(ctx, config) {
         scheduleMissingRetry()
       }
 
+      // 模型表与汇率总有结论（实时值或内置快照），因此本轮一定有内容可写
+      Object.assign(patch, auxPatch)
+      answered = true
+
       // 两侧都没给出结论时不写盘（也不更新「本轮刷新时间」）
       if (!answered) return
       patch.lastUpdated = new Date().toISOString()
@@ -533,7 +633,7 @@ export function apply(ctx, config) {
     }
     const mins = readCfg().refreshMinutes
     const m = Number.isFinite(mins) ? Math.min(1440, Math.max(0.5, mins)) : 5
-    autoDisposer = ctx.interval(function () { refreshAll() }, Math.max(30000, Math.round(m * 60000)))
+    autoDisposer = ctx.interval(function () { refreshAll().catch(function () {}) }, Math.max(30000, Math.round(m * 60000)))
   }
 
   // 客户端写入配置（两把 Key / refreshMinutes / refreshRequest / 锚点）→ 响应。
@@ -544,8 +644,9 @@ export function apply(ctx, config) {
     const prev = lastCfg
     lastCfg = next
     if (next.refreshMinutes !== prev.refreshMinutes) applyAutoRefresh()
-    if (next.apiKey !== prev.apiKey || next.deepseekApiKey !== prev.deepseekApiKey) refreshAll()
-    if (next.refreshRequest !== prev.refreshRequest) refreshAll()
+    if (next.apiKey !== prev.apiKey || next.deepseekApiKey !== prev.deepseekApiKey) refreshAll().catch(function () {})
+    // 手动刷新（客户端递增 refreshRequest）：强制重抓模型表与汇率，不吃 TTL 缓存
+    if (next.refreshRequest !== prev.refreshRequest) refreshAll(true)
   })
 
   ctx.effect(function () {

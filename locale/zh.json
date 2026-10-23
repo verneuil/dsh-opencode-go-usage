@@ -1,6 +1,6 @@
 {
   "meta": {
     "title": "OCG 余量查询",
-    "description": "浮窗显示 DeepSeek 余额与 OpenCode Go 的 5 小时 / 本周 / 本月用量。"
+    "description": "浮窗显示 DeepSeek 余额或 OpenCode Go 配额剩余，以及 5 小时 / 本周 / 本月用量。"
   }
 }

@@ -62,27 +62,59 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
     '.ocgu-bal[data-balwarn="true"]{color:var(--dsw-alias-state-warn-primary)}' +
     '.ocgu-sep{flex:none;width:1px;height:13px;background:var(--dsw-alias-border-l2);margin-right:3px}' +
     // 悬停临时浮层：余额 + 三条进度（窗口名与重置倒计时同一行、左名右时）；百分比做成贴在进度位置的圆形数字钮
-    '.ocgu-tip{position:absolute;left:0;z-index:6;pointer-events:none;display:flex;flex-direction:column;gap:8px;padding:12px 14px;border-radius:14px;background:var(--dsw-alias-bg-layer-2);border:1px solid var(--dsw-alias-border-l2);font-size:11.5px;line-height:1.3;white-space:nowrap;animation:ocgu-tip-in .12s ease-out}' +
+    '.ocgu-tip{position:absolute;left:0;z-index:6;pointer-events:none;display:flex;flex-direction:column;gap:8px;padding:12px 14px;border-radius:14px;background:var(--dsw-alias-bg-layer-2);border:1px solid var(--dsw-alias-border-l2);font-size:11.5px;line-height:1.3;white-space:nowrap;width:232px;animation:ocgu-tip-in .12s ease-out}' +
     '.ocgu-tip[data-pos="down"]{top:calc(100% + 8px)}' +
     '.ocgu-tip[data-pos="up"]{bottom:calc(100% + 8px)}' +
     '@keyframes ocgu-tip-in{from{opacity:0}to{opacity:1}}' +
-    '.ocgu-tip-bal{font-size:10.5px;font-weight:600;font-variant-numeric:tabular-nums}' +
+    // 仅浮层：余额行与「OCG配额剩余」行同款（12px，整行常规字重，金额单独加粗）
+    // 标签在左、金额在右（金额右端与下方重置时间、进度条右端严格对齐）
+    '.ocgu-tip-bal{display:flex;align-items:baseline;justify-content:space-between;gap:12px;font-size:12px;font-weight:400;font-variant-numeric:tabular-nums}' +
+    '.ocgu-tip-lb{font-weight:400}' +
+    '.ocgu-tip-amt{font-weight:600}' +
+    // 下拉多选（悬停浮层余额数据）：details + summary，原生无状态，点面板外再点一次收起
+    '.ocgu-dd{position:relative;display:inline-block;min-width:158px}' +
+    '.ocgu-dd>summary{list-style:none;cursor:pointer;box-sizing:border-box;height:26px;line-height:24px;padding:0 24px 0 8px;border:.5px solid var(--dsw-alias-border-l3);border-radius:var(--dsw-radius-sm,8px);background:var(--dsw-alias-bg-base);color:var(--dsw-alias-label-primary);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
+    '.ocgu-dd>summary::-webkit-details-marker{display:none}' +
+    '.ocgu-dd>summary::after{content:"";position:absolute;right:9px;top:10px;width:6px;height:6px;border-right:1.5px solid var(--dsw-alias-label-tertiary);border-bottom:1.5px solid var(--dsw-alias-label-tertiary);transform:rotate(45deg)}' +
+    '.ocgu-dd[open]>summary{border-color:var(--dsw-alias-state-business-primary)}' +
+    '.ocgu-dd-panel{position:absolute;right:0;top:calc(100% + 4px);z-index:30;min-width:100%;padding:4px;border:.5px solid var(--dsw-alias-border-l2);border-radius:10px;background:var(--dsw-alias-bg-base);box-shadow:0 8px 24px rgba(0,0,0,.16)}' +
+    '.ocgu-dd-item{display:flex;align-items:center;gap:6px;padding:5px 8px;border-radius:6px;font-size:12px;color:var(--dsw-alias-label-primary);cursor:pointer;white-space:nowrap}' +
+    '.ocgu-dd-item:hover{background:var(--dsw-alias-interactive-bg-hover)}' +
+    // 配额四行：标题用深色（primary），其余三行用浅色（secondary）；设置页那版字号更大
+    '.ocgu-quota{display:flex;flex-direction:column;gap:1px;font-size:10.5px;font-weight:600;line-height:1.45;font-variant-numeric:tabular-nums;color:var(--dsw-alias-label-secondary)}' +
+    '.ocgu-quota-h{color:var(--dsw-alias-label-primary)}' +
+    '.ocgu-quota-sub{font-weight:400}' +
+    // 设置页配额块：标题用字段标题样式（照搬），下面两行用小字样式并居中（由渲染层加 textAlign）
+    '.ocgu-qset{display:flex;flex-direction:column;gap:2px;margin-top:10px}' +
+    // 抓取失败点名报错：单行出品，浮层底部与设置页共用
+    '.ocgu-errline{display:flex;align-items:baseline;gap:6px;font-size:9.5px;line-height:1.45;color:var(--dsw-alias-state-error-primary)}' +
+    '.ocgu-errline svg{flex:none;transform:translateY(1px)}' +
+    // 说明：金额显示计价币种 / 浮窗左侧余额数据 两个控件现在直接用标准 .ocgu-seg，
+    // 与用量卡片里的「已使用 / 剩余」严格同高（同一套 padding 与字号）。
+    // 配额参考模型下拉框
+    '.ocgu-select{box-sizing:border-box;height:26px;padding:0 6px;border:.5px solid var(--dsw-alias-border-l3);border-radius:var(--dsw-radius-sm,8px);background:var(--dsw-alias-bg-base);color:var(--dsw-alias-label-primary);font-family:inherit;font-size:12px;cursor:pointer;max-width:260px}' +
+    '.ocgu-select:focus-visible{outline:var(--dsw-focus-ring-width,2px) solid var(--dsw-focus-ring-color,var(--dsw-alias-state-business-primary));outline-offset:1px}' +
     // 余额与下方用量之间的区隔：通栏细线（负边距抵消浮层左右内边距）+ 用量小标题
     '.ocgu-tip-sep{height:1px;margin:0 -14px;background:var(--dsw-alias-border-l2)}' +
-    '.ocgu-tip-title{font-size:10.5px;font-weight:600;color:var(--dsw-alias-label-secondary)}' +
     '.ocgu-tip-row{display:flex;flex-direction:column;gap:4px}' +
     // 窗口名与重置时间同一行：名字左对齐、倒计时右对齐；不再占左侧字母列，进度条得以整幅拉长
     '.ocgu-tip-meta{display:flex;align-items:baseline;justify-content:space-between;gap:12px;font-size:10px}' +
     '.ocgu-tip-win{color:var(--dsw-alias-label-secondary)}' +
     // 进度条：240×10，宽度即浮层内容宽（左右留白＝浮层内边距，与边框等距）；数字钮绝对定位不被裁掉
-    '.ocgu-tip-line{position:relative;display:flex;align-items:center;width:240px;height:18px}' +
+    // 进度条不再定宽：随浮层（= 上半部分最长那行文本 + 左右等宽内边距）自适应；
+    // 窗口名与倒计时在同一行 100% 宽里左右对齐，于是与进度条两端严格齐平。
+    '.ocgu-tip-line{position:relative;display:flex;align-items:center;width:100%;height:18px}' +
     '.ocgu-tip-track{position:relative;flex:none;width:100%;height:12px;border-radius:999px;background:color-mix(in srgb,var(--dsw-alias-label-tertiary) 22%,transparent);overflow:hidden}' +
-    '.ocgu-tip-fill{position:absolute;left:0;top:0;bottom:0;border-radius:999px;background:var(--dsw-alias-state-success-primary);transition:width .45s cubic-bezier(.22,.9,.28,1)}' +
+    '.ocgu-tip-fill{position:absolute;left:0;top:0;bottom:0;overflow:hidden;border-radius:999px;background:var(--dsw-alias-state-success-primary);transition:width .45s cubic-bezier(.22,.9,.28,1)}' +
     '.ocgu-tip-fill[data-level="warn"]{background:var(--dsw-alias-state-warn-primary)}' +
     '.ocgu-tip-fill[data-level="danger"]{background:var(--dsw-alias-state-error-primary)}' +
     '.ocgu-tip-fill[data-level="empty"]{background:var(--dsw-alias-label-tertiary)}' +
     // 流动高光：一点点动效（系统开了「减少动态效果」时自动关闭）
-    '.ocgu-tip-fill::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--dsw-alias-label-primary-foreground) 40%,transparent),transparent);transform:translateX(-100%);animation:ocgu-shine 2.8s ease-in-out infinite}' +
+    // 光带宽度按「整条轨道」算（--ocgu-pct 是本条百分比），故三条扫过的距离与速度一致；
+    // 早先用 inset:0 时宽度=已填充部分，7% 的短条只扫一小段，看起来像卡住。
+    // 光带宽度按「整条轨道」算（--ocgu-pct 是本条百分比），故三条扫过的距离与速度一致；
+    // 早先用 inset:0 时宽度=已填充部分，7% 的短条只扫一小段，看起来像卡住。
+    '.ocgu-tip-fill::after{content:"";position:absolute;top:0;bottom:0;left:0;width:calc(100% * 100 / var(--ocgu-pct,100));background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--dsw-alias-label-primary-foreground) 40%,transparent),transparent);transform:translateX(-100%);animation:ocgu-shine 2.8s ease-in-out infinite}' +
     '@keyframes ocgu-shine{0%{transform:translateX(-100%)}55%,100%{transform:translateX(220%)}}' +
     // 圆形数字钮：贴住进度当前位置；轻薄质感 —— 半透明底 + 细描边 + 极轻投影，
     // 数字用主题前景色（浅色主题即黑色，深色主题自动变浅），不再随危险等级变色（等级由进度条本身表达）
@@ -122,7 +154,7 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
     '.ocgu-mini-ring[data-level="danger"]{--ocgu-ring:var(--dsw-alias-state-error-primary)}' +
     '.ocgu-mini-ring[data-level="empty"]{--ocgu-ring:color-mix(in srgb,var(--dsw-alias-label-secondary) 78%,transparent)}' +
     // 设置页的横向进度条继续用 .ocgu-fill（同一套分级配色）
-    '.ocgu-fill[data-level="ok"]{background:var(--dsw-alias-brand-primary)}' +
+    '.ocgu-fill[data-level="ok"]{background:var(--dsw-alias-state-success-primary)}' +
     '.ocgu-fill[data-level="warn"]{background:var(--dsw-alias-state-warn-primary)}' +
     '.ocgu-fill[data-level="danger"]{background:var(--dsw-alias-state-error-primary)}' +
     // ---------- 设置页：用量行 ----------
@@ -133,7 +165,12 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
     '.ocgu-row-pct{flex:none;min-width:38px;text-align:right;font-size:13px;line-height:18px;font-weight:600;font-variant-numeric:tabular-nums;color:var(--dsw-alias-label-primary);animation:ocgu-fade .26s ease}' +
     // 进度槽 6 → 8px：槽底比纯 border-l1 更有「槽」感，又不抢眼
     '.ocgu-row-track{position:relative;height:8px;border-radius:999px;background:color-mix(in srgb,var(--dsw-alias-border-l1) 82%,var(--dsw-alias-bg-base));overflow:hidden}' +
-    '.ocgu-row-fill{position:absolute;left:0;top:0;bottom:0;border-radius:999px;background:var(--dsw-alias-brand-primary);transition:width .45s cubic-bezier(.22,.9,.28,1)}' +
+    // 设置页进度条：与浮层同款（绿色填充 + 常驻光带，一直循环）
+    '.ocgu-row-fill{position:absolute;left:0;top:0;bottom:0;overflow:hidden;border-radius:999px;background:var(--dsw-alias-state-success-primary);transition:width .45s cubic-bezier(.22,.9,.28,1)}' +
+    '.ocgu-row-fill[data-level="warn"]{background:var(--dsw-alias-state-warn-primary)}' +
+    '.ocgu-row-fill[data-level="danger"]{background:var(--dsw-alias-state-error-primary)}' +
+    '.ocgu-row-fill[data-level="empty"]{background:var(--dsw-alias-label-tertiary)}' +
+    '.ocgu-row-fill::after{content:"";position:absolute;top:0;bottom:0;left:0;width:calc(100% * 100 / var(--ocgu-pct,100));background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--dsw-alias-label-primary-foreground) 40%,transparent),transparent);transform:translateX(-100%);animation:ocgu-shine 2.8s ease-in-out infinite}' +
     // 倒计时在标题行、百分比左侧：不换行、随标签挤压让位
     '.ocgu-row-reset{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;line-height:16px;color:var(--dsw-alias-label-tertiary)}' +
     // ---------- 设置页：开关 —— 逐行照抄宿主控件 ----------
@@ -183,6 +220,8 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
     '.ocgu-tabs .ocgu-msg{margin-left:auto}' +
     // 标题行（标题 + 右侧图标按钮）
     '.ocgu-title-row{display:flex;align-items:center;gap:10px}' +
+    // 标题右侧的版本号小字
+    '.ocgu-ver{font-size:10.5px;font-weight:400;color:var(--dsw-alias-label-tertiary);font-variant-numeric:tabular-nums;letter-spacing:.2px}' +
     // 无边框图标按钮（标题右侧）：默认透明无框，hover 只给一点底色
     '.ocgu-iconbtn{flex:none;display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;padding:0;border:0;background:transparent;color:var(--dsw-alias-label-secondary);cursor:pointer;border-radius:6px;transition:background-color .18s ease,color .18s ease}' +
     '.ocgu-iconbtn:hover{background:color-mix(in srgb,var(--dsw-alias-label-tertiary) 12%,transparent);color:var(--dsw-alias-label-primary)}' +
@@ -212,6 +251,10 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
     // 宿主把「清空 / 重置」这类次要动作做成无边框小字（原文：_reset_{border:none;background:none;padding:0;font-size:12px;color:label-secondary}）
     '.ocgu-btn[data-kind="link"]{height:auto;padding:0;border:none;background:none;font-size:12px;color:var(--dsw-alias-label-secondary)}' +
     '.ocgu-btn[data-kind="link"]:hover:not(:disabled){background:none;color:var(--dsw-alias-label-primary)}' +
+    // 用量页的「手动刷新」：链接样式 + 重点色（品牌蓝，与进度条同色；带兜底值防令牌缺失）
+    '.ocgu-btn[data-kind="link"][data-accent="1"]{color:var(--dsw-alias-brand-primary,#4d6bfe);font-weight:500}' +
+    '.ocgu-btn[data-kind="link"][data-accent="1"]:hover:not(:disabled){color:var(--dsw-alias-brand-primary,#4d6bfe);opacity:.82;text-decoration:underline}' +
+    '.ocgu-btn[data-kind="link"][data-accent="1"]:disabled{opacity:.5}' +
     '.ocgu-input{box-sizing:border-box;height:28px;padding:0 10px;border:.5px solid var(--dsw-alias-border-l4);border-radius:var(--dsw-radius-sm,8px);background:var(--dsw-alias-bg-layer-3);color:var(--dsw-alias-label-primary);font-family:inherit;font-size:13px;line-height:1.5;outline:none;transition:border-color .12s ease}' +
     '.ocgu-input::placeholder{color:var(--dsw-alias-label-tertiary)}' +
     '.ocgu-input:focus{border-color:var(--dsw-alias-border-l3);outline:var(--dsw-focus-ring-width,2px) solid var(--dsw-focus-ring-color,var(--dsw-alias-state-business-primary));outline-offset:1px}' +
@@ -331,6 +374,149 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
     }
     var l = Math.round(100 - u);
     return { value: l, level: l <= 5 ? 'danger' : (l <= 20 ? 'warn' : 'ok') };
+  }
+
+  // ---------- 配额参考 / 计价币种（浮层与设置页共用） ----------
+  // 当前界面语言：用插件自己的字典反查（中文字典的取值含汉字），不依赖宿主暴露 locale id，
+  // 也不绑定具体文案（改名不会踩坑）。
+  function isZhLocale(t) {
+    try { return /[\u4e00-\u9fa5]/.test(String(t('tab.usage'))); } catch (e) { return true; }
+  }
+  // 计价币种：auto = 中文 ¥ / 英文 ＄；cny / usd 为强制
+  function currencyOf(value, t) {
+    var m = String((value && value.currencyMode) || 'auto');
+    if (m === 'cny' || m === 'usd') return m;
+    return isZhLocale(t) ? 'cny' : 'usd';
+  }
+  function fxRateOf(value) {
+    var r = Number(value && value.fxUsdCny);
+    return r > 0 ? r : 6.69;
+  }
+  // 美元金额 → 当前显示币种文本
+  function usdText(value, t, usd) {
+    if (!isFinite(usd)) return '--';
+    var cur = currencyOf(value, t);
+    var n = cur === 'cny' ? usd * fxRateOf(value) : usd;
+    return (cur === 'cny' ? '¥' : '$') + n.toFixed(2);
+  }
+  // 人民币金额 → 当前显示币种文本
+  function cnyText(value, t, cny) {
+    if (!isFinite(cny)) return '--';
+    var cur = currencyOf(value, t);
+    var n = cur === 'usd' ? cny / fxRateOf(value) : cny;
+    return (cur === 'cny' ? '¥' : '$') + n.toFixed(2);
+  }
+  // 余额文本：接口给的是 ¥，按显示币种换算（非 CNY 币种原样显示，避免二次换算）
+  function curBalanceText(value, t) {
+    var b = (value && value.balance) || {};
+    var n = Number(b.totalBalance);
+    var cur = String(b.currency || 'CNY').toUpperCase();
+    if (cur !== 'CNY') return currencySymbol(b.currency || 'CNY') + (isFinite(n) ? n : '--');
+    return isFinite(n) ? cnyText(value, t, n) : '¥--';
+  }
+  function goModelList(value) {
+    var list = value && Array.isArray(value.goModels) ? value.goModels : [];
+    return list.filter(function (m) { return m && m.id; });
+  }
+  // 月度「已使用」百分比：官方接口的 percent 恒为「已用」（进度口径只影响面板显示，不改数据）
+  function monthlyUsedPct(value) {
+    var u = (value && value.usage && value.usage.monthly) || {};
+    var pct = Number(u.percent);
+    if (!isFinite(pct)) pct = 0;
+    return clampNum(pct, 0, 100);
+  }
+  // 配额折算：Go 档月度配额（美元）× 月度已用百分比
+  function quotaOf(value) {
+    var list = goModelList(value);
+    var id = String((value && value.quotaRefModel) || 'deepseek-v4.1-flash');
+    var m = null;
+    for (var i = 0; i < list.length; i++) { if (list[i].id === id) { m = list[i]; break; } }
+    if (!m && list.length) { m = list[0]; id = m.id; }   // 选中模型已下架 → 退到列表第一个
+    var q = m ? Number(m.go) : NaN;
+    var used = monthlyUsedPct(value);
+    var hasQuota = isFinite(q) && q > 0;
+    return {
+      model: m, id: id, quota: q, usedPct: used,
+      used: hasQuota ? q * used / 100 : NaN,
+      left: hasQuota ? q * (1 - used / 100) : NaN
+    };
+  }
+  // 抓取失败清单：点名到具体数据源（用量 / 余额 / 汇率 / 模型表）
+  function fetchErrors(value, t) {
+    var out = [];
+    if (!value) return out;
+    if (value.usageError) out.push(t('err.usage'));
+    if (value.balanceError) out.push(t('err.balance'));
+    if (value.fxError) out.push(t('err.fx'));
+    if (value.goModelsError) out.push(t('err.models'));
+    return out;
+  }
+  // 数据来源说明（用于 tooltip）：实时值 / 内置快照 + 时间
+  function quotaSrcHint(value, t) {
+    var live = String((value && value.goModelsSource) || '') === 'live';
+    var at = String((value && value.goModelsAt) || '');
+    var shown = at ? (live ? fmtTime(at) : at) : '';
+    var m = live ? t('quota.srcLive') : t('quota.srcSnapshot', { date: shown });
+    var fxLive = String((value && value.fxSource) || '') === 'live';
+    var rd = String((value && value.fxRateDate) || '');
+    var fx = (fxLive ? t('quota.srcLive') : t('quota.srcSnapshot', { date: shown }))
+      + (rd ? (isZhLocale(t) ? '，' : ', ') + t('quota.fxRateDate', { d: rd }) : '');
+    return t('quota.monthSrc', { models: m, fx: fx, rate: fxRateOf(value).toFixed(4) });
+  }
+  // 配额四行文本（浮层与设置页共用同一份内容）：标题 / 参考模型 / 月配额 / 已消耗·剩余
+  // 短时间戳：26/10/22 17:03:45（设置页小字用）
+  function fmtStampShort(iso) {
+    var d = new Date(iso);
+    if (!iso || isNaN(d.getTime())) return '';
+    var p = function (n) { return (n < 10 ? '0' : '') + n; };
+    return String(d.getFullYear()).slice(2) + '/' + p(d.getMonth() + 1) + '/' + p(d.getDate())
+      + ' ' + p(d.getHours()) + ':' + p(d.getMinutes()) + ':' + p(d.getSeconds());
+  }
+  // 抓取状态后缀：成功 / 失败（沿用兜底）
+  function srcStatus(value, which, t) {
+    var live = String((which === 'models' ? value.goModelsSource : value.fxSource) || '') === 'live';
+    if (live) return t('quota.ok');
+    return t(which === 'models' ? 'quota.staleModels' : 'quota.staleFx');
+  }
+  // 模型表 / 汇率小字（各自只讲自己，带更新时间与刷新结果）
+  function quotaModelHint(value, t) {
+    var at = String((value && value.goModelsAt) || '');
+    if (!at) return t('quota.loading');
+    return t('quota.hintModels', { t: fmtStampShort(at), rel: fmtRelative(at, t), status: srcStatus(value, 'models', t) });
+  }
+  function fxHint(value, t) {
+    var at = String((value && value.fxAt) || '');
+    return t('quota.hintFx', {
+      rate: fxRateOf(value).toFixed(4),
+      t: at ? fmtStampShort(at) : '--',
+      rel: at ? fmtRelative(at, t) : '',
+      status: at ? srcStatus(value, 'fx', t) : ''
+    });
+  }
+  // 配额金额三态：正常 / 免费 / 无限制
+  function quotaAmounts(value, t) {
+    var q = quotaOf(value);
+    var usable = isFinite(q.quota) && q.quota > 0;
+    var quotaStr = q.quota === -1 ? t('quota.unlimited') : (q.quota === 0 ? t('quota.free') : usdText(value, t, q.quota));
+    return {
+      q: q,
+      quota: quotaStr,
+      used: usable ? usdText(value, t, q.used) : '--',
+      left: usable ? usdText(value, t, q.left) : '--'
+    };
+  }
+  // 浮层：配额剩余一行（标签 + 金额两段，金额加粗）；总配额 / 已消耗那行已按要求去掉
+  function quotaTipLines(value, t) {
+    if (!goModelList(value).length) return [t('quota.loading'), ''];
+    var a = quotaAmounts(value, t);
+    return [t('quota.tipLeftLabel'), a.left];
+  }
+  // 设置页配额小字：一行（模型 + 括号内的总配额 / 消耗 / 剩余）
+  function quotaSetLine(value, t) {
+    if (!goModelList(value).length) return t('quota.loading');
+    var a = quotaAmounts(value, t);
+    var name = (a.q.model && a.q.model.name) || a.q.id;
+    return t('quota.setLine', { name: name, quota: a.quota, used: a.used, left: a.left });
   }
   function currencySymbol(cur) {
     if (!cur || cur === 'CNY') return '¥';
@@ -478,21 +664,43 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
       'btn.resetAll': '恢复默认设置',
       'title.resetAll': '一键恢复：已使用 / 5 分钟 / 极简模式 / 不显示余额 / 默认位置',
       'aria.widget': '显示浮窗',
-      'label.balance': '官方余额',
       'label.minimal': '极简模式',
       'title.minimal': '三环嵌套（R / W / M），余额取整显示在环旁',
-      'tip.balance': 'DeepSeek余额（包含赠金）：{bal}',
-      'tip.usageTitleUsed': 'OpenCode Go 套餐用量：',
-      'tip.usageTitleLeft': 'OpenCode Go 套餐余量：',
-      'title.balance': '是否在浮窗上显示 DeepSeek 官方余额',
+      'tip.balanceLabel': 'DeepSeek账户余额：',
+      // ── 配额参考（按 Go 档月度配额 × 月度已用百分比折算）──
+      'msg.keyTooLong': 'Key 过长（最多 512 个字符）',
+      'quota.title': 'OpenCode Go 套餐配额',
+      'quota.setLine': '模型：{name}（总配额：{quota}，消耗：{used}，剩余：{left}）',
+      'quota.tipLeftLabel': 'OpenCode Go配额剩余：',
+      'quota.unlimited': '无限制',
+      'quota.free': '免费',
+      'quota.loading': '配额数据获取中…',
+      'quota.pick': '配额参考模型选择',
+      'quota.hintModels': '模型表更新时间：{t}（{rel}）{status}',
+      'quota.hintFx': '1 USD = {rate} CNY，{t}（{rel}）{status}',
+      'quota.ok': '，刷新成功',
+      'quota.staleModels': '，刷新失败（沿用内置快照）',
+      'quota.staleFx': '，刷新失败（沿用内置汇率）',
+      'quota.srcLive': '实时数据',
+      'quota.srcSnapshot': '内置快照 {date}',
+      'quota.monthSrc': '模型表：{models}；汇率：{fx}（1 USD = {rate} CNY）',
+      'quota.fxRateDate': '汇率数据日期 {d}',
+      'field.currency': '金额显示计价币种',
+      'cur.auto': '自动',
+      'cur.cny': '¥ 人民币',
+      'cur.usd': '$ 美元',
+      'cur.autoHint': '自动：中文界面 ¥ / 英文界面 ＄',
+      // ── 抓取失败点名报错（浮层底部 / 设置页手动刷新左侧）──
+      'err.prefix': '数据获取失败：',
+      'err.usage': 'OCG 用量',
+      'err.balance': 'DeepSeek 官方余额',
+      'err.fx': '汇率（已用内置汇率）',
+      'err.models': '模型列表及配额（已用内置快照）',
       'float.groupTitle': 'OpenCode Go · {win}（{mini}）',
       'float.ring': 'OpenCode Go {win} {mode} {pct}%',
       'float.ringEmpty': 'OpenCode Go {win}（暂无数据）',
       'float.noKey': '未配置 API Key：可在设置 → OCG 余量查询 里填写，或写入 DSH 凭据库（点击刷新，拖动可移动位置）',
       'float.failed': '刷新失败：{err}（点击重试，拖动可移动位置）',
-      'float.balance': 'DeepSeek 余额 {bal} · ',
-      'float.usage': 'OpenCode Go 用量：5 小时 / 本周 / 本月 · 每 {min} 分钟自动刷新 · 更新于 {rel}',
-      'float.tail': '（点击或自动刷新：边框流光 → 全绿/全红 → 3 秒淡出；拖动可移动位置；明细见设置 → OCG 余量查询）',
       'rel.justNow': '刚刚更新',
       'rel.min': '{n} 分钟前',
       'rel.hour': '{n} 小时前',
@@ -515,13 +723,26 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
       'anchor.view-bottom': '窗口底部',
       'settings.title': 'OCG 余量查询',
       'settings.intro': 'OpenCode Go 的 5 小时 / 本周 / 本月用量。点击浮窗即刷新，拖动可移动位置。',
-      'tab.usage': '用量',
-      'tab.widget': '浮窗',
-      'tab.general': 'Key管理',
+      'tab.usage': '用量数据',
+      'tab.widget': '浮窗管理',
+      'tab.general': 'API Key',
       'aria.tabs': '设置分组',
       'title.console': '打开 OpenCode 账户页（opencode.ai/console）',      'field.widget.master': '浮窗总开关',
-      'field.balance': '显示 DeepSeek 官方余额',
-      'field.balance.hint': '是否在浮窗上显示 DeepSeek 官方余额；该金额包含赠金',
+      'field.pillBalance': '在浮窗左侧显示余额',
+      'field.pillBalance.hint': '在浮窗胶囊左侧显示一行余额；关闭后下一项一并收起',
+      'field.pillBalanceSrc': '浮窗左侧余额数据',
+      'field.pillBalanceSrc.hint': 'DS余额包含赠金',
+      'pill.srcDeepseek': 'DS余额',
+      'pill.srcQuota': 'OCG配额剩余',
+      'field.tipBalanceSrc': '鼠标悬停浮层余额数据',
+      'field.tipBalanceSrc.hint': '两个都不勾选时，浮层只显示三条进度条（DS余额包含赠金）',
+      'tip.chkDeepseek': 'DS余额',
+      'tip.chkQuota': 'OCG配额剩余',
+      'tip.ddNone': '都不显示',
+      'msg.pillSrcDeepseek': '浮窗左侧已显示 DS 余额',
+      'msg.pillSrcQuota': '浮窗左侧已显示 OCG 配额剩余',
+      'msg.tipData': '浮层余额数据：{list}',
+      'msg.tipDataNone': '浮层余额数据：无（只显示进度条）',
       'field.minimal': '极简模式',
       'field.pos': '重置浮窗位置',
       'msg.minimalOn': '已开启极简模式',
@@ -584,21 +805,43 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
       'btn.resetAll': 'Restore defaults',
       'title.resetAll': 'One-click defaults: Used / 5 min / Minimal / no balance / default position',
       'aria.widget': 'Show floating pill',
-      'label.balance': 'Balance',
       'label.minimal': 'Minimal',
       'title.minimal': 'Nested rings (R / W / M) with the rounded balance beside them',
-      'tip.balance': 'DeepSeek Balance+Bonus : {bal}',
-      'tip.usageTitleUsed': 'OpenCode Go plan usage:',
-      'tip.usageTitleLeft': 'OpenCode Go plan remaining:',
-      'title.balance': 'Whether to show the DS balance on the pill',
+      'tip.balanceLabel': 'DeepSeek account balance: ',
+      // ── Quota reference (Go-tier monthly quota × monthly used percentage) ──
+      'msg.keyTooLong': 'Key too long (512 characters max)',
+      'quota.title': 'OpenCode Go plan quota',
+      'quota.setLine': 'Model: {name} (total: {quota}, used: {used}, left: {left})',
+      'quota.tipLeftLabel': 'OpenCode Go quota left: ',
+      'quota.unlimited': 'Unlimited',
+      'quota.free': 'Free',
+      'quota.loading': 'Loading quota data…',
+      'quota.pick': 'Quota reference model',
+      'quota.hintModels': 'Model table updated: {t} ({rel}){status}',
+      'quota.hintFx': '1 USD = {rate} CNY, {t} ({rel}){status}',
+      'quota.ok': ', refresh ok',
+      'quota.staleModels': ', refresh failed (bundled snapshot in use)',
+      'quota.staleFx': ', refresh failed (bundled rate in use)',
+      'quota.srcLive': 'live data',
+      'quota.srcSnapshot': 'bundled snapshot {date}',
+      'quota.monthSrc': 'Model table: {models}; rate: {fx} (1 USD = {rate} CNY)',
+      'quota.fxRateDate': 'FX data date {d}',
+      'field.currency': 'Amount display currency',
+      'cur.auto': 'Auto',
+      'cur.cny': '¥ CNY',
+      'cur.usd': '$ USD',
+      'cur.autoHint': 'Auto: ¥ in Chinese, $ in English',
+      // ── Per-source fetch failures (popover footer / left of the manual refresh button) ──
+      'err.prefix': 'Fetch failed: ',
+      'err.usage': 'OCG usage',
+      'err.balance': 'DeepSeek balance',
+      'err.fx': 'exchange rate (bundled rate in use)',
+      'err.models': 'model list & quota (bundled snapshot in use)',
       'float.groupTitle': 'OpenCode Go · {win} ({mini})',
       'float.ring': 'OpenCode Go {win} {mode} {pct}%',
       'float.ringEmpty': 'OpenCode Go {win} (no data)',
       'float.noKey': 'No API key configured: add one in Settings → OCG Usage, or put it in the DSH credential store (click to refresh, drag to move)',
       'float.failed': 'Refresh failed: {err} (click to retry, drag to move)',
-      'float.balance': 'DeepSeek balance {bal} · ',
-      'float.usage': 'OpenCode Go usage: Rolling / weekly / monthly · auto-refresh every {min} min · updated {rel}',
-      'float.tail': '(click or auto-refresh: border light trail → all green/red → fades after 3s; drag to move; details in Settings → OCG Usage)',
       'rel.justNow': 'just now',
       'rel.min': '{n} min ago',
       'rel.hour': '{n} h ago',
@@ -621,14 +864,27 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
       'anchor.view-bottom': 'window bottom',
       'settings.title': 'OCG Usage',
       'settings.intro': 'OpenCode Go usage for the Rolling, weekly and monthly windows. Click the pill to refresh; drag it to move.',
-      'tab.usage': 'Usage',
+      'tab.usage': 'Usage data',
       'tab.widget': 'Floating pill',
-      'tab.general': 'Keys',
+      'tab.general': 'API Key',
       'aria.tabs': 'Settings groups',
       'title.console': 'Open the OpenCode account page (opencode.ai/console)',
       'field.widget.master': 'Floating pill',
-      'field.balance': 'Show the DeepSeek balance',
-      'field.balance.hint': 'Whether to show the DeepSeek balance on the pill; the amount includes bonus credit',
+      'field.pillBalance': "Show a balance on the pill's left",
+      'field.pillBalance.hint': 'One balance line on the left of the pill; turning it off also collapses the row below',
+      'field.pillBalanceSrc': 'Pill left-side balance data',
+      'field.pillBalanceSrc.hint': 'The DS balance includes bonus credit',
+      'pill.srcDeepseek': 'DS balance',
+      'pill.srcQuota': 'OCG quota left',
+      'field.tipBalanceSrc': 'Hover popover balance data',
+      'field.tipBalanceSrc.hint': 'With neither box ticked the popover shows only the three progress bars (the DS balance includes bonus credit)',
+      'tip.chkDeepseek': 'DS balance',
+      'tip.chkQuota': 'OCG quota',
+      'tip.ddNone': 'None',
+      'msg.pillSrcDeepseek': 'Pill left now shows the DS balance',
+      'msg.pillSrcQuota': 'Pill left now shows the OCG quota left',
+      'msg.tipData': 'Popover balance data: {list}',
+      'msg.tipDataNone': 'Popover balance data: none (progress bars only)',
       'field.minimal': 'Minimal mode',
       'field.pos': 'Reset the pill position',
       'msg.minimalOn': 'Minimal mode on',
@@ -709,22 +965,23 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
     var b = value && typeof value.balance === 'object' && value.balance ? value.balance : null;
     return b && b.totalBalance ? b : null;
   }
-  function balanceText(value) {
-    var b = balanceOf(value);
-    var cur = (value && typeof value.balance === 'object' && value.balance && value.balance.currency) || 'CNY';
-    return b ? currencySymbol(cur) + b.totalBalance : currencySymbol(cur) + '--';
-  }
   function floatWarn(value) {
     return value.keyStatus === 'missing' || value.balanceKeyStatus === 'missing'
       || !!value.usageError || !!value.balanceError;
   }
-  // 极简模式：余额只到「元」（四舍五入，不带小数）
-  function balanceYuan(value) {
-    var b = balanceOf(value);
-    var cur = (value && typeof value.balance === 'object' && value.balance && value.balance.currency) || 'CNY';
-    if (!b) return currencySymbol(cur) + '--';
-    var n = Number(String(b.totalBalance).replace(/[^0-9.\-]/g, ''));
-    return isFinite(n) ? currencySymbol(cur) + String(Math.round(n)) : currencySymbol(cur) + b.totalBalance;
+  // 浮窗左侧那一行余额：按「浮窗左侧余额数据」取 DeepSeek 余额或 OCG 配额剩余
+  // 两路都先换算成当前「金额显示计价币种」；rounded = true 用于极简模式（去掉小数）
+  function pillBalanceText(value, t, rounded) {
+    var s = String((value && value.pillBalanceSource) || 'deepseek') === 'quota'
+      ? quotaAmounts(value, t).left        // 形如 ¥305.03 / $45.60 / --
+      : curBalanceText(value, t);          // DeepSeek 余额（接口给的是 ¥，按币种换算）
+    if (s === '--') return s;
+    return rounded ? s.replace(/\.\d+$/, '') : s;
+  }
+  // 浮窗左侧余额的告警态：跟着当前来源走
+  function pillBalanceWarn(value) {
+    if (String((value && value.pillBalanceSource) || 'deepseek') === 'quota') return !!value.goModelsError;
+    return !!(value.balanceError || value.balanceKeyStatus === 'missing');
   }
 
   // ---------- 悬浮窗（余额 + OCG 用量 + 刷新状态提示） ----------
@@ -924,6 +1181,9 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
       // （按 refreshState==='loading' 拦会把流光那 1~2 秒里的点击一起吞掉）
       if (manualBusyRef.current) return;
       manualBusyRef.current = true;
+      // 看门狗：宿主 settings.update 若既不 resolve 也不 reject（极端挂起），30 秒后强制解锁，
+      // 否则「手动刷新」会永久点不动。
+      var busyWatchdog = setTimeout(function () { manualBusyRef.current = false; }, 30000);
       stopAutoLoading();
       if (revertRef.current) { clearTimeout(revertRef.current); revertRef.current = null; }
       requestRefresh(remote, viewRef.current, {
@@ -935,6 +1195,7 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
           if (v.refreshMinutes) setRefreshMinutes(v.refreshMinutes);
         },
         onDone: function (ok) {
+          clearTimeout(busyWatchdog);
           manualBusyRef.current = false;
           stopAutoLoading();
           setRefreshState(ok ? 'ok' : 'error');
@@ -1060,8 +1321,8 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
         React.createElement('span', {
           key: 'bal',
           className: 'ocgu-bal',
-          'data-balwarn': (value.balanceError || value.balanceKeyStatus === 'missing') ? 'true' : 'false'
-        }, balanceText(value)),
+          'data-balwarn': pillBalanceWarn(value) ? 'true' : 'false'
+        }, pillBalanceText(value, t, false)),
         React.createElement('span', { key: 'sep', className: 'ocgu-sep' }));
     }
     var mode = modeOf(value);
@@ -1105,8 +1366,8 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
         children.push(
           React.createElement('span', {
             key: 'bal', className: 'ocgu-bal',
-            'data-balwarn': (value.balanceError || value.balanceKeyStatus === 'missing') ? 'true' : 'false'
-          }, balanceYuan(value)),
+            'data-balwarn': pillBalanceWarn(value) ? 'true' : 'false'
+          }, pillBalanceText(value, t, true)),
           React.createElement('span', { key: 'sep', className: 'ocgu-sep' }));
       }
       var NEST = 26, NC = NEST / 2;
@@ -1159,7 +1420,7 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
             React.createElement('span', { className: 'ocgu-tip-track' },
               React.createElement('span', {
                 className: 'ocgu-tip-fill', 'data-level': twHas ? td.level : 'empty',
-                style: { width: (twHas ? td.value : 0) + '%' }
+                style: { width: (twHas ? td.value : 0) + '%', '--ocgu-pct': Math.max(1, twHas ? td.value : 1) }
               })),
             // 圆形数字钮：贴住进度当前位置，保留 % 号（无数据时不出现）
             twHas ? React.createElement('span', {
@@ -1170,14 +1431,34 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
             React.createElement('span', { className: 'ocgu-tip-win' }, t('win.' + w.key)),
             React.createElement('span', { className: 'ocgu-tip-cd' }, fmtCountdown(tw.resetsAt, t) || t('cd.unknown'))));
       });
+      var tipQuota = quotaTipLines(value, t);
+      var tipBalText = curBalanceText(value, t);
+      var tipErrs = fetchErrors(value, t);
+      // 悬停浮层里两段余额各自可关：都不选则只留进度条（分隔线也一起去掉）
+      var tipShowBal = value.tipShowBalance !== false;
+      var tipShowQuota = value.tipShowQuota !== false;
       children.push(React.createElement('div', {
         key: 'tip', className: 'ocgu-tip', 'data-pos': tipUp ? 'up' : 'down', 'aria-hidden': 'true'
       },
-        React.createElement('div', { className: 'ocgu-tip-bal' }, t('tip.balance', { bal: balanceText(value) })),
-        React.createElement('div', { className: 'ocgu-tip-sep' }),
-        // 板块二标题随进度口径切换：已使用 = 套餐用量 / 剩余 = 套餐余量
-        React.createElement('div', { className: 'ocgu-tip-title' }, t(mode === 'left' ? 'tip.usageTitleLeft' : 'tip.usageTitleUsed')),
-        tipRows));
+        // 余额行与下面「配额剩余」行用**完全相同**的类（字号/字重/颜色逐项一致），避免看起来不一致
+        // ① 账户余额：独占一栏（下方跟一条分割线）；标签常规字重，金额加粗并右对齐
+        tipShowBal ? React.createElement('div', { className: 'ocgu-tip-bal ocgu-quota-h' },
+          React.createElement('span', { className: 'ocgu-tip-lb' }, t('tip.balanceLabel')),
+          React.createElement('span', { className: 'ocgu-tip-amt' }, tipBalText)) : null,
+        tipShowBal ? React.createElement('div', { className: 'ocgu-tip-sep' }) : null,
+        // ② 配额剩余：同样独占一栏（标签 + 右对齐的加粗金额）；下方保留既有分割线
+        tipShowQuota ? React.createElement('div', { className: 'ocgu-quota', title: quotaSrcHint(value, t) },
+          React.createElement('div', { className: 'ocgu-tip-bal ocgu-quota-h' },
+            React.createElement('span', { className: 'ocgu-tip-lb' }, tipQuota[0]),
+            React.createElement('span', { className: 'ocgu-tip-amt' }, tipQuota[1]))) : null,
+        // 只有「配额剩余」这一段存在时，进度条上方才需要第二条分割线；
+        // 仅显示余额时，余额自己那条分隔线已经够了（否则两条会叠在一起）。
+        tipShowQuota ? React.createElement('div', { className: 'ocgu-tip-sep' }) : null,
+        tipRows,
+        // 抓取失败点名报错：浮层最底部（明确是 OCG 用量 / 余额 / 汇率 / 模型表哪一项）
+        tipErrs.length ? React.createElement('div', {
+          className: 'ocgu-errline', role: 'status', 'aria-live': 'polite'
+        }, t('err.prefix') + tipErrs.join(isZhLocale(t) ? '、' : ', ')) : null));
     }
 
     return React.createElement('div', {
@@ -1250,7 +1531,7 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
           (fmtCountdown(win.resetsAt, t) || t('cd.unknown')) + (win.status && win.status !== 'ok' ? t('cd.status', { s: win.status }) : '')),
         React.createElement('span', { key: 'p' + (winHas ? d.value : '-'), className: 'ocgu-row-pct' }, winHas ? d.value + '%' : '--')),
       React.createElement('div', { className: 'ocgu-row-track' },
-        React.createElement('div', { className: 'ocgu-row-fill ocgu-fill', 'data-level': winHas ? d.level : 'empty', style: { width: (winHas ? d.value : 0) + '%' } })));
+        React.createElement('div', { className: 'ocgu-row-fill ocgu-fill', 'data-level': winHas ? d.level : 'empty', style: { width: (winHas ? d.value : 0) + '%', '--ocgu-pct': Math.max(1, winHas ? d.value : 1) } })));
   }
 
   function SettingsPage(props) {
@@ -1263,6 +1544,16 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
     var loading = loadState[0];
     var setLoading = loadState[1];
     var dsKeyState = React.useState('');
+    // 下拉多选（悬停浮层余额数据）：点击其范围之外自动收起（点面板内的复选框不收起）
+    var ddRef = React.useRef(null);
+    React.useEffect(function () {
+      var onDocDown = function (e) {
+        var el = ddRef.current;
+        if (el && el.open && !el.contains(e.target)) el.open = false;
+      };
+      document.addEventListener('pointerdown', onDocDown, true);
+      return function () { document.removeEventListener('pointerdown', onDocDown, true); };
+    }, []);
     var dsKeyDraft = dsKeyState[0];
     var setDsKeyDraft = dsKeyState[1];
     var ocgKeyState = React.useState('');
@@ -1369,6 +1660,8 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
       var rowId = which === 'ds' ? 'dsKey' : 'ocgKey';
       var draft = (which === 'ds' ? dsKeyDraft : ocgKeyDraft).trim();
       if (!draft) { say(rowId, t('msg.needKey'), 'error'); return; }
+      // 长度护栏：API Key 不会有 512 字符以上，防止误粘贴整段文本把配置撑大
+      if (draft.length > 512) { say(rowId, t('msg.keyTooLong'), 'error'); return; }
       var patch = which === 'ds' ? { deepseekApiKey: draft } : { apiKey: draft };
       updateNs(remote, viewRef.current, patch, function (err, nv) {
         if (err || !nv) { say(rowId, t('msg.saveFailed', { err: err || t('msg.unknownErr') }), 'error'); return; }
@@ -1432,6 +1725,56 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
       });
     };
 
+    // 切换配额参考模型（只影响折算显示，不触网）
+    var setQuotaModel = function (id) {
+      var next = String(id || '');
+      if (String(value.quotaRefModel || '') === next) return;
+      updateNs(remote, viewRef.current, { quotaRefModel: next }, function (err, nv) {
+        if (err || !nv) { say('quota', t('msg.saveFailed', { err: err || t('msg.unknownErr') }), 'error'); return; }
+        apply(nv);
+      });
+    };
+
+    // 切换计价币种（auto / cny / usd）
+    var setCurrency = function (m) {
+      if (String(value.currencyMode || 'auto') === m) return;
+      updateNs(remote, viewRef.current, { currencyMode: m }, function (err, nv) {
+        if (err || !nv) { say('currency', t('msg.saveFailed', { err: err || t('msg.unknownErr') }), 'error'); return; }
+        apply(nv);
+      });
+    };
+
+    // 浮窗左侧余额数据来源（deepseek / quota）
+    var setPillSrc = function (v) {
+      if (String(value.pillBalanceSource || 'deepseek') === v) return;
+      updateNs(remote, viewRef.current, { pillBalanceSource: v }, function (err, nv) {
+        if (err || !nv) { say('pillSrc', t('msg.saveFailed', { err: err || t('msg.unknownErr') }), 'error'); return; }
+        apply(nv);
+        say('pillSrc', v === 'quota' ? t('msg.pillSrcQuota') : t('msg.pillSrcDeepseek'));
+      });
+    };
+    // 悬停浮层两段余额的显隐（都不选 = 只留进度条）
+    var tipDataMsg = function (v) {
+      var list = [];
+      if (v.tipShowBalance !== false) list.push(t('tip.chkDeepseek'));
+      if (v.tipShowQuota !== false) list.push(t('tip.chkQuota'));
+      return list.length ? t('msg.tipData', { list: list.join(isZhLocale(t) ? '、' : ', ') }) : t('msg.tipDataNone');
+    };
+    var toggleTipBalance = function () {
+      updateNs(remote, viewRef.current, { tipShowBalance: !(value.tipShowBalance !== false) }, function (err, nv) {
+        if (err || !nv) { say('tipData', t('msg.saveFailed', { err: err || t('msg.unknownErr') }), 'error'); return; }
+        apply(nv);
+        say('tipData', tipDataMsg(nsValue(nv)));
+      });
+    };
+    var toggleTipQuota = function () {
+      updateNs(remote, viewRef.current, { tipShowQuota: !(value.tipShowQuota !== false) }, function (err, nv) {
+        if (err || !nv) { say('tipData', t('msg.saveFailed', { err: err || t('msg.unknownErr') }), 'error'); return; }
+        apply(nv);
+        say('tipData', tipDataMsg(nsValue(nv)));
+      });
+    };
+
     var resetPos = function () {
       updateNs(remote, viewRef.current, DEFAULT_ANCHORS, function (err, nv) {
         if (err || !nv) { say('pos', t('msg.saveFailed', { err: err || t('msg.unknownErr') }), 'error'); return; }
@@ -1448,6 +1791,11 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
         minimalMode: true,
         showBalance: false,
         widgetVisible: true,
+        quotaRefModel: 'deepseek-v4.1-flash',
+        currencyMode: 'auto',
+        pillBalanceSource: 'deepseek',
+        tipShowBalance: true,
+        tipShowQuota: true,
         widgetAnchorX: DEFAULT_ANCHORS.widgetAnchorX,
         widgetOffsetX: DEFAULT_ANCHORS.widgetOffsetX,
         widgetAnchorY: DEFAULT_ANCHORS.widgetAnchorY,
@@ -1511,6 +1859,34 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
     var openConsole = function () {
       try { window.open('https://opencode.ai/console', '_blank', 'noopener'); } catch (e) { /* 打不开不影响其它功能 */ }
     };
+    // 配额 / 币种：本页与浮层共用同一套计算（quotaSetLine / quotaTipLines 在模块作用域）
+    var qSet = quotaSetLine(value, t);
+    var qInfo = quotaOf(value);
+    var modelList = goModelList(value);
+    var errList = fetchErrors(value, t);
+    var errText = errList.length ? t('err.prefix') + errList.join(isZhLocale(t) ? '、' : ', ') : '';
+    var curButton = function (m, key) {
+      var on = String(value.currencyMode || 'auto') === m;
+      return React.createElement('button', {
+        key: m, type: 'button', className: 'ocgu-seg-item', role: 'radio',
+        'aria-checked': on ? 'true' : 'false', 'data-on': on ? '1' : '0',
+        onClick: function () { setCurrency(m); }
+      }, t(key));
+    };
+    // 悬停浮层余额数据的下拉摘要（如「DS余额 + OCG配额剩余」/「都不显示」）
+    var tipDataNames = [];
+    if (value.tipShowBalance !== false) tipDataNames.push(t('pill.srcDeepseek'));
+    if (value.tipShowQuota !== false) tipDataNames.push(t('pill.srcQuota'));
+    var tipDataSummary = tipDataNames.length ? tipDataNames.join(' + ') : t('tip.ddNone');
+    // 浮窗左侧余额数据来源的二选一按钮（同一套小号分段样式）
+    var pillSrcButton = function (v, key) {
+      var on = String(value.pillBalanceSource || 'deepseek') === v;
+      return React.createElement('button', {
+        key: v, type: 'button', className: 'ocgu-seg-item', role: 'radio',
+        'aria-checked': on ? 'true' : 'false', 'data-on': on ? '1' : '0',
+        onClick: function () { setPillSrc(v); }
+      }, t(key));
+    };
     var openRepo = function () {
       try { window.open('https://github.com/verneuil/dsh-opencode-go-usage', '_blank', 'noopener'); } catch (e) { /* 同上 */ }
     };
@@ -1541,7 +1917,12 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
         React.createElement('button', {
           className: 'ocgu-iconbtn', onClick: openRepo,
           title: t('aria.github'), 'aria-label': t('aria.github')
-        }, githubIcon())),
+        }, githubIcon()),
+        // 版本号：宿主把 UA 里的版本写进配置投影，客户端只读
+        value.pluginVersion
+          ? React.createElement('span', { className: 'ocgu-ver', title: 'dsh-opencode-go-usage v' + value.pluginVersion },
+            'v' + value.pluginVersion)
+          : null),
       React.createElement('div', { className: 'ocgu-hint', style: { marginTop: '4px' } },
         t('settings.intro')),
       // ── 标签栏（左：用量 / 通用 / 悬浮窗）＋ 常驻「恢复默认设置」（最右）──
@@ -1567,6 +1948,43 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
           className: 'ocgu-iconbtn', onClick: openConsole,
           title: t('title.console'), 'aria-label': t('title.console')
         }, opencodeIcon())),
+      // 配额参考模型选择（位于「用量详情」标题与进度条卡片之间）
+      React.createElement(FieldRow, {
+        title: t('quota.pick'),
+        hint: quotaModelHint(value, t),
+        msg: msgOf('quota'),
+        tone: toneOf('quota'),
+        nowrap: true,
+        control: [
+          React.createElement('select', {
+            key: 'sel', className: 'ocgu-select', value: qInfo.id,
+            onChange: function (e) { setQuotaModel(e.target.value); },
+            'aria-label': t('quota.pick')
+          }, modelList.length
+            ? modelList.map(function (m) {
+              return React.createElement('option', { key: m.id, value: m.id }, m.name);
+            })
+            : [React.createElement('option', { key: 'none', value: qInfo.id }, t('quota.loading'))])
+        ]
+      }),
+      // 金额显示计价币种（紧跟在配额参考模型选择下方）：小号分段控件 = 自动 / ¥ 人民币 / ＄ 美元
+      React.createElement(FieldRow, {
+        title: t('field.currency'),
+        hint: fxHint(value, t),
+        msg: msgOf('currency'),
+        tone: toneOf('currency'),
+        nowrap: true,
+        control: [
+          React.createElement('span', {
+            key: 'seg', className: 'ocgu-seg', role: 'radiogroup',
+            'aria-label': t('field.currency'), title: t('cur.autoHint')
+          }, curButton('auto', 'cur.auto'), curButton('cny', 'cur.cny'), curButton('usd', 'cur.usd'))
+        ]
+      }),
+      // 套餐配额：标题照搬字段标题样式，下面一行小字
+      React.createElement('div', { className: 'ocgu-qset', title: quotaSrcHint(value, t) },
+        React.createElement('div', { className: 'ocgu-field-title' }, t('quota.title')),
+        React.createElement('div', { className: 'ocgu-hint' }, qSet)),
       React.createElement('div', { className: 'ocgu-card', style: { marginTop: '10px' } },
         React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' } },
           React.createElement('span', { className: 'ocgu-badge', 'data-tone': badgeTone(ocgKeyStatus) }, statusText(ocgKeyStatus)),
@@ -1598,6 +2016,10 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
       React.createElement('div', {
         style: { display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '10px', marginTop: '10px' }
       },
+        // 抓取失败点名报错：手动刷新按钮左侧
+        errText ? React.createElement('span', {
+          className: 'ocgu-errline', role: 'status', 'aria-live': 'polite', title: errText
+        }, errText) : null,
         React.createElement('span', {
           className: 'ocgu-msg',
           'data-tone': refreshMsg ? toneOf('refresh') : 'muted',
@@ -1607,7 +2029,7 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
           ? t('settings.lastUpdated', { time: fmtTime(value.lastUpdated), rel: fmtRelative(value.lastUpdated, t) })
           : t('settings.lastUpdatedEmpty'))),
         React.createElement('button', {
-          onClick: refresh, disabled: loading, className: 'ocgu-btn', 'data-kind': 'primary',
+          onClick: refresh, disabled: loading, className: 'ocgu-btn', 'data-kind': 'link', 'data-accent': '1',
           title: t('settings.refreshTitle')
         }, loading ? t('settings.refreshing') : t('settings.manualRefresh'))),
       // 再下面：自动刷新间隔
@@ -1652,14 +2074,60 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
           nowrap: true,
           control: [sw(value.widgetVisible === true, toggleWidget, t('aria.widget'), false)]
         }),
+        // ① 浮窗左侧余额总开关：关闭后下一项一并收起
         React.createElement(FieldRow, {
-          title: t('field.balance'),
-          hint: t('field.balance.hint'),
+          title: t('field.pillBalance'),
+          hint: t('field.pillBalance.hint'),
           msg: msgOf('balance'),
           tone: toneOf('balance'),
           nowrap: true,
           disabled: !value.widgetVisible,
-          control: [sw(value.showBalance !== false, toggleBalance, t('label.balance'), !value.widgetVisible)]
+          control: [sw(value.showBalance !== false, toggleBalance, t('field.pillBalance'), !value.widgetVisible)]
+        }),
+        // ② 浮窗左侧余额数据来源（二选一，样式与「金额显示计价币种」一致）
+        React.createElement(FieldRow, {
+          title: t('field.pillBalanceSrc'),
+          hint: t('field.pillBalanceSrc.hint'),
+          msg: msgOf('pillSrc'),
+          tone: toneOf('pillSrc'),
+          nowrap: true,
+          disabled: !value.widgetVisible || value.showBalance === false,
+          control: [
+            React.createElement('span', {
+              key: 'seg', className: 'ocgu-seg', role: 'radiogroup',
+              'aria-label': t('field.pillBalanceSrc')
+            }, pillSrcButton('deepseek', 'pill.srcDeepseek'), pillSrcButton('quota', 'pill.srcQuota'))
+          ]
+        }),
+        // ③ 鼠标悬停浮层的余额数据：下拉多选（两个都不勾则只留进度条），避免横向占位
+        React.createElement(FieldRow, {
+          title: t('field.tipBalanceSrc'),
+          hint: t('field.tipBalanceSrc.hint'),
+          msg: msgOf('tipData'),
+          tone: toneOf('tipData'),
+          nowrap: true,
+          disabled: !value.widgetVisible,
+          control: [
+            React.createElement('details', { key: 'dd', className: 'ocgu-dd', ref: ddRef },
+              React.createElement('summary', { className: 'ocgu-dd-sum' }, tipDataSummary),
+              React.createElement('div', { className: 'ocgu-dd-panel' },
+                React.createElement('label', {
+                  className: 'ocgu-dd-item', title: t('pill.srcDeepseek')
+                },
+                  React.createElement('input', {
+                    type: 'checkbox', checked: value.tipShowBalance !== false,
+                    onChange: toggleTipBalance, 'aria-label': t('pill.srcDeepseek')
+                  }),
+                  t('pill.srcDeepseek')),
+                React.createElement('label', {
+                  className: 'ocgu-dd-item', title: t('pill.srcQuota')
+                },
+                  React.createElement('input', {
+                    type: 'checkbox', checked: value.tipShowQuota !== false,
+                    onChange: toggleTipQuota, 'aria-label': t('pill.srcQuota')
+                  }),
+                  t('pill.srcQuota'))))
+          ]
         }),
         React.createElement(FieldRow, {
           title: t('field.minimal'),
@@ -1766,10 +2234,17 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
       var l = (ctx.locale && typeof ctx.locale.register === 'function') ? ctx.locale : ctx.get('locale');
       if (!l || typeof l.register !== 'function') return null;
       localeSvc = l;
-      // 两种语言各自独立 try/catch：同一 ns 重复注册时官方会抛错，
-      // 不能让「中文已注册」把「英文注册」一起带崩。
-      try { ctx.effect(function () { return l.register(LOCALE_NS, 'zh', I18N.zh); }); } catch (e) { /* 已注册则忽略 */ }
-      try { ctx.effect(function () { return l.register(LOCALE_NS, 'en', I18N.en); }); } catch (e) { /* 已注册则忽略 */ }
+      // 官方主推的对象形式一次注册两门语言；个别实现只支持逐语言三参形式，故保留回退。
+      // 🚩 语言服务必须在 inject 里声明（官方 README：`export const inject = ['locale']`）：
+      // 漏声明时 ctx.get('locale') 取不到服务 → 所有文案静默退回内置中文（英文界面全变中文的根因）。
+      // 官方原文：“A dictionary registered after the UI is already mounted is picked up without a remount.”
+      // （所以这里早注册一次、挂载时再确认一次，两条路径都安全）
+      try {
+        ctx.effect(function () { return l.register(LOCALE_NS, { zh: I18N.zh, en: I18N.en }); });
+      } catch (e) {
+        try { ctx.effect(function () { return l.register(LOCALE_NS, 'zh', I18N.zh); }); } catch (e2) { /* 已注册则忽略 */ }
+        try { ctx.effect(function () { return l.register(LOCALE_NS, 'en', I18N.en); }); } catch (e3) { /* 已注册则忽略 */ }
+      }
       return l;
     };
     // 翻译护栏：框架查不到词条时会「原样返回 key」，这里统一兜底到内置中文 ——
@@ -1888,6 +2363,7 @@ window.__ModuleLoader__.load({ id: 'dsh-opencode-go-usage', factory: (require) =
     ctx.effect(function () { return function () { if (timer !== null) clearTimeout(timer); }; });
   }
 
-  module.exports = { name: 'opencode-go-usage', inject: ['slots', 'locale'], apply: apply };
+  // 客户端 inject：remote.settings 显式声明（官方写法），ctx.get 兜底保留，双保险。
+  module.exports = { name: 'opencode-go-usage', inject: ['slots', 'locale', 'remote', 'remote.settings'], apply: apply };
   return module.exports;
 }});

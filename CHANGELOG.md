@@ -3,6 +3,30 @@
 记录每个版本相对上一版的变更，最新在最上。版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 Every release's changes, newest first. Versioning follows [Semantic Versioning](https://semver.org/).
 
+## 3.0.0
+新功能：
+- 新增OpenCode Go模型配额金额显示。提供「配额参考模型选择」，按 OpenCode Go 各模型的月度配额折算该模型的已消耗与剩余金额，可选全部官方模型（默认 DeepSeek V4.1 Flash），模型清单随官方文档定时抓取更新，也可以手动刷新，获取失败时回退内置列表和配额数据；
+- 新增「金额显示计价币种」切换。所有金额（DS余额与OCG配额）可切换 ¥人民币 / $美元 / 自动（中文¥、英文$）。汇率自动获取，获取失败时回退内置汇率；
+- 「浮窗」可自主选择显示DS官方余额或OCG配额。具体功能菜单细化：「在浮窗左侧显示余额」总开关、「浮窗左侧余额数据」（DS余额 / OCG配额剩余二选一）、「鼠标悬停浮层余额数据」下拉多选（支持同时或单独显示DS、OCG的数据或都不显示）；
+改进和修复：
+- 数据获取失败时有更明确的提示信息。明确提示是 OCG 用量、DeepSeek 官方余额、汇率还是模型列表及配额获取出错；
+- 悬停浮层动效优化，文本显示效果精简与修正；
+- 设置菜单的文本描述、图标、按钮和控件优化了使用体验；
+- 数据刷新说明：OpenCode Go模型清单、配额与汇率自动刷新周期：模型表 24 小时、汇率 1 小时，均复用缓存；手动刷新（菜单按钮 / 点击浮窗）均触发强制重抓，设置菜单小字如实显示各自的更新时刻与刷新结果。
+
+**English**
+
+**New features**
+- Added OpenCode Go model quota amounts: a “quota reference model” selector converts each OpenCode Go model’s monthly quota into that model’s used and remaining amounts; every official model is available (DeepSeek V4.1 Flash by default), the list is refreshed from the official docs on a schedule or by manual refresh, and a failed fetch falls back to the bundled list and quota data;
+- Added an “amount display currency” switch: every amount (the DS balance and the OCG quota) can be shown in ¥ CNY / $ USD / auto (¥ in Chinese, $ in English). The rate is fetched automatically and falls back to the bundled rate on failure;
+- The pill can now show either the DS balance or the OCG quota by choice, with a finer set of settings rows: a “show a balance on the pill's left” master switch, “pill left-side balance data” (DS balance / OCG quota left, pick one) and a “hover popover balance data” checkbox dropdown (show the DS and OCG data together, separately, or neither);
+
+**Improvements & fixes**
+- Fetch failures are reported more explicitly, stating whether OCG usage, the DeepSeek balance, the exchange rate or the model list & quota failed;
+- The hover popover’s animation was improved and its text display was tightened and corrected;
+- The settings page’s wording, icons, buttons and controls were refined for a better experience;
+- Refresh behaviour: the OpenCode Go model list, the quota and the exchange rate refresh automatically on a 24 h (model table) and 1 h (rate) cycle, reusing the cache; manual refresh (the settings button or a pill click) always forces a refetch, and the settings footnotes report each one’s own update time and result.
+
 ## 2.16.0
 - 设置页UI更新；
 - 设置增加一键跳转Opencode官方控制台的图标按钮；

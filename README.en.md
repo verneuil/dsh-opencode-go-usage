@@ -1,7 +1,7 @@
 # OCG Balance & Usage · dsh-opencode-go-usage
 
-| ![Plugin icon](assets/icon.png) | **Merges your DeepSeek balance and your OpenCode Go usage across three windows (Rolling R / Weekly W / Monthly M) into a single floating pill**, with a settings page of the same name. |
-| :---: | --- |
+| ![Plugin icon](assets/icon.png) | **Merges your DeepSeek balance and OpenCode Go's three usage windows (5-hour R / weekly W / monthly M) into one floating pill**, with a settings page of the same name. |
+|:------------------------:| ---------------------------------------------------------------------------------- |
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
@@ -12,12 +12,10 @@
 </p>
 
 <p align="center">
-  <a href="README.md">中文</a> · <b>English</b> · <a href="CHANGELOG.md">Changelog</a> · <a href="https://github.com/verneuil/dsh-opencode-go-usage/issues">Issues</a>
+  <a href="README.md">中文</a> · <b>English</b> · <a href="CHANGELOG.md">Changelog</a> · <a href="https://github.com/verneuil/dsh-opencode-go-usage/issues">Feedback</a>
 </p>
 
-![Pill · light theme](screenshots/float-light.png)
-
-> *An unofficial [DeepSeek Harness](https://github.com/deepseek-ai) plugin that shows your DeepSeek balance and OpenCode Go usage (Rolling / weekly / monthly) in one floating pill, with click-to-refresh, border-flash feedback, drag-to-snap and a hover popover.*
+*An unofficial [DeepSeek Harness](https://github.com/deepseek-ai) plugin that shows your DeepSeek balance and OpenCode Go usage (Rolling / weekly / monthly) in one floating pill, with click-to-refresh, border-flash feedback, drag-to-snap and a hover popover.*
 
 ## Contents
 
@@ -27,22 +25,37 @@
 
 ## Features
 
-**The pill**
+**The pill and the hover popover**
 
-- **Two datasets in one pill**: DeepSeek balance (`¥` amount) + OpenCode Go usage for three windows; **click the pill to refresh both** (fetched together — a failure on one side does not affect the other).
-- **Three rings**: each ring's centre shows the percentage — **Used** by default, switchable to **Left** in settings (no `%` sign); > 20% green, ≤ 20% amber, ≤ 5% red; the track is the same colour at 32% opacity, so every ring reads as one piece.
-- **Border feedback**: the pill's own border **pulses** while refreshing, **holds green** on success and **blinks red three times** on failure — the border *is* the animation, so nothing can drift out of alignment.
-- **Hover popover**: hovering the pill shows **two sections** — the DeepSeek balance (incl. granted balance) on top, then a hairline and the “OpenCode Go plan usage / plan remaining” heading (it follows the progress basis) with three progress bars; each bar carries a **round percentage knob** at its current position (theme-coloured, lightweight), with the window name (Rolling / Weekly / Monthly) on the left and the **reset countdown** on the right of the row beneath it; it flips upwards near the bottom of the window.
-- **Minimal mode**: three **nested** rings (R inner / W middle / M outer) with the balance **rounded to whole yuan** shown beside them — a more compact pill. Turning the balance off as well gives the **most compact form**: nested rings only.
-- **Drag to snap**: on release the pill snaps to the nearest reference line (composer card edge / window edge) and keeps following it when the window resizes, the side panel opens, or the chat width changes.
-- **Fixed size**: the pill never changes size in any state (the feedback layer is an absolutely positioned overlay that does not participate in layout).
+- **OpenCode Go quota amounts + DeepSeek balance display**:
+  - The balance area on the pill's left can show either the **DeepSeek balance** or the **OCG quota remaining worked out from a reference model**;
+  - the OCG model list and quota are fetched automatically, falling back to the bundled model table and quota data when the fetch fails.
+
+- **Three rings show each window's usage**:
+  - OpenCode Go's three windows are drawn as ring progress indicators, and **clicking the pill refreshes them**;
+  - the number in each ring's centre is a percentage (**Used** by default, switchable to **Left** in settings): > 20% left green / ≤ 20% amber / ≤ 5% red.
+
+- **Hover popover**:
+  - hovering the pill opens a panel with three separate usage bars showing the percentage and the reset time;
+  - it can also show both balances at once (**DeepSeek account balance** and **OpenCode Go quota left** — either can be switched off on the “Floating pill” tab).
+
+- **OCG quota conversion**:
+  - pick a **reference model** on the settings page (DeepSeek V4.1 Flash by default; any official OpenCode Go model is available) and the plugin works out the **used / remaining amount** from “that model's **Go-tier** monthly quota × this month's used percentage”, shown both in settings and in the hover popover;
+  - free models read “Free”, unlimited ones “Unlimited”, and the remaining quota and similar figures all show `--` .
+- **Amount currency**:
+  - every amount (the DS balance and the OCG quota) can be priced in **¥ CNY / ＄ USD / auto** (¥ in the Chinese UI, ＄ in the English UI);
+  - the rate is fetched automatically, falls back to a bundled rate, and conversion only affects the display.
+- **Minimal mode**:
+  - three **nested** rings (R inner / W middle / M outer) with the balance **rounded to whole units** shown beside them — a more compact pill (the normal mode is “balance + three separate rings”);
+  - turning “show a balance on the pill's left” off as well gives the **most compact form**: nested rings only, taking up the least space.
+- **Other details**:
+  - **Drag to snap**: on release the pill snaps to the nearest reference line (composer card edge / window edge), and keeps following it when the window resizes, the side panel opens or the chat width changes.
+  - **Fixed size**: the pill never changes size in any state (the feedback layer is an absolutely positioned overlay that does not participate in layout).
 
 **General**
 
 - **Zero dependencies**: plain JavaScript — **no build step, no third-party runtime dependencies** (only `require('react')`, provided by the host).
 - **Bilingual UI**: every interface string goes through the client locale dictionaries and follows the DSH language setting instantly (pill, settings page, menu label and all action messages).
-- **Theme aware**: colours come only from host theme tokens (`--dsw-alias-*`), so light/dark follow automatically; switches, buttons, inputs and badges are copied from the host's own components (only the class prefix is renamed).
-- **Ships its own icons**: a colourful three-ring icon in the plugin list, and its own gauge glyph in the settings navigation (no default gear).
 
 ## Installation
 
@@ -53,64 +66,75 @@ In DSH, open the **plugin manager → “Install plugin” dialog → paste one 
 | Method                                     | Spec to paste                                                                                                    |
 | ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------- |
 | **Straight from GitHub** (recommended)      | `github:verneuil/dsh-opencode-go-usage`                                                                          |
-| **Pin a version**                          | `github:verneuil/dsh-opencode-go-usage#v2.15.4` (replace with any published tag)                                    |
-| **Release tarball**                        | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v2.15.4/dsh-opencode-go-usage-2.15.4.tgz` |
-| **Release direct link (always latest)**     | `https://github.com/verneuil/dsh-opencode-go-usage/releases/latest/download/dsh-opencode-go-usage.tgz`         |
-| **Offline tgz**                            | `file:D:/your/path/dsh-opencode-go-usage-2.15.4.tgz`                                                              |
+| **Pin a version**                          | `github:verneuil/dsh-opencode-go-usage#v3.0.0` (replace with any published tag)                                    |
+| **Release tarball**                        | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v3.0.0/dsh-opencode-go-usage-3.0.0.tgz`    |
+| **Release URL (always latest)**            | `https://github.com/verneuil/dsh-opencode-go-usage/releases/latest/download/dsh-opencode-go-usage.tgz`            |
+| **Offline tgz**                            | `file:D:/your/path/dsh-opencode-go-usage-3.0.0.tgz`                                                             |
 
-The same thing from a terminal (`dsh plugin` adds any dependency that declares `dsh.bundle` to the profile's bundles, so no patch needs to be written by hand):
+The equivalent command line (`dsh plugin` automatically adds dependencies that declare `dsh.bundle` to the profile's bundles — no hand-written patch needed):
 
 ```sh
 dsh plugin --profile web add github:verneuil/dsh-opencode-go-usage
 ```
 
-A spec without `#` installs the **latest commit of the default branch** (pnpm resolves it to that commit and records it in the lockfile); with `#` the tag is pinned instead.
+Follow the on-screen prompt to reload afterwards (replacing an installed JavaScript module generation requires restarting DSH).
 
-Follow the on-screen prompt to reload afterwards (replacing an installed JavaScript module generation requires a DSH restart).
-
-- **Bundles only**: the plugin manager rejects dependencies that have no bundle patch; this package ships `cordis.patch.yml`, so it qualifies.
-- **Upgrading = uninstall, then install again**: the plugin manager offers no version picker and no upgrade button. Uninstalling removes the dependency record, so only a fresh install re-resolves to the newest commit — **that is how you get a new version**. Installing the same spec over an existing install will not move to a newer commit.
-- Per-version changes are recorded in [CHANGELOG.md](CHANGELOG.md) (Chinese and English).
+- **Bundle-only installs**: the plugin manager rejects dependencies without a bundle patch; this package ships its own `cordis.patch.yml`, so it qualifies.
+- **Upgrading = uninstall then reinstall**: the plugin manager offers no version picker and no upgrade button. Uninstalling removes the dependency record and reinstalling resolves it afresh, so **that is how you get a new version**; installing the same spec over the top will not pick up a new commit.
+- Every version's changes are listed in [CHANGELOG.md](CHANGELOG.md) (Chinese and English).
 
 ## Usage
 
-- **Click the pill** = refresh the balance and the usage immediately (or just wait for the automatic refresh).
-- **Drag the pill** = move it; it snaps on release. The “Reset position” button in the settings page restores the default position (top-left of the window).
+- **Click the pill** = refresh the balance, the usage, the model list and the exchange rate immediately (or just wait for the automatic refresh).
+- **Drag the pill** = move it; it snaps on release. The “Reset position” button restores the default position (top-left of the window).
+- **The balance line on the pill's left** = pick one in settings: **DS balance** / **OCG quota left** (see [Settings page](#settings-page)).
 - **Settings page** = `Settings → Plugins → OCG Usage`.
 
 ## Settings page
 
-The settings page has three tabs — **Usage** (default) / **Floating pill** / **Keys** — with **Restore defaults** pinned to the right of the tab bar, available from every tab. The GitHub icon next to the page title opens this repository.
+The settings page has three tabs: **Usage data** (default) / **Floating pill** / **API Key**;
 
-**Usage**
+**Restore defaults** sits permanently at the right end of the tab bar and writes everything back from any tab.
+
+Next to the page title sit the **GitHub icon and the current version** (e.g. `v3.0.0`); clicking the icon opens this repository.
+
+**Usage data**
 
 - The **OpenCode icon** sits right next to the “OpenCode Go usage” heading; clicking it opens the [OpenCode account page](https://opencode.ai/console).
+- **Quota reference model**: a dropdown listing every official OpenCode Go model (default **DeepSeek V4.1 Flash**); the note beneath shows the **model-table update time** and the result of this refresh.
+- **Amount display currency**: a three-way choice — `Auto` / `¥ CNY` / `＄ USD`; the note beneath shows the **current rate, when it was fetched** and the refresh result.
+- **Plan quota**: `Model: X (total: Z, used: Y, left: W)`; the amounts come from the **reference model's Go-tier monthly quota × this month's used percentage**.
 - **Usage details**: a progress bar, the percentage (basis is selectable), reset countdown and API status for each of the three windows.
 - **Progress basis** (top-right of the usage card): **Used** / **Left** — the pill and the settings rows follow; defaults to **Used**.
-- Two rows below the card: first **manual refresh + last-updated time** (after a successful refresh it shows “Updated (time)” and **falls back to “Last updated: …” after 3 seconds**), then the **auto-refresh interval** (minutes, 0.5 – 1440).
+- Two rows below the card:
+  - **manual refresh + last-updated time** (after a successful refresh it shows “Updated (time)” and **falls back to “Last updated: …” after 3 seconds**);
+  - the **auto-refresh interval** (set a number of minutes and save; range 0.5 – 1440).
+- **Failures name the source**: whenever a fetch fails, the error line appears **left of the manual refresh button** (and at the very bottom of the hover popover), stating whether **OCG usage / DeepSeek balance / exchange rate / model list & quota** broke.
 
 **Floating pill**
 
-- **Pill master switch**: turning it off greys out the three rows below and makes them non-interactive.
-- **Show the DeepSeek balance** (switch): the amount includes bonus credit; turning it off leaves only the three rings and narrows the pill.
+- **Pill master switch**: turning it off greys out the rows below and makes them non-interactive.
+- **Show a balance on the pill's left** (switch): shows one balance line on the pill's left; turning it off also collapses the row below.
+- **Pill left-side balance data** (two-way): `DS balance` / `OCG quota left` — which data that left line uses (the DS balance includes bonus credit).
+- **Hover popover balance data** (checkbox dropdown): `DS balance` / `OCG quota left` — show one, both, or **neither** (the popover then keeps only the three progress bars); **clicking outside the dropdown closes it**.
 - **Minimal mode** (switch): nested rings (R / W / M) with the rounded balance shown beside them.
 - **Reset the pill position**: back to the default position (top-left of the window).
 
-**Keys**
+**API Key**
 
-- **Manual overrides for both API keys** (leave blank to use the DSH credential store; clear them at any time to go back to automatic).
+- **Overrides for both keys** (leave empty to use the DSH credential store; clear them at any time to go back to automatic).
 
 **Shared behaviour**
 
-- **Restore defaults** (right end of the tab bar): one click writes back “Used / 5 min / Minimal / no balance / top-left default position” — the same set a fresh install starts with.
-- **Transitions**: switching Minimal, the progress basis or the balance fades and scales the content in, with animated ring arcs and numbers — no hard cut.
-- **Per-row feedback**: each action's message appears in the row it belongs to (the balance switch reports in the “Show the DeepSeek balance” row, the minimal switch in the “Minimal mode” row, and so on) — red on failure, green on success. Messages live in a slot on the title row, so **showing and hiding them does not shift the layout** and they **disappear after 3 seconds**.
+- **Restore defaults** (right end of the tab bar): one click writes back “Used basis / 5-minute auto-refresh / Minimal on / no balance on the pill / reference model DeepSeek V4.1 Flash / currency auto / left side = DS balance / both popover balances on / top-left default position” — the same set a fresh install starts with.
 
-Because the plugin ships its own settings page, the host side calls the official `settings.configure({ auto: false })` to suppress the auto-generated form — otherwise there would be two duplicate configuration UIs.
+- **Per-row feedback**: each action's message appears in the row it belongs to — red on failure, green on success. Messages live in a slot on the title row, so **showing and hiding them does not shift the layout** and they **disappear after 3 seconds**.
+
+Because the plugin ships its own settings page, the host side calls the official `settings.configure({ auto: false })` to switch off the auto-generated form, avoiding two duplicate configuration UIs.
 
 ## Screenshots
 
-> All five are **rendered illustrations** of the interface, built from the plugin's real stylesheet and the host theme tokens.
+> All five are **rendered illustrations** of the interface, built from the plugin's real stylesheet and the host theme tokens. The two settings images show the “Usage data” tab (quota reference model, amount currency and the one-line plan quota); the states image includes the latest hover popover (account-balance row + quota-left row + three progress bars, at the fixed 232 px width with right-aligned amounts).
 
 | Pill · light                                  | Pill · dark                                 |
 | --------------------------------------------- | ------------------------------------------- |
@@ -135,10 +159,16 @@ Authorization: Bearer <OpenCode Go API Key>
 
 GET https://api.deepseek.com/user/balance                  # DeepSeek balance
 Authorization: Bearer <DeepSeek API Key>
+
+GET https://opencode.ai/v2/docs/console/go                  # OpenCode Go model list + per-model monthly quota (server-rendered tables)
+GET https://open.er-api.com/v6/latest/USD                   # USD/CNY rate (primary, no key)
+GET https://api.frankfurter.app/latest?from=USD&to=CNY      # USD/CNY rate (backup, no key)
 ```
 
 The usage endpoint returns `{ usage: { rolling, weekly, monthly } }`, where each window carries `status` / `percent` (**used** percentage) / `resetsAt`; the balance endpoint returns `balance_infos[]` (the CNY entry is preferred). The UI shows **Used** by default and can be switched to **Left** in settings; the internal value always stays “used”.
 The host half performs the fetching and parsing (neither key ever leaves the host process); the client half only reads the configuration projection the host writes.
+
+**The model list and the rate** refresh together with everything else: **manual refresh (button or pill click) forces a refetch**, while auto-refresh reuses the **model table for 24 h and the rate for 1 h**. If both fail, the plugin falls back to its **bundled snapshot** (`go-data.js`, generated 2026-10-22: 29 official models + a rate of 6.689327) and names the failure in the UI. **Quota conversion uses the Go-tier monthly quota from that model table.**
 
 **Key resolution** (independent per side, in priority order):
 
@@ -164,32 +194,43 @@ The settings page covers the common options; the fields below can also be edited
 | `deepseekApiKey`                                               | Manual DeepSeek API key (secret). Leave empty to use the DSH credential store      |
 | `refreshMinutes`                                               | Auto-refresh interval in minutes (default 5); one round refreshes both balance and usage |
 | `widgetVisible`                                                | Pill visibility switch                                                             |
-| `showBalance`                                                  | Whether to show the DeepSeek balance on the pill (default off)                      |
+| `showBalance`                                                  | Whether the pill shows a balance line on its left (default off)                     |
+| `pillBalanceSource`                                            | Data for that left line: `deepseek` DS balance (default) / `quota` OCG quota left   |
+| `tipShowBalance`, `tipShowQuota`                               | Whether each popover balance row is shown (both default on; both off leaves only the bars) |
+| `quotaRefModel`                                                | Reference model id (default `deepseek-v4.1-flash`; options come from the official model table) |
+| `currencyMode`                                                 | Amount currency: `auto` (default) / `cny` / `usd`                                   |
 | `percentMode`                                                  | Usage progress basis: `used` (default) or `left`                                   |
-| `widgetAnchorX/Y`, `widgetOffsetX/Y`                            | Pill anchoring (written by the client while dragging; defaults to 11 / 50 at the window's top-left) |
-| `refreshRequest`                                               | Manual refresh counter (incremented by the client when the pill is clicked)         |
-| `refreshTick`                                                  | “Refreshing” signal the host increments before each fetch (client read-only; lights up the border feedback) |
-| `minimalMode`                                                  | Minimal mode: nested rings with the balance rounded and shown beside them (default on) |
-| `keyStatus`, `keyHint`, `usageError`, `lastUpdated`, `usage`     | Derived OpenCode Go snapshots (written by the host, read by the client)             |
+| `widgetAnchorX/Y`, `widgetOffsetX/Y`                           | Pill anchoring (written by the client while dragging; defaults to 11 / 50 from the window's top-left) |
+| `refreshRequest`                                               | Manual-refresh counter (incremented by the client when the pill is clicked)         |
+| `refreshTick`                                                  | The “refreshing” signal the host bumps before each round (read-only on the client, used for the border feedback) |
+| `minimalMode`                                                  | Minimal mode: nested rings (with the rounded balance beside them; default on)       |
+| `keyStatus`, `keyHint`, `usageError`, `lastUpdated`, `usage`     | Derived OCG usage snapshots (written by the host, read by the client)               |
 | `balanceKeyStatus`, `balanceKeyHint`, `balanceError`, `balance` | Derived DeepSeek balance snapshots (written by the host, read by the client)        |
+| `goModels`, `goModelsAt`, `goModelsSource`, `goModelsError`     | Derived model-list and quota snapshots (`source` = `live` or `snapshot`)             |
+| `fxUsdCny`, `fxAt`, `fxRateDate`, `fxSource`, `fxError`         | Derived USD/CNY rate, its data date and the moment it was fetched                    |
 
 ## Robustness
 
-- **Only takes a seat the official UI reserves for overlays**: `shell.overlay` (`replaceRisk: none`, a click-through layer where an entry opts into pointer events itself); registering under its own `id` means “added next to existing entries”, replacing nothing.
-- **No official UI is covered**: it does not register `conversation.composer.dock` and does not clone official components.
-- **Only theme tokens for styling** (`--dsw-alias-*`): a renamed token can degrade the look but never break rendering; no literal colour values.
-- **No Harness client package is imported** (such as `dsh-client-ui-primitives`): those packages change without notice and a plain-JS plugin has no type checking, so every control on the pill is written by hand.
-- **Host API contract self-check**: at startup the plugin verifies the host contracts it actually uses, prints a readable warning and skips safely on a mismatch, instead of throwing a `TypeError` that silently deactivates the whole row.
-- **Config as the channel**: the host writes derived snapshots into volatile fields of this row's config and the client reads them through `remote.settings.describe()`; writes are committed outside the HMR transaction (avoiding `HMR transactions cannot be nested`).
+- **Only the seat the official UI reserves for overlays** — `shell.overlay` (`replaceRisk: none`, a click-through layer whose entries opt into pointer events); registering with its own `id` means “added next to existing entries”, replacing nothing official.
+- **Obscures no official UI**: it does not register `conversation.composer.dock` and does not clone official components.
+- **Styling uses theme tokens only** (`--dsw-alias-*`): a token rename can at worst degrade the look, never crash the render; there are no hard-coded colours.
+- **No Harness client packages** (such as `dsh-client-ui-primitives`): those packages change often and plain JS plugins get no type checking, so every control in the pill is hand-written.
+- **Host API contract self-check**: on start-up the contracts this plugin actually uses are verified; a mismatch prints a readable warning and skips safely instead of throwing a `TypeError` that would silently deactivate the whole entry.
+- **Config as the channel**: the host writes derived snapshots into this row's volatile Config fields and the client reads them via `remote.settings.describe()`; writes are committed outside the HMR transaction (avoiding `HMR transactions cannot be nested`).
 - **A failed fetch never clears data**: the last known usage is kept (with 3s / 10s anti-jitter retries), so one network hiccup cannot blank the bars to `--` or persist empty values.
+- **Four independent data paths**: usage, balance, model list and exchange rate never block each other — a failure only affects its own field, the UI **names** which one broke, and a failed model list or rate falls back to the bundled snapshot (labelled as such).
+- **Manual refresh means a full refetch**: the button (or a pill click) bypasses the TTL and forces the model table and the rate to be re-fetched, so both footnote times follow your manual refresh.
 - While no key is available yet, resolution retries in steps (3/8/20/40/60/120 seconds), and three misses are tolerated once a good snapshot exists — avoiding a false “not configured” reading right after startup.
 
 ## Known limitations & disclaimer
 
-- **Unofficial plugin**: this project is **not affiliated with DeepSeek or OpenCode**. Neither endpoint is a frozen public contract, so a major upstream change can break it (the parser already tolerates common variants such as “remaining percentage / used amount and quota / seconds until reset”, and the host reports readable text in `usageError` when it cannot).
-- **Keys stay on your machine**: the host half calls the two endpoints directly, with no third party in between. A manually entered key is stored in this machine's plugin config, and the UI only ever shows a masked hint (such as `sk-****5590`).
+- **Unofficial plugin**: this project has **no affiliation whatsoever** with DeepSeek or OpenCode; neither endpoint is a long-term frozen public contract, so a major upstream change can break it (the parser already tolerates common variants such as “remaining percentage / used amount and quota / seconds to reset”, and on failure the host puts a readable message in `usageError`).
+- **Keys stay on this machine**: the host half calls the two endpoints above directly and goes through no third party; a manual key entered in settings is stored in this machine's plugin config, and the UI only ever shows a masked hint (such as `sk-****5590`).
 - **Network hiccups**: occasional cross-border HTTPS timeouts are normal. The pill then keeps the **last known values** and the border turns to a warning colour; the host retries at 3/8/20/40 seconds and recovers automatically.
 - **Interface language**: the pill and the settings page are **bilingual (Chinese / English)** and follow the DSH language setting. **Error details** produced by the API layer (such as 401/403 or an unexpected response shape) are still in Chinese.
+- **The quota figure is an estimate**: no official endpoint exposes “how much of model X is left right now”, so the plugin estimates it as “that model's **Go-tier** monthly quota × **this month's used percentage**” — for reference only. The monthly percentage is the **whole plan's** progress, not that model's own share. The **Go Plus tier is not covered yet** (the Go tier is always used).
+- **The rate only affects display**: the DS balance is originally in CNY and the quota in USD; conversion is purely cosmetic (`auto` = ¥ in Chinese, ＄ in English) and never changes a real bill.
+- **The model list can lag**: the bundled snapshot is the official data of 2026-10-22; it updates with each refresh while online, and while offline (or when fetching fails) the snapshot is shown and labelled in the UI.
 - **Use at your own risk**: this software is provided “as is” under the MIT licence, without warranty of any kind.
 
 ## License
