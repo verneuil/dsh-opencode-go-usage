@@ -68,10 +68,10 @@ In DSH, open the **plugin manager → “Install plugin” dialog → paste one 
 | ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------- |
 | **Straight from GitHub** (recommended)      | `github:verneuil/dsh-opencode-go-usage`                                                                          |
 | **From npm**                              | `dsh plugin --profile web add @verneuil/dsh-opencode-go-usage`                                                                 |
-| **Pin a version**                          | `github:verneuil/dsh-opencode-go-usage#v3.0.4` (replace with any published tag)                                    |
-| **Release tarball**                        | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v3.0.4/dsh-opencode-go-usage-3.0.4.tgz`    |
+| **Pin a version**                          | `github:verneuil/dsh-opencode-go-usage#v3.0.5` (replace with any published tag)                                    |
+| **Release tarball**                        | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v3.0.5/dsh-opencode-go-usage-3.0.5.tgz`    |
 | **Release URL (always latest)**            | `https://github.com/verneuil/dsh-opencode-go-usage/releases/latest/download/dsh-opencode-go-usage.tgz`            |
-| **Offline tgz**                            | `file:D:/your/path/dsh-opencode-go-usage-3.0.4.tgz`                                                             |
+| **Offline tgz**                            | `file:D:/your/path/dsh-opencode-go-usage-3.0.5.tgz`                                                             |
 
 The equivalent command line (`dsh plugin` automatically adds dependencies that declare `dsh.bundle` to the profile's bundles — no hand-written patch needed):
 
@@ -98,7 +98,7 @@ The settings page has three tabs: **Usage data** (default) / **Floating pill** /
 
 **Restore defaults** sits permanently at the right end of the tab bar and writes everything back from any tab.
 
-Next to the page title sit the **GitHub icon and the current version** (e.g. `v3.0.4`); clicking the icon opens this repository.
+Next to the page title sit the **GitHub icon and the current version** (e.g. `v3.0.5`); clicking the icon opens this repository.
 
 **Usage data**
 

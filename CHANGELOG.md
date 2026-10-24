@@ -3,6 +3,17 @@
 记录每个版本相对上一版的变更，最新在最上。版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 Every release's changes, newest first. Versioning follows [Semantic Versioning](https://semver.org/).
 
+## 3.0.5
+- 更新内置兜底数据到最新：模型表 29 → 30 个（新增 Kimi K3.1 Pro；替换Gemini 4 Argon Contributor、
+  MiniMax M3.1 Flash Free 为 Gemini 4 Argon、MiniMax M3.1 Flash 并带配额）汇率快照更新到24 Oct 2026；
+- 插件行为无变化，无任何功能改动。
+
+**English**
+- Refreshed the bundled fallback data: the model table grew from 29 to 30 (adds Kimi K3.1 Pro; replaces
+  Gemini 4 Argon Contributor and MiniMax M3.1 Flash Free with Gemini 4 Argon and MiniMax M3.1 Flash, now
+  with quotas); the exchange-rate snapshot is updated to 24 Oct 2026;
+- No behavioural change — no functional change.
+
 ## 3.0.4
 - 把「安全与隐私」小节同步进 npm 包（README 中英两版，内容与仓库一致）；
 - 截图更新为当前版本；
