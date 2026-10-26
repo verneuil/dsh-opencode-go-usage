@@ -50,8 +50,12 @@
   - three **nested** rings (R inner / W middle / M outer) with the balance **rounded to whole units** shown beside them — a more compact pill (the normal mode is “balance + three separate rings”);
   - turning “show a balance on the pill's left” off as well gives the **most compact form**: nested rings only, taking up the least space.
 - **Other details**:
-  - **Drag to snap**: on release the pill snaps to the nearest reference line (composer card edge / window edge), and keeps following it when the window resizes, the side panel opens or the chat width changes.
+  **The popover is interactive**: moving the pointer from the pill onto the popover keeps it open (a 220 ms grace period covers the gap between the two), clicking the popover behaves exactly like clicking the pill (a manual refresh), and its border flashes in sync with the pill;
+  **The popover picks its direction**: it opens upwards near the bottom of the window and inwards near the left/right edges, so it is never clipped;
+  **Drag to snap**: on release the position is recorded against the **window edges only** (so it no longer drifts when the composer card changes size), with 0.1px precision, and the pill keeps its relative position when the window resizes;
   - **Fixed size**: the pill never changes size in any state (the feedback layer is an absolutely positioned overlay that does not participate in layout).
+
+**Optional sidebar entry**: a "Sidebar entry" switch in settings (off by default). When enabled the plugin gets a sidebar row that opens its settings page as a full page (the very same UI), with the settings-menu mark as its icon;
 
 **General**
 
@@ -68,10 +72,10 @@ In DSH, open the **plugin manager → “Install plugin” dialog → paste one 
 | ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------- |
 | **Straight from GitHub** (recommended)      | `github:verneuil/dsh-opencode-go-usage`                                                                          |
 | **From npm**                              | `dsh plugin --profile web add @verneuil/dsh-opencode-go-usage`                                                                 |
-| **Pin a version**                          | `github:verneuil/dsh-opencode-go-usage#v3.0.5` (replace with any published tag)                                    |
-| **Release tarball**                        | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v3.0.5/dsh-opencode-go-usage-3.0.5.tgz`    |
+| **Pin a version**                          | `github:verneuil/dsh-opencode-go-usage#v3.1.0` (replace with any published tag)                                    |
+| **Release tarball**                        | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v3.1.0/dsh-opencode-go-usage-3.1.0.tgz`    |
 | **Release URL (always latest)**            | `https://github.com/verneuil/dsh-opencode-go-usage/releases/latest/download/dsh-opencode-go-usage.tgz`            |
-| **Offline tgz**                            | `file:D:/your/path/dsh-opencode-go-usage-3.0.5.tgz`                                                             |
+| **Offline tgz**                            | `file:D:/your/path/dsh-opencode-go-usage-3.1.0.tgz`                                                             |
 
 The equivalent command line (`dsh plugin` automatically adds dependencies that declare `dsh.bundle` to the profile's bundles — no hand-written patch needed):
 
@@ -96,9 +100,10 @@ Follow the on-screen prompt to reload afterwards (replacing an installed JavaScr
 
 The settings page has three tabs: **Usage data** (default) / **Floating pill** / **API Key**;
 
+**Sidebar entry** (right of the tabs, left of "Restore defaults"): whether the sidebar shows a row for this plugin; off by default and it never affects the settings page itself;
 **Restore defaults** sits permanently at the right end of the tab bar and writes everything back from any tab.
 
-Next to the page title sit the **GitHub icon and the current version** (e.g. `v3.0.5`); clicking the icon opens this repository.
+Next to the page title sit the **GitHub icon and the current version** (e.g. `v3.1.0`); clicking the icon opens this repository.
 
 **Usage data**
 
@@ -136,13 +141,15 @@ Because the plugin ships its own settings page, the host side calls the official
 
 ## Screenshots
 
-> All five are **rendered illustrations** of the interface, built from the plugin's real stylesheet and the host theme tokens. The two settings images show the “Usage data” tab (quota reference model, amount currency and the one-line plan quota); the states image includes the latest hover popover (account-balance row + quota-left row + three progress bars, at the fixed 232 px width with right-aligned amounts).
+> All six are **rendered illustrations** of the interface, built from the plugin's real stylesheet and the host theme tokens. The two settings images show the “Usage data” tab (quota reference model, amount currency and the one-line plan quota); the states image includes the latest hover popover (account-balance row + quota-left row + three progress bars, at the fixed 232 px width with right-aligned amounts). The sixth shows the full settings page opened from the sidebar entry.
 
 | Pill · light                                  | Pill · dark                                 |
 | --------------------------------------------- | ------------------------------------------- |
 | ![Pill · light](screenshots/float-light.png)   | ![Pill · dark](screenshots/float-dark.png)   |
 | **Settings · light**                          | **Settings · dark**                         |
 | ![Settings · light](screenshots/settings-light.png) | ![Settings · dark](screenshots/settings-dark.png) |
+| **Sidebar entry · full settings page** (what the sidebar row opens when the entry is enabled) | |
+| ![Sidebar entry](screenshots/sidebar-light.png) | |
 
 **States and colour grades** (refreshing / success / failure / three grade colours / minimal mode / most compact form / narrowed after hiding the balance)
 
@@ -170,7 +177,7 @@ GET https://api.frankfurter.app/latest?from=USD&to=CNY      # USD/CNY rate (back
 The usage endpoint returns `{ usage: { rolling, weekly, monthly } }`, where each window carries `status` / `percent` (**used** percentage) / `resetsAt`; the balance endpoint returns `balance_infos[]` (the CNY entry is preferred). The UI shows **Used** by default and can be switched to **Left** in settings; the internal value always stays “used”.
 The host half performs the fetching and parsing (neither key ever leaves the host process); the client half only reads the configuration projection the host writes.
 
-**The model list and the rate** refresh together with everything else: **manual refresh (button or pill click) forces a refetch**, while auto-refresh reuses the **model table for 24 h and the rate for 1 h**. If both fail, the plugin falls back to its **bundled snapshot** (`go-data.js`, generated 2026-10-22: 29 official models + a rate of 6.689327) and names the failure in the UI. **Quota conversion uses the Go-tier monthly quota from that model table.**
+**The model list and the rate** refresh together with everything else: **manual refresh (button or pill click) forces a refetch**, while auto-refresh reuses the **model table for 24 h and the rate for 1 h**. If both fail, the plugin falls back to its **bundled snapshot** (`go-data.js`, generated 2026-10-24: 30 official models + a rate of 6.684864) and names the failure in the UI. **Quota conversion uses the Go-tier monthly quota from that model table.**
 
 **Key resolution** (independent per side, in priority order):
 
@@ -199,6 +206,7 @@ The settings page covers the common options; the fields below can also be edited
 | `showBalance`                                                  | Whether the pill shows a balance line on its left (default off)                     |
 | `pillBalanceSource`                                            | Data for that left line: `deepseek` DS balance (default) / `quota` OCG quota left   |
 | `tipShowBalance`, `tipShowQuota`                               | Whether each popover balance row is shown (both default on; both off leaves only the bars) |
+| `sidebarEntry` | Whether the sidebar shows a row for this plugin (off by default; same as the "Sidebar entry" switch) |
 | `quotaRefModel`                                                | Reference model id (default `deepseek-v4.1-flash`; options come from the official model table) |
 | `currencyMode`                                                 | Amount currency: `auto` (default) / `cny` / `usd`                                   |
 | `percentMode`                                                  | Usage progress basis: `used` (default) or `left`                                   |
@@ -240,7 +248,7 @@ The settings page covers the common options; the fields below can also be edited
 - **Interface language**: the pill and the settings page are **bilingual (Chinese / English)** and follow the DSH language setting. **Error details** produced by the API layer (such as 401/403 or an unexpected response shape) are still in Chinese.
 - **The quota figure is an estimate**: no official endpoint exposes “how much of model X is left right now”, so the plugin estimates it as “that model's **Go-tier** monthly quota × **this month's used percentage**” — for reference only. The monthly percentage is the **whole plan's** progress, not that model's own share. The **Go Plus tier is not covered yet** (the Go tier is always used).
 - **The rate only affects display**: the DS balance is originally in CNY and the quota in USD; conversion is purely cosmetic (`auto` = ¥ in Chinese, ＄ in English) and never changes a real bill.
-- **The model list can lag**: the bundled snapshot is the official data of 2026-10-22; it updates with each refresh while online, and while offline (or when fetching fails) the snapshot is shown and labelled in the UI.
+- **The model list can lag**: the bundled snapshot is the official data of 2026-10-24; it updates with each refresh while online, and while offline (or when fetching fails) the snapshot is shown and labelled in the UI.
 - **Use at your own risk**: this software is provided “as is” under the MIT licence, without warranty of any kind.
 
 ## License

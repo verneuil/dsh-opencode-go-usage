@@ -46,6 +46,7 @@ export const Config = z.object({
   refreshMinutes: z.number().default(5).volatile(),
   // 浮窗显示开关
   widgetVisible: z.boolean().default(true).volatile(),
+  sidebarEntry: z.boolean().default(false).volatile(),
   // 浮窗上是否显示左侧那一行余额（默认关：极简形态只留三环）
   showBalance: z.boolean().default(false).volatile(),
   // 浮窗左侧余额的数据来源：deepseek = DeepSeek 官方余额；quota = 按参考模型折算的 OCG 配额剩余

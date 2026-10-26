@@ -62,10 +62,16 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
     '.ocgu-bal[data-balwarn="true"]{color:var(--dsw-alias-state-warn-primary)}' +
     '.ocgu-sep{flex:none;width:1px;height:13px;background:var(--dsw-alias-border-l2);margin-right:3px}' +
     // 悬停临时浮层：余额 + 三条进度（窗口名与重置倒计时同一行、左名右时）；百分比做成贴在进度位置的圆形数字钮
-    '.ocgu-tip{position:absolute;left:0;z-index:6;pointer-events:none;display:flex;flex-direction:column;gap:8px;padding:12px 14px;border-radius:14px;background:var(--dsw-alias-bg-layer-2);border:1px solid var(--dsw-alias-border-l2);font-size:11.5px;line-height:1.3;white-space:nowrap;width:232px;animation:ocgu-tip-in .12s ease-out}' +
+    '.ocgu-tip{position:absolute;left:0;z-index:6;pointer-events:auto;display:flex;flex-direction:column;gap:8px;padding:12px 14px;border-radius:14px;background:var(--dsw-alias-bg-layer-2);border:1px solid var(--dsw-alias-border-l2);font-size:11.5px;line-height:1.3;white-space:nowrap;width:232px;animation:ocgu-tip-in .12s ease-out}' +
     '.ocgu-tip[data-pos="down"]{top:calc(100% + 8px)}' +
     '.ocgu-tip[data-pos="up"]{bottom:calc(100% + 8px)}' +
+    // 水平方向：默认与浮窗左对齐、向右展开；浮窗靠近窗口右缘时改为右对齐、向左展开，
+    // 否则 232px 宽的浮层会被视口右缘裁掉（与悬停时的 setTipRight 判定对应）。
+    '.ocgu-tip[data-align="right"]{left:auto;right:0}' +
     '@keyframes ocgu-tip-in{from{opacity:0}to{opacity:1}}' +
+    '.ocgu-tip[data-state="loading"]{animation:ocgu-tip-in .12s ease-out,ocgu-blink 1s ease-in-out infinite}' +
+    '.ocgu-tip[data-state="ok"]{animation:ocgu-tip-in .12s ease-out,ocgu-flash-ok 2.8s ease-out 1}' +
+    '.ocgu-tip[data-state="error"]{animation:ocgu-tip-in .12s ease-out,ocgu-flash-err .5s ease-out 3}' +
     // 仅浮层：余额行与「OCG配额剩余」行同款（12px，整行常规字重，金额单独加粗）
     // 标签在左、金额在右（金额右端与下方重置时间、进度条右端严格对齐）
     '.ocgu-tip-bal{display:flex;align-items:baseline;justify-content:space-between;gap:12px;font-size:12px;font-weight:400;font-variant-numeric:tabular-nums}' +
@@ -121,7 +127,7 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
     '.ocgu-tip-knob{position:absolute;top:50%;transform:translate(-50%,-50%);display:inline-flex;align-items:center;justify-content:center;min-width:16px;height:16px;padding:0 4px;border-radius:999px;font-size:8.5px;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:-.2px;color:var(--dsw-alias-label-primary);background:color-mix(in srgb,var(--dsw-alias-bg-layer-2) 86%,transparent);border:1px solid color-mix(in srgb,var(--dsw-alias-border-l2) 72%,transparent);box-shadow:0 .5px 1.5px color-mix(in srgb,var(--dsw-alias-label-primary) 9%,transparent);transition:left .45s cubic-bezier(.22,.9,.28,1);animation:ocgu-knob 3.6s ease-in-out infinite}' +
     '@keyframes ocgu-knob{0%,100%{box-shadow:0 .5px 1.5px color-mix(in srgb,var(--dsw-alias-label-primary) 9%,transparent)}50%{box-shadow:0 1px 3px color-mix(in srgb,var(--dsw-alias-label-primary) 15%,transparent)}}' +
     '.ocgu-tip-cd{font-size:10px;color:var(--dsw-alias-label-tertiary)}' +
-    '@media (prefers-reduced-motion:reduce){.ocgu-tip-fill::after,.ocgu-tip-knob{animation:none}}' +
+    '@media (prefers-reduced-motion:reduce){.ocgu-tip-fill::after,.ocgu-tip-knob{animation:none}.ocgu-tip[data-state="loading"],.ocgu-tip[data-state="ok"]{animation:none;border-color:var(--dsw-alias-state-success-primary)}.ocgu-tip[data-state="error"]{animation:none;border-color:var(--dsw-alias-state-error-primary)}}' +
     // 极简模式：三环嵌套（外 M / 中 W / 内 R），只比常规三环略大；余额取整后显示在环旁
     '.ocgu-nest{position:relative;flex:none;display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;animation:ocgu-swap .3s cubic-bezier(.22,.9,.28,1)}' +
     '.ocgu-nest svg{position:absolute;inset:0;width:26px;height:26px;overflow:visible}' +
@@ -217,7 +223,14 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
     '.ocgu-tabs .ocgu-seg{flex:0 0 auto;gap:4px;padding:2px}' +
     // 标签：更宽、高度压到与「恢复默认设置」按钮等高（按钮 28px = 24px 标签 + 上下各 2px 容器内边距）
     '.ocgu-tabs .ocgu-seg-item{height:24px;padding:0 22px;font-size:13px;line-height:1;border-radius:7px}' +
-    '.ocgu-tabs .ocgu-msg{margin-left:auto}' +
+    '.ocgu-tabs .ocgu-msg{margin-left:auto}' +    // 侧栏入口开关：位于三个标签与「恢复默认设置」之间，靠左紧凑排布
+    '.ocgu-tabs-toggle{display:inline-flex;align-items:center;gap:8px;margin-left:4px}' +
+    '.ocgu-tabs-label{font-size:12.5px;line-height:1;color:var(--dsw-alias-label-secondary);white-space:nowrap}' +
+    // 侧栏入口打开后的整页面板：居中单列、与设置页同宽
+    // 整页宽度：固定 760px（切换三个标签时不再随内容宽度跳变）；窗口更窄时自适应 100%
+    '.ocgu-page{box-sizing:border-box;width:760px;max-width:100%;margin:0 auto;padding:24px 28px 64px}' +
+    // 宿主页面容器若是 flex，避免被压成内容宽度
+    '.ocgu-page>*{min-width:0}' +
     // 标题行（标题 + 右侧图标按钮）
     '.ocgu-title-row{display:flex;align-items:center;gap:10px}' +
     // 标题右侧的版本号小字
@@ -568,7 +581,12 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
     } catch (e) { /* 查询失败则视为无卡片，退化为视口锚定 */ }
     return null;
   }
-  function pickAnchors(rect, cardRect, vw, vh) {
+  // 拖放专用：只允许视口锚线。
+  // 为什么不用卡片锚线：card-* 的偏移是相对「输入框卡片实时 rect」存的，而卡片的
+  // 高度/位置会随聚焦、草稿行、提示行变化 → 松手后浮窗会被反算到别处（看起来像自己跳开）。
+  // 视口边沿在一次会话里几乎不变 → 视口锚线才能做到「放哪儿就是哪儿」。
+  // 旧配置里已存下的 card-* 仍由 resolvePos 正常渲染（向后兼容），只是不再产生新的。
+  function pickViewAnchors(rect, vw, vh) {
     var xs = [
       { a: 'view-left', d: Math.abs(rect.left), o: rect.left },
       { a: 'view-right', d: Math.abs(vw - rect.right), o: rect.right - vw }
@@ -577,19 +595,12 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
       { a: 'view-top', d: Math.abs(rect.top), o: rect.top },
       { a: 'view-bottom', d: Math.abs(vh - rect.bottom), o: rect.bottom - vh }
     ];
-    if (cardRect) {
-      xs.push({ a: 'card-left', d: Math.abs(rect.left - cardRect.left), o: rect.left - cardRect.left });
-      xs.push({ a: 'card-right', d: Math.abs(rect.right - cardRect.right), o: rect.right - cardRect.right });
-      ys.push({ a: 'card-top', d: Math.abs(rect.top - cardRect.top), o: rect.top - cardRect.top });
-      ys.push({ a: 'card-bottom', d: Math.abs(rect.bottom - cardRect.bottom), o: rect.bottom - cardRect.bottom });
-    }
     var bx = xs[0], by = ys[0], i;
     for (i = 1; i < xs.length; i++) if (xs[i].d < bx.d) bx = xs[i];
     for (i = 1; i < ys.length; i++) if (ys[i].d < by.d) by = ys[i];
-    return {
-      widgetAnchorX: bx.a, widgetOffsetX: Math.round(bx.o),
-      widgetAnchorY: by.a, widgetOffsetY: Math.round(by.o)
-    };
+    // 0.1px 精度：整数化会在松手后引入最多 0.5px 的位移（放大后可见的"抖一下"）
+    var r1 = function (v) { return Math.round(v * 10) / 10; };
+    return { widgetAnchorX: bx.a, widgetOffsetX: r1(bx.o), widgetAnchorY: by.a, widgetOffsetY: r1(by.o) };
   }
   function resolvePos(cfg, cardRect, node) {
     var vw = window.innerWidth || 0;
@@ -786,6 +797,10 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
       'msg.balanceHidden': '浮窗已隐藏余额',
       'msg.posReset': '浮窗已回到默认位置',
       'msg.resetAllDone': '已恢复默认设置',
+      'field.sidebarEntry': '侧栏入口',
+      'title.sidebarEntry': '在侧栏加一个入口，点它直接打开本插件的设置页（等同 dshmarket 的做法）',
+      'msg.sidebarOn': '侧栏入口已开启',
+      'msg.sidebarOff': '侧栏入口已关闭',
       'status.auto': '已自动读取',
       'status.manual': '手动配置',
       'status.loading': '检测中',
@@ -928,6 +943,10 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
       'msg.balanceHidden': 'Balance hidden from the pill',
       'msg.posReset': 'Pill moved back to its default position',
       'msg.resetAllDone': 'Defaults restored',
+      'field.sidebarEntry': 'Sidebar entry',
+      'title.sidebarEntry': 'Add a row to the sidebar that opens this plugin\'s settings page directly',
+      'msg.sidebarOn': 'Sidebar entry enabled',
+      'msg.sidebarOff': 'Sidebar entry disabled',
       'status.auto': 'Read automatically',
       'status.manual': 'Set manually',
       'status.loading': 'Checking',
@@ -1006,9 +1025,31 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
     var hoverState = React.useState(false);
     var hovering = hoverState[0];
     var setHovering = hoverState[1];
+    // 悬停意图：指针离开浮窗后延迟 220ms 再关浮层 —— 浮层与浮窗之间有 8px 间隙，
+    // 期间指针既不在浮窗也不在浮层，立即关闭会让「移到浮层上」根本走不到。
+    var hoverTimerRef = React.useRef(null);
+    function holdHover() {
+      if (hoverTimerRef.current !== null) { clearTimeout(hoverTimerRef.current); hoverTimerRef.current = null; }
+      setHovering(true);
+    }
+    function releaseHover() {
+      if (hoverTimerRef.current !== null) clearTimeout(hoverTimerRef.current);
+      hoverTimerRef.current = setTimeout(function () {
+        hoverTimerRef.current = null;
+        setHovering(false);
+      }, 220);
+    }
+    React.useEffect(function () {
+      return function () { if (hoverTimerRef.current !== null) clearTimeout(hoverTimerRef.current); };
+    }, []);
     var tipUpState = React.useState(false);
     var tipUp = tipUpState[0];
     var setTipUp = tipUpState[1];
+    // 浮层水平展开方向：true = 右对齐向左展开（浮窗贴近窗口右侧时使用）
+    var tipRightState = React.useState(false);
+    var tipRight = tipRightState[0];
+    var setTipRight = tipRightState[1];
+    var TIP_W = 232; // 与 CSS 中 .ocgu-tip 的 width 保持一致
 
     var rootRef = React.useRef(null);
     var dragRef = React.useRef(null);
@@ -1258,9 +1299,9 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
         if (d.moved) {
           if (node) node.setAttribute('data-dragging', 'false');
           if (!node) return;
-          var anchors = pickAnchors(
+          // 落点只按视口锚线记账：松手即最终位置，不会被输入框卡片的变化反算走
+          var anchors = pickViewAnchors(
             node.getBoundingClientRect(),
-            findComposerCard(),
             window.innerWidth || 0,
             window.innerHeight || 0
           );
@@ -1438,7 +1479,11 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
       var tipShowBal = value.tipShowBalance !== false;
       var tipShowQuota = value.tipShowQuota !== false;
       children.push(React.createElement('div', {
-        key: 'tip', className: 'ocgu-tip', 'data-pos': tipUp ? 'up' : 'down', 'aria-hidden': 'true'
+        key: 'tip', className: 'ocgu-tip', 'data-pos': tipUp ? 'up' : 'down', 'data-align': tipRight ? 'right' : 'left',
+        // 与浮窗同相位（loading/ok/error）：刷新时浮层边框与浮窗同步闪烁；鼠标进入浮层续命
+        'data-state': refreshState,
+        onMouseEnter: holdHover,
+        onMouseLeave: releaseHover
       },
         // 余额行与下面「配额剩余」行用**完全相同**的类（字号/字重/颜色逐项一致），避免看起来不一致
         // ① 账户余额：独占一栏（下方跟一条分割线）；标签常规字重，金额加粗并右对齐
@@ -1475,13 +1520,37 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
           var r = el.getBoundingClientRect();
           // 贴近视口底部时向上展开，避免浮层被裁掉
           setTipUp(r.bottom + 140 > (window.innerHeight || 0));
+          // 浮层默认从浮窗左缘向右铺开；右侧放不下 232px 时改为右对齐向左铺开
+          setTipRight(r.left + TIP_W + 8 > (window.innerWidth || 0));
         }
-        setHovering(true);
+        holdHover();
       },
-      onMouseLeave: function () { setHovering(false); }
+      onMouseLeave: releaseHover
     }, children);
   }
 
+  // ---------- 侧栏入口（main 面板 + sidebar.panellist 行） ----------
+  // 与 dshmarket 同样的官方契约：main 面板承载整页内容，sidebar.panellist 提供侧栏行；
+  // 设置对话框的打开状态属于宿主私有，无法程序化跳转，因此这里用「整页」这一唯一官方入口。
+  // 与设置菜单里的导航标记同一字形（NAV_MASK）：缺口环 + 中心点，16×16 原生尺寸，currentColor 着色
+  function SidebarLogo(props) {
+    var size = (props && props.size) || 16;
+    return React.createElement('svg', {
+      width: size, height: size, viewBox: '0 0 16 16', fill: 'none',
+      'aria-hidden': 'true', focusable: 'false', style: { display: 'block' }
+    },
+      React.createElement('path', {
+        d: 'M8 2.4a5.6 5.6 0 1 1-3.96 1.64', fill: 'none',
+        stroke: 'currentColor', strokeWidth: 1.7, strokeLinecap: 'round'
+      }),
+      React.createElement('circle', { cx: 8, cy: 8, r: 1.8, fill: 'currentColor' }));
+  }
+  // 整页面板：外层给页面留白与最大宽度，内部直接复用设置页组件（同一套 UI、零重复实现）
+  function SidebarPage(props) {
+    // 不再自己画标题：设置页内部已有「标题 + ⓘ + 版本号」那一行（在设置对话框里由宿主提供，
+    // 独立成页时同样由它自己渲染），这里重复画就是双层标题。
+    return React.createElement('div', { className: 'ocgu-page' }, React.createElement(SettingsPage, props));
+  }
   // ---------- 设置页（settings.section，菜单名「OCG 余量查询」） ----------
   // 两种布局：
   // · row（默认，左右）：标题 + 短注释在左，控件在右 —— 注释一两行放得下时用（自动刷新 / 悬浮窗 / 浮窗位置）
@@ -1699,6 +1768,16 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
     };
 
     // 浮窗上是否显示 DeepSeek 余额（关掉后只留 OCG 三组环，浮窗变窄）
+    // 侧栏入口：开关只控制「侧栏那一行」是否注册；主面板（main）常驻，隐藏行时不影响
+    var toggleSidebarEntry = function () {
+      var next = !(value.sidebarEntry === true);
+      updateNs(remote, viewRef.current, { sidebarEntry: next }, function (err, nv) {
+        if (err || !nv) { say('sidebar', t('msg.saveFailed', { err: err || t('msg.unknownErr') }), 'error'); return; }
+        apply(nv);
+        if (props.sidebarApi && props.sidebarApi.apply) props.sidebarApi.apply(nsValue(nv).sidebarEntry === true);
+        say('sidebar', nsValue(nv).sidebarEntry === true ? t('msg.sidebarOn') : t('msg.sidebarOff'));
+      });
+    };
     var toggleBalance = function () {
       updateNs(remote, viewRef.current, { showBalance: !(value.showBalance !== false) }, function (err, nv) {
         if (err || !nv) { say('balance', t('msg.saveFailed', { err: err || t('msg.unknownErr') }), 'error'); return; }
@@ -1935,6 +2014,10 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
           className: 'ocgu-msg', 'data-tone': msgOf('resetAll') ? toneOf('resetAll') : 'muted',
           role: 'status', 'aria-live': 'polite', title: msgOf('resetAll') || ''
         }, msgOf('resetAll')),
+        // 侧栏入口开关：三个标签右边、「恢复默认设置」左边；宿主不支持该槽位时不显示
+        props.sidebarApi && props.sidebarApi.supported ? React.createElement('div', { className: 'ocgu-tabs-toggle' },
+          React.createElement('span', { className: 'ocgu-tabs-label' }, t('field.sidebarEntry')),
+          sw(value.sidebarEntry === true, toggleSidebarEntry, t('field.sidebarEntry'), false)) : null,
         React.createElement('button', {
           className: 'ocgu-btn', 'data-kind': 'outline', onClick: resetAll, title: t('title.resetAll')
         }, t('btn.resetAll'))),
@@ -2341,10 +2424,63 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
         );
       });
       // 设置页：菜单名「OCG 余量查询」/「OCG Usage」
+      // ── 侧栏入口（与 dshmarket 同款官方契约）：
+      //    main 面板 = 整页内容（页面常驻注册）；sidebar.panellist = 侧栏那一行（受设置开关控制）。
+      //    设置对话框状态属于宿主私有，无法程序化跳转，所以「整页」是唯一的官方一键入口。
+      var sidebarApi = { supported: false, want: false };
+      var sidebarRowOff = null;
+      function sidebarSync() {
+        var shouldShow = sidebarApi.supported && sidebarApi.want;
+        if (shouldShow && !sidebarRowOff) {
+          try {
+            var rowMeta = { name: 'sidebar.panellist', id: 'opencode-go-usage', order: 31, label: function () { return navLabel('settings.title'); } };
+            if (locale) rowMeta.locale = LOCALE_NS;
+            var off = slots.register(rowMeta, function (owner) {
+              return React.createElement(SidebarLogo, { size: (owner && owner.size) || 16 });
+            });
+            sidebarRowOff = (typeof off === 'function') ? off : function () { };
+          } catch (e) { sidebarApi.supported = false; }
+        } else if (!shouldShow && sidebarRowOff) {
+          try { sidebarRowOff(); } catch (e) { /* 注销失败不影响主流程 */ }
+          sidebarRowOff = null;
+        }
+      }
+      sidebarApi.apply = function (on) { sidebarApi.want = on === true; sidebarSync(); };
+      // 能力探测：宿主声明了该槽位才会回调（旧宿主不会，开关因此不出现）
+      slots.inject('sidebar.panellist', function () {
+        sidebarApi.supported = true;
+        sidebarSync();
+        return function () { sidebarApi.supported = false; sidebarSync(); };
+      });
+      // 整页面板：内容直接复用设置页组件（同一套 UI，零重复实现）
+      slots.inject('main', function () {
+        var pageMeta = { name: 'main', key: 'opencode-go-usage' };
+        if (locale) pageMeta.locale = LOCALE_NS;
+        return slots.register(pageMeta, function (ownerProps) {
+          return React.createElement(SidebarPage, Object.assign({}, ownerProps, {
+            remote: remoteOf() || remote, t: guardT(ownerProps.t || currentT()), sidebarApi: sidebarApi
+          }));
+        });
+      });
+      // 启动时按已保存的开关决定是否注册侧栏行（投影可能稍后就绪，短轮询几次即可）
+      (function initSidebarRow() {
+        var tries = 0;
+        var timer = null;
+        var step = function () {
+          tries += 1;
+          readNs(remote).then(function (nv) {
+            var v = nsValue(nv) || {};
+            if (v.sidebarEntry !== undefined) { sidebarApi.apply(v.sidebarEntry === true); return; }
+            if (tries < 40) timer = setTimeout(step, 250);
+          }).catch(function () { if (tries < 40) timer = setTimeout(step, 250); });
+        };
+        step();
+        ctx.effect(function () { return function () { if (timer !== null) clearTimeout(timer); }; });
+      })();
       slots.inject('settings.section', function () {
         return slots.register(
           meta('settings.section', 'opencode-go-usage', 31, 'settings.title'),
-          function (p) { return React.createElement(SettingsPage, Object.assign({}, p, { remote: remoteOf() || remote, t: guardT(p.t || currentT()) })); }
+          function (p) { return React.createElement(SettingsPage, Object.assign({}, p, { remote: remoteOf() || remote, t: guardT(p.t || currentT()), sidebarApi: sidebarApi })); }
         );
       });
       return true;

@@ -1,3 +1,22 @@
+## 3.1.0
+
+新功能：
+- 悬停浮层优化：鼠标从浮窗移到浮层上时浮层不再消失、点击行为与浮窗点击效果相同（手动刷新）、刷新闪烁效果与浮窗相同；
+- 侧栏入口：设置页新增「侧栏入口」开关（默认关闭）。开启后侧栏出现本插件菜单入口，点击直接打开本插件设置页面。
+
+修复：
+- 修复松开鼠标后浮窗自行漂移、部分位置无法固定于目标点的问题：落点改为仅按窗口边沿记录位置，并保留窗口缩放时的相对位置；位置精度提高到 0.1px，旧配置中的位置仍照常渲染；
+- 修复浮层面板被窗口裁切的问题：浮窗贴近窗口边缘时，浮层自动判断展开方向，向软件内部展开，避免显示不全。
+
+**English**
+**New features**
+- The hover popover is now interactive: moving the pointer from the pill onto the popover keeps it open, clicking it behaves like clicking the pill (a manual refresh), and its border flashes together with the pill on refresh;
+- Sidebar entry: a new "Sidebar entry" switch in the settings page (off by default). When enabled the plugin gets a row in the sidebar that opens its settings page directly.
+
+**Fixes**
+- Fixed the pill drifting after release and being unable to stay at some positions: the drop position is now recorded against the window edges only (relative positions still hold when the window resizes), with 0.1px precision; positions from older configs keep rendering as before;
+- Fixed the hover popover being clipped: near a window edge the popover now picks its opening direction and expands inwards so it stays fully visible.
+
 # 更新日志 · Changelog
 
 记录每个版本相对上一版的变更，最新在最上。版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
