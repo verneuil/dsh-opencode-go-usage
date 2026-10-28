@@ -1,3 +1,15 @@
+## 3.1.1
+
+修复：
+- 修复在无法解析宿主包 @deepseek-ai/schemastery 的环境（如隔离沙箱、纯 CLI profile）中插件加载失败、导致整棵插件树无法加载的问题：改为 createRequire → ESM 动态 import 两段式解析，两段均失败时导出 Config = undefined 并让插件照常运行；桌面端仍走原有解析路径，行为不变；
+- 侧栏整页与宿主官方页面保持同一版式，切换三个标签时宽度不再跳变。
+
+**English**
+
+**Fixes**
+- Fixed the plugin failing to load in environments where the host package @deepseek-ai/schemastery cannot be resolved (isolated sandboxes, plain CLI profiles), which took the whole plugin tree down: the schema factory is now resolved in two stages (createRequire → dynamic ESM import), and when both fail Config is exported as undefined while the plugin keeps running; the desktop path is unchanged;
+- The sidebar page now follows the host’s official page layout, and its width no longer jumps when switching between the three tabs.
+
 ## 3.1.0
 
 新功能：

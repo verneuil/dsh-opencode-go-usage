@@ -1,4 +1,38 @@
-import z from "@deepseek-ai/schemastery"
+// @deepseek-ai/schemastery 是**宿主包**（不在 npm 上，dshmarket 的代码注释明确写了这一点）：
+// 桌面端一定会提供它，但裸 CLI / 隔离沙箱环境不一定能从这个插件的模块图里解析到。
+// 做成静态 import 时，解析失败会让整棵插件树加载失败（dsh.so 的 L5.2_WEB_BOOT_READY 就是这么挂的 ✗）；
+// 因此改成「尽力动态解析 + 最小 shim 兜底」：拿不到真库时 Config 仍然可用，插件照常加载 ✓。
+// 宿主包 @deepseek-ai/schemastery 不在 npm 上，只能由宿主提供；静态 ESM import 一旦解析不到，
+// 整棵插件树就会加载失败（dsh.so 的 L5.2_WEB_BOOT_READY 正是这样挂的 ✗）。
+// 这里完全对齐 dsh-claude-style（L5 长期全绿）的两段式解析：createRequire → ESM 动态 import → 都失败则 Config = undefined。
+async function resolveSchemaFactory() {
+  try {
+    const { createRequire } = await import("node:module");
+    const anchor = typeof process.argv[1] === "string" && process.argv[1] !== "" ? process.argv[1] : process.execPath;
+    const factory = createRequire(anchor)("@deepseek-ai/schemastery");
+    if (factory != null && typeof factory.object === "function") return factory;
+  } catch (e) { /* 落到 ESM 动态 import */ }
+  try {
+    const resolved = await import("@deepseek-ai/schemastery");
+    const factory = (resolved && (resolved.default || resolved.Schema)) || null;
+    return factory != null && typeof factory.object === "function" ? factory : null;
+  } catch (e) { return null; }
+}
+const zReal = await resolveSchemaFactory();
+// 内部构造用的兜底：真库缺失时用最小 shim，只为让模块能加载；宿主 schema 不导出（见下方 Config）
+function makeSchemaShim() {
+  var node = function () {
+    var self = {
+      default: function () { return self; }, volatile: function () { return self; }, role: function () { return self; },
+      description: function () { return self; }, min: function () { return self; }, max: function () { return self; },
+      optional: function () { return self; }, required: function () { return self; }, deprecated: function () { return self; },
+      hidden: function () { return self; }
+    };
+    return self;
+  };
+  return { object: node, string: node, number: node, boolean: node, array: node, dict: node, any: node, union: node, "const": node, enum: node };
+}
+const z = zReal || makeSchemaShim();
 import { GO_DATA_SNAPSHOT, fetchGoModelsLive, fetchFxLive, USER_AGENT as GO_USER_AGENT } from "./go-fetch.js"
 
 export const name = "opencode-go-usage"
@@ -36,7 +70,7 @@ const BalanceInfo = z.object({
   toppedUpBalance: z.string().default(""),
 })
 
-export const Config = z.object({
+export const Config = zReal ? z.object({
   // ── 用户可改 ──
   // 两把 Key 都是可选覆盖：留空则自动使用 DSH 凭据库
   // （OpenCode Go → OPENCODE_GO_API_KEY；DeepSeek → DEEPSEEK_API_KEY）
@@ -108,7 +142,7 @@ export const Config = z.object({
   fxRateDate: z.string().default("").volatile(),
   fxSource: z.string().default("").volatile(),
   fxError: z.string().default("").volatile(),
-})
+}): undefined
 
 const OCG_ENDPOINT = "https://opencode.ai/zen/go/v1/usage"
 const DS_ENDPOINT = "https://api.deepseek.com/user/balance"

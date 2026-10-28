@@ -227,10 +227,11 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
     '.ocgu-tabs-toggle{display:inline-flex;align-items:center;gap:8px;margin-left:4px}' +
     '.ocgu-tabs-label{font-size:12.5px;line-height:1;color:var(--dsw-alias-label-secondary);white-space:nowrap}' +
     // 侧栏入口打开后的整页面板：居中单列、与设置页同宽
-    // 整页宽度：固定 760px（切换三个标签时不再随内容宽度跳变）；窗口更窄时自适应 100%
-    '.ocgu-page{box-sizing:border-box;width:760px;max-width:100%;margin:0 auto;padding:24px 28px 64px}' +
-    // 宿主页面容器若是 flex，避免被压成内容宽度
-    '.ocgu-page>*{min-width:0}' +
+    // 整页容器：逐条对齐宿主官方页面骨架（asar 内 .V7pFBG_page / .pageHead）：
+    //   官方 = 外层 flex 列 + align-items:center + 左右 padding clamp(24px,4vw,48px)，子项 width:100%/max-width:960px，
+    //   页头 padding-top:28px。这样侧栏页与其他官方页（插件 / 自动化任务）左右边界、留白完全一致。
+    '.ocgu-page{box-sizing:border-box;display:flex;flex-direction:column;align-items:center;width:100%;padding:28px clamp(24px,4vw,48px) 48px;overflow:auto}' +
+    '.ocgu-page>*{box-sizing:border-box;width:100%;max-width:960px;min-width:0}' +
     // 标题行（标题 + 右侧图标按钮）
     '.ocgu-title-row{display:flex;align-items:center;gap:10px}' +
     // 标题右侧的版本号小字
