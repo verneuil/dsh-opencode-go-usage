@@ -180,7 +180,7 @@ GET https://api.frankfurter.app/latest?from=USD&to=CNY      # USD/CNY rate (back
 The usage endpoint returns `{ usage: { rolling, weekly, monthly } }`, where each window carries `status` / `percent` (**used** percentage) / `resetsAt`; the balance endpoint returns `balance_infos[]` (the CNY entry is preferred). The UI shows **Used** by default and can be switched to **Left** in settings; the internal value always stays “used”.
 The host half performs the fetching and parsing (neither key ever leaves the host process); the client half only reads the configuration projection the host writes.
 
-**The model list and the rate** refresh together with everything else: **manual refresh (button or pill click) forces a refetch**, while auto-refresh reuses the **model table for 24 h and the rate for 1 h**. If both fail, the plugin falls back to its **bundled snapshot** (`go-data.js`, generated 2026-10-24: 30 official models + a rate of 6.684864) and names the failure in the UI. **Quota conversion uses the Go-tier monthly quota from that model table.**
+**The model list and the rate** refresh together with everything else: **manual refresh (button or pill click) forces a refetch**, while auto-refresh reuses the **model table for 24 h and the rate for 1 h**. If both fail, the plugin falls back to its **bundled snapshot** (`go-data.js`, generated 2026-10-28: 30 official models + a rate of 6.681042) and names the failure in the UI. **Quota conversion uses the Go-tier monthly quota from that model table.**
 
 **Key resolution** (independent per side, in priority order):
 
@@ -251,7 +251,7 @@ The settings page covers the common options; the fields below can also be edited
 - **Interface language**: the pill and the settings page are **bilingual (Chinese / English)** and follow the DSH language setting. **Error details** produced by the API layer (such as 401/403 or an unexpected response shape) are still in Chinese.
 - **The quota figure is an estimate**: no official endpoint exposes “how much of model X is left right now”, so the plugin estimates it as “that model's **Go-tier** monthly quota × **this month's used percentage**” — for reference only. The monthly percentage is the **whole plan's** progress, not that model's own share. The **Go Plus tier is not covered yet** (the Go tier is always used).
 - **The rate only affects display**: the DS balance is originally in CNY and the quota in USD; conversion is purely cosmetic (`auto` = ¥ in Chinese, ＄ in English) and never changes a real bill.
-- **The model list can lag**: the bundled snapshot is the official data of 2026-10-24; it updates with each refresh while online, and while offline (or when fetching fails) the snapshot is shown and labelled in the UI.
+- **The model list can lag**: the bundled snapshot is the official data of 2026-10-28; it updates with each refresh while online, and while offline (or when fetching fails) the snapshot is shown and labelled in the UI.
 - **Use at your own risk**: this software is provided “as is” under the MIT licence, without warranty of any kind.
 
 ## License
