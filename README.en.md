@@ -1,22 +1,25 @@
-# OCG Balance & Usage · dsh-opencode-go-usage
+<div align="center">
 
-| ![Plugin icon](assets/icon.png) | **Merges your DeepSeek balance and OpenCode Go's three usage windows (5-hour R / weekly W / monthly M) into one floating pill**, with a settings page of the same name. |
-|:------------------------:| ---------------------------------------------------------------------------------- |
+<img src="assets/icon.png" width="96" height="96" alt="OCG Usage icon" />
 
-<p align="center">
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a>
-  <a href="https://github.com/verneuil/dsh-opencode-go-usage/releases/latest"><img src="https://img.shields.io/github/v/tag/verneuil/dsh-opencode-go-usage?label=version&color=4b8bf5" alt="version"></a>
-  <a href="https://www.npmjs.com/package/@verneuil/dsh-opencode-go-usage"><img src="https://img.shields.io/npm/v/@verneuil/dsh-opencode-go-usage?label=npm&color=cb3837" alt="npm"></a>
-  <a href="https://dsh-plugin.org/plugins/verneuil/dsh-opencode-go-usage"><img src="https://dsh-plugin.org/badges/listed.svg" alt="Listed on dsh-plugin.org"></a>
-  <a href="https://www.dsh.so/artifact/dsh-opencode-go-usage-15/"><img src="https://www.dsh.so/badge/dsh-opencode-go-usage-15.svg" alt="dsh.so risk"></a>
-  <a href="https://awesome-dsh-plugin.com/p/verneuil/dsh-opencode-go-usage"><img src="https://awesome-dsh-plugin.com/badge.svg" alt="Awesome DSH Plugin"></a>
-</p>
+# OCG Usage
 
-<p align="center">
-  <a href="README.md">中文</a> · <b>English</b> · <a href="CHANGELOG.md">Changelog</a> · <a href="https://github.com/verneuil/dsh-opencode-go-usage/issues">Feedback</a>
-</p>
+**DeepSeek balance and OpenCode Go usage (5-hour / weekly / monthly) merged into one floating pill, with a matching settings page**
 
-*An unofficial [DeepSeek Harness](https://github.com/deepseek-ai) plugin that shows your DeepSeek balance and OpenCode Go usage (Rolling / weekly / monthly) in one floating pill, with click-to-refresh, border-flash feedback, drag-to-snap and a hover popover.*
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![version](https://img.shields.io/github/v/tag/verneuil/dsh-opencode-go-usage?label=version&color=4b8bf5)](https://github.com/verneuil/dsh-opencode-go-usage/releases/latest)
+[![npm](https://img.shields.io/npm/v/@verneuil/dsh-opencode-go-usage?label=npm&color=cb3837)](https://www.npmjs.com/package/@verneuil/dsh-opencode-go-usage)
+[![Listed on dsh-plugin.org](https://dsh-plugin.org/badges/listed.svg)](https://dsh-plugin.org/plugins/verneuil/dsh-opencode-go-usage)
+[![dsh.so risk](https://www.dsh.so/badge/dsh-opencode-go-usage-15.svg)](https://www.dsh.so/artifact/dsh-opencode-go-usage-15/)
+[![Awesome DSH Plugin](https://awesome-dsh-plugin.com/badge.svg)](https://awesome-dsh-plugin.com/p/verneuil/dsh-opencode-go-usage)
+
+[中文](README.md) · **English** · [Changelog](CHANGELOG.md) · [Feedback](https://github.com/verneuil/dsh-opencode-go-usage/issues)
+
+</div>
+
+---
+
+*An unofficial [DeepSeek Harness](https://github.com/deepseek-ai) plugin that shows your DeepSeek balance and OpenCode Go usage (Rolling / weekly / monthly) in one floating pill, with click-to-refresh, border-flash feedback, drag-to-snap and a hover popover, plus a full-page settings view of its own.*
 
 ## Contents
 
