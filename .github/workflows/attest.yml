@@ -52,7 +52,8 @@ jobs:
             exit 1
           fi
           export OUT=$(mktemp -d)
-          tar -xzf dist/*.tgz -C "$OUT"
+          ASSET=$(ls dist/*.tgz | head -n1)
+          tar -xzf "$ASSET" -C "$OUT"
           node -e '
             const fs = require("node:fs");
             const path = require("node:path");
