@@ -6,6 +6,8 @@
 
 **DeepSeek balance and OpenCode Go usage (5-hour / weekly / monthly) merged into one floating pill, with a matching settings page**
 
+[![简体中文](https://img.shields.io/badge/lang-%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87-red.svg)](README.md) [![English](https://img.shields.io/badge/lang-English-blue.svg)](README.en.md)
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![version](https://img.shields.io/github/v/tag/verneuil/dsh-opencode-go-usage?label=version&color=4b8bf5)](https://github.com/verneuil/dsh-opencode-go-usage/releases/latest)
 [![npm](https://img.shields.io/npm/v/@verneuil/dsh-opencode-go-usage?label=npm&color=cb3837)](https://www.npmjs.com/package/@verneuil/dsh-opencode-go-usage)
@@ -13,7 +15,7 @@
 [![dsh.so risk](https://www.dsh.so/badge/dsh-opencode-go-usage-15.svg)](https://www.dsh.so/artifact/dsh-opencode-go-usage-15/)
 [![Awesome DSH Plugin](https://awesome-dsh-plugin.com/badge.svg)](https://awesome-dsh-plugin.com/p/verneuil/dsh-opencode-go-usage)
 
-[中文](README.md) · **English** · [Changelog](CHANGELOG.md) · [Feedback](https://github.com/verneuil/dsh-opencode-go-usage/issues)
+[Changelog](CHANGELOG.md) · [Feedback](https://github.com/verneuil/dsh-opencode-go-usage/issues)
 
 </div>
 
