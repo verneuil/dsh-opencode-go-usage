@@ -1,0 +1,80 @@
+# 给 Release 附件签发构建来源证明（build provenance）。
+# 发布 Release 后自动运行，也可以用 workflow_dispatch 手动补签某个历史 tag。
+# 通过后，Release 页面上这些 .tgz 会显示 Verified 徽标，任何人都能用
+#   gh attestation verify <file> --repo verneuil/dsh-opencode-go-usage
+# 校验「这个包确实是由本仓库的这次提交在 GitHub Actions 里构建的」。
+name: Attest release assets
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag to attest (for example v3.1.2)
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  id-token: write
+  attestations: write
+
+jobs:
+  attest:
+    name: Attest ${{ github.event.release.tag_name || inputs.tag }}
+    runs-on: ubuntu-latest
+    env:
+      TAG: ${{ github.event.release.tag_name || inputs.tag }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Checkout the tagged commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name || inputs.tag }}
+
+      - name: Download the published assets
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          gh release download "$TAG" --pattern '*.tgz' --dir dist
+          ls -l dist
+          sha256sum dist/*.tgz
+
+      - name: Verify the assets match the tagged source
+        shell: bash
+        run: |
+          set -euo pipefail
+          export VERSION="${TAG#v}"
+          UNIQ=$(sha256sum dist/*.tgz | awk '{print $1}' | sort -u | wc -l)
+          if [ "$UNIQ" -ne 1 ]; then
+            echo "::error::release assets are not byte-identical to each other"
+            exit 1
+          fi
+          export OUT=$(mktemp -d)
+          tar -xzf dist/*.tgz -C "$OUT"
+          node -e '
+            const fs = require("node:fs");
+            const path = require("node:path");
+            const root = path.join(process.env.OUT, "package");
+            const pkg = JSON.parse(fs.readFileSync(path.join(root, "package.json"), "utf8"));
+            if (pkg.version !== process.env.VERSION) {
+              console.error(`::error::asset version ${pkg.version} does not match tag ${process.env.VERSION}`);
+              process.exit(1);
+            }
+            for (const file of ["index.js", "client.js", "go-fetch.js", "go-data.js", "cordis.patch.yml", "README.md", "CHANGELOG.md"]) {
+              if (!fs.existsSync(path.join(root, file))) {
+                console.error(`::error::asset is missing ${file}`);
+                process.exit(1);
+              }
+            }
+            console.log("asset matches tag", process.env.VERSION);
+          '
+          for file in index.js client.js go-fetch.js go-data.js; do
+            node --check "$OUT/package/$file"
+          done
+
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-path: 'dist/*.tgz'

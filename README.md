@@ -9,6 +9,7 @@
 [![简体中文](https://img.shields.io/badge/lang-%E7%AE%80%E4%BD%93%E4%B8%AD%E6%96%87-red.svg)](README.md) [![English](https://img.shields.io/badge/lang-English-blue.svg)](README.en.md)
 
 [![CI](https://github.com/verneuil/dsh-opencode-go-usage/actions/workflows/ci.yml/badge.svg)](https://github.com/verneuil/dsh-opencode-go-usage/actions/workflows/ci.yml)
+[![CodeQL](https://github.com/verneuil/dsh-opencode-go-usage/actions/workflows/codeql.yml/badge.svg)](https://github.com/verneuil/dsh-opencode-go-usage/actions/workflows/codeql.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![version](https://img.shields.io/github/v/tag/verneuil/dsh-opencode-go-usage?label=version&color=4b8bf5)](https://github.com/verneuil/dsh-opencode-go-usage/releases/latest)
 [![npm](https://img.shields.io/npm/v/@verneuil/dsh-opencode-go-usage?label=npm&color=cb3837)](https://www.npmjs.com/package/@verneuil/dsh-opencode-go-usage)
@@ -239,6 +240,7 @@ GET https://api.frankfurter.app/latest?from=USD&to=CNY      # USD/CNY 汇率（�
 
 ## 安全与隐私
 
+- **Release 附件带构建来源证明**：每个 `.tgz` 都由 GitHub Actions 构建并签名，Release 页面显示 **Verified**；可用 `gh attestation verify <文件> --repo verneuil/dsh-opencode-go-usage` 自行校验。
 - **密钥只在本机流转**：API Key 由 DSH 的设置存储保管，插件只在请求头里把它发给官方端点；不写入 URL、日志、用量快照，也不会下发到前端（前端只拿到“是否已配置”与掩码形式）。
 - **运行期只访问 4 个固定域名**：`api.deepseek.com`（账户余额）、`opencode.ai`（用量与官方模型表）、`open.er-api.com` 与 `api.frankfurter.app`（汇率，仅在选择「自动」币种时）。
 - **无遥测**：不收集任何使用数据，也不向任何自建服务回传；运行期 npm 依赖为空（只用 DSH 提供的 peer 依赖）。
