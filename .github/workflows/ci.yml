@@ -1,0 +1,39 @@
+# 每次 push 到 main、每个 PR 都跑一遍仓库自检 —— 与 README 顶部的 CI 徽章绑定。
+# 检查内容全部写在 scripts/ci-check.mjs：语法、版本三段一致、清单与 patch 结构、
+# 宿主/客户端契约关键字、内置快照数据合理性，以及「真的 npm pack 一次」的打包冒烟。
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Node ${{ matrix.node }} on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        node: ['20', '22']
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node ${{ matrix.node }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+
+      - name: Repo self-checks
+        run: node scripts/ci-check.mjs
