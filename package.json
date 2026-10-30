@@ -10,7 +10,7 @@
       "optional": true
     }
   },
-  "description": "OCG 余量查询：一个浮窗同时显示 DeepSeek 官方余额或 OpenCode Go 配额剩余（二选一）与 5 小时 / 本周 / 本月用量（官方 shell.overlay 席位，replaceRisk=none），点击刷新并闪边框反馈（成功长亮、失败闪红），拖动按锚线吸附；另带「OCG 余量查询」设置页（标签式：用量数据 / 浮窗管理 / API Key，含配额参考模型、金额计价币种、手动与自动刷新、浮窗余额三行开关、双 Key 覆盖、用量明细）；模型清单与 USD/CNY 汇率自动获取，失败回退内置快照并点名报错。",
+  "description": "OCG 余量查询：一个浮窗同时显示 DeepSeek 官方余额或 OpenCode Go 配额剩余（二选一）与 5 小时 / 本周 / 本月用量（官方 shell.overlay 席位，replaceRisk=none），点击刷新并闪边框反馈（成功长亮、失败闪红），拖动按锚线吸附；另带「OCG 余量查询」设置页（标签式：用量数据 / 浮窗管理 / 通用设置，含配额参考模型、金额计价币种、手动与自动刷新、三环显示数据自定义、双 Key 覆盖、用量明细）；模型清单与 USD/CNY 汇率自动获取，失败回退内置快照并点名报错。",
   "license": "MIT",
   "author": "verneuil",
   "repository": {

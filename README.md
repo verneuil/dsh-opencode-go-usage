@@ -13,6 +13,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![version](https://img.shields.io/github/v/tag/verneuil/dsh-opencode-go-usage?label=version&color=4b8bf5)](https://github.com/verneuil/dsh-opencode-go-usage/releases/latest)
 [![npm](https://img.shields.io/npm/v/@verneuil/dsh-opencode-go-usage?label=npm&color=cb3837)](https://www.npmjs.com/package/@verneuil/dsh-opencode-go-usage)
+
+
 [![Listed on dsh-plugin.org](https://dsh-plugin.org/badges/listed.svg)](https://dsh-plugin.org/plugins/verneuil/dsh-opencode-go-usage)
 [![dsh.so risk](https://www.dsh.so/badge/dsh-opencode-go-usage-15.svg)](https://www.dsh.so/artifact/dsh-opencode-go-usage-15/)
 [![Awesome DSH Plugin](https://awesome-dsh-plugin.com/badge.svg)](https://awesome-dsh-plugin.com/p/verneuil/dsh-opencode-go-usage)
@@ -36,37 +38,47 @@
 **浮窗与悬停浮层**
 
 - **OpenCode Go配额计算+DeepSeek官方余额展示**：
+
   - 浮窗左侧的余额区域可选择显示**DeepSeek 官方余额**或**按参考模型折算出的 OCG 配额剩余**；
   - OCG模型列表与配额自动获取，取不到就用内置模型表和配额数据。
 
 - **三环进度条显示窗口用量**：
+
   - OpenCode Go 三窗口用量，以圆环进度条显示，**点击浮窗即刷新**；
   - 环心数字是百分比（默认**已使用**，可在设置里切为展示「剩余」），剩余 > 20% 绿 / ≤ 20% 琥珀 / ≤ 5% 红。
 
 - **悬停浮层**：
+
   - 鼠标停在胶囊上，展开浮层面板，显示三根独立的用量进度条，显示用量百分比和重置时间；
   - 此外还支持同时显示两个余额金额（ **DeepSeek 账户余额**、**OpenCode Go 配额剩余**——两者都可在「浮窗管理」页关掉）
 
 - **OCG 配额折算**：
+
   - 在设置页选一个**参考模型**（默认 DeepSeek V4.1 Flash，可选 OpenCode Go 全部官方模型），插件按「该模型 **Go 档**月度配额 × 本月已用百分比」算出**已消耗 / 剩余金额**，显示在设置页与悬停浮层；
   - 免费模型显示「免费」，无限制模型显示「无限制」，剩余配额等均显示为 -- 。
+
 - **金额计价币种**：
+
   - 所有金额（DS 余额与 OCG 配额）可选 **¥ 人民币 / ＄ 美元 / 自动**（中文界面 ¥、英文界面 ＄）三种计价方式。
   - 汇率自动获取，取不到就用内置汇率，换算只影响显示。
+
 - **极简模式**：
-- **三环显示数据**：极简模式下的外 / 中 / 内三环可分别绑定 R（5 小时）/ W（本周）/ M（本月），右侧带实时预览；选到已被占用的窗口会自动与另一环交换。
+
+  - **三环显示数据**：外 / 中 / 内三环可分别绑定「5 小时 / 本周 / 本月」，右侧带实时预览（仅极简模式下可用）；
   - 使用三环**嵌套**（内 R / 中 W / 外 M）+ 余额**取整到元**显示在环旁，胶囊更紧凑（非极简模式为「余额 + 三颗独立圆环」）；
   - 再关掉「在浮窗左侧显示余额」即为**最精简形态**：只留三环嵌套，占地最小。
+
 - **其他特性**：
   **浮层可交互**：鼠标从胶囊移到浮层上时浮层不会消失（留了 220ms 过渡，跨过两者之间的间隙）；点击浮层与点击胶囊效果相同，都会触发一次手动刷新；浮层边框的刷新闪烁与胶囊完全同步；
   **浮层方向自适应**：贴近窗口底部时向上展开，贴近左右边缘时自动改为向内展开，不会被窗口裁掉；
   **拖动吸附**：松手按**窗口边沿**记录位置（只记边沿 + 偏移，输入框卡片变化不会再带着它漂移），精确到 0.1px；窗口尺寸变化时按锚线保持相对位置；
+
   - **长宽恒定**：任何状态下浮窗尺寸都不变（反馈层是绝对定位叠加层，不参与布局）。
 
 **其它**
 
 - **零依赖**：纯原生 JS，**无构建步骤、无第三方运行时依赖**（只 `require('react')`，由宿主提供）。
-**侧栏入口（可选）**：设置页有「侧栏入口」开关（默认关）。开启后侧栏出现本插件入口，点一下直接打开本插件的整页设置界面（与设置对话框里完全同一套），侧栏图标与设置菜单里的标记一致；
+- **侧栏入口（可选）**：设置页有「侧栏入口」开关（默认关）。开启后侧栏出现本插件入口，点一下直接打开本插件的整页设置界面（与设置对话框里完全同一套），侧栏图标与设置菜单里的标记一致；
 - **中英双语**：全部界面文案走客户端 locale 字典，随 DSH 语言设置即时切换（浮窗、设置页、菜单名与各项操作提示）。
 
 ## 安装
@@ -75,14 +87,14 @@
 
 在 DSH 里打开 **插件管理页 → 「安装插件」对话框 → 粘贴下面任一 spec → 安装**（对话框调用 pnpm，一次只能装一个）：
 
-| 方式                   | 粘贴的 spec                                                                                                       |
-| -------------------- | -------------------------------------------------------------------------------------------------------------- |
-| **GitHub 直装**（推荐）    | `github:verneuil/dsh-opencode-go-usage`                                                                        |
-| **npm 安装**                 | `dsh plugin --profile web add @verneuil/dsh-opencode-go-usage`                                                                 |
-| **固定某个版本**           | `github:verneuil/dsh-opencode-go-usage#v3.2.1`（换成任意已发布 tag）                                                   |
-| **Release 包**        | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v3.2.1/dsh-opencode-go-usage-3.2.0.tgz` |
-| **Release 直链（始终最新）** | `https://github.com/verneuil/dsh-opencode-go-usage/releases/latest/download/dsh-opencode-go-usage.tgz`         |
-| **离线 tgz**           | `file:D:/你的路径/dsh-opencode-go-usage-3.2.0.tgz`                                                                |
+| 方式                         | 粘贴的 spec                                                                                                  |
+| ---------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| **GitHub 直装**（推荐）      | `github:verneuil/dsh-opencode-go-usage`                                                                      |
+| **npm 安装**                 | `dsh plugin --profile web add @verneuil/dsh-opencode-go-usage`                                               |
+| **固定某个版本**             | `github:verneuil/dsh-opencode-go-usage#v3.2.1`（换成任意已发布 tag）                                         |
+| **Release 包**               | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v3.2.1/dsh-opencode-go-usage-3.2.1.tgz` |
+| **Release 直链（始终最新）** | `https://github.com/verneuil/dsh-opencode-go-usage/releases/latest/download/dsh-opencode-go-usage.tgz`       |
+| **离线 tgz**                 | `file:D:/你的路径/dsh-opencode-go-usage-3.2.1.tgz`                                                           |
 
 命令行等价写法（`dsh plugin` 会把声明了 `dsh.bundle` 的依赖自动加进 profile 的 bundles，无需手写 patch）：
 
@@ -105,23 +117,20 @@ dsh plugin --profile web add github:verneuil/dsh-opencode-go-usage
 
 ## 设置页
 
-设置页分三个标签：**用量数据**（默认）/ **浮窗管理** / **API Key**；
-
-标签栏右侧常驻 **恢复默认设置**，任何标签下都能一键写回。
+设置页分三个标签：**用量数据**（默认）/ **浮窗管理** / **通用设置**。
 
 页面顶部标题右侧是 **GitHub 图标 + 当前版本号**（如 `v3.2.1`），点击图标打开本插件仓库。
 
 **用量数据**
 
-- 「OpenCode Go 用量详情」标题右侧是 **OpenCode 官方图标**，点击打开 [OpenCode 账户页](https://opencode.ai/console)。
 - **配额参考模型选择**：下拉框列出 OpenCode Go 全部官方模型（默认 **DeepSeek V4.1 Flash**）；下方小字显示**模型表更新时间**与本次刷新结果。
 - **金额显示计价币种**：三选一： `自动` / `¥ 人民币` / `＄ 美元`；下方小字显示**当前汇率、汇率更新时间**与刷新结果。
 - **套餐配额**： `模型：X（总配额：Z，消耗：Y，剩余：W）`；金额按**参考模型的 Go 档月度配额 × 本月已用百分比**折算。
 - **用量详情**：三个窗口的进度条、百分比（口径可选）、重置倒计时与接口 status。
-- **进度口径二选一**（用量详情卡片右上角）：**已使用** / **剩余**，浮窗与设置页同时跟随；默认**已使用**。
+- **进度口径二选一**（用量详情卡片右上角）：**已使用** / **剩余**；紧挨着它的是 **OpenCode 官方图标**，点击打开 [OpenCode 账户页](https://opencode.ai/console)。浮窗与设置页同时跟随该口径；默认**已使用**。
 - 卡片下方两行：
-  -  **手动刷新 + 更新时间**（成功后显示「已更新（时间）」，**3 秒后自动回落**成「上次更新：…」）；
-  -  **自动刷新间隔**（设置分钟数并保存，区间 0.5 ~ 1440）。
+  - **手动刷新 + 更新时间**（成功后显示「已更新（时间）」，**3 秒后自动回落**成「上次更新：…」）；
+  - **自动刷新间隔**（设置分钟数并保存，区间 0.5 ~ 1440）。
 - **获取失败点名**：任何一项数据抓取失败，错误行出现在**手动刷新按钮左侧**（悬停浮层**最底部**同样有一行），明确写出是 **OCG 用量 / DeepSeek 官方余额 / 汇率 / 模型列表及配额**中的哪一项失败。
 
 **浮窗管理**
@@ -130,19 +139,21 @@ dsh plugin --profile web add github:verneuil/dsh-opencode-go-usage
 - **在浮窗左侧显示余额**（开关）：浮窗左侧显示一行余额；关掉后下一项一并收起。
 - **浮窗左侧余额数据**（二选一）：`DS余额` / `OCG配额剩余` —— 决定左侧那一行取哪份数据（DS 余额包含赠金）。
 - **鼠标悬停浮层余额数据**（下拉多选）：`DS余额` / `OCG配额剩余` —— 可只显示其一、两个都显示，或**都不显示**（此时浮层只留三条进度条）；**点击下拉范围之外会自动收起**。
-- **极简模式**（开关）：三环嵌套（R / W / M）+ 余额取整显示在环旁。
+- **极简模式**（开关）：三环嵌套（外 / 中 / 内）+ 余额取整显示在环旁。
+- **三环显示数据**（仅在极简模式下可用）：分别指定外 / 中 / 内三环显示「5 小时 / 本周 / 本月」中的哪一个，右侧带实时预览（三个按钮左侧标注「外环 / 中环 / 内环」）。
 - **重置浮窗位置**：把浮窗放回默认位置（窗口左上角）。
 
-**API Key**
+**通用设置**
 
-- **两把 Key 的覆盖输入**（留空即用 DSH 凭据库；可随时清空改回自动）。
+- **API Key** 小节：**两把 Key 的覆盖输入**（留空即用 DSH 凭据库；可随时清空改回自动）。
+- **设置** 小节：
+  - **侧栏入口**（开关）：开启后 DSH 侧边栏里出现本插件入口，点它直接打开本插件的整页设置界面；默认关闭，不影响设置页本身；
+  - **恢复默认设置**：一次写回「已使用口径 / 5 分钟自动刷新 / 极简模式开 / 浮窗不显示余额 / 参考模型 DeepSeek V4.1 Flash / 金额币种自动 / 左侧来源 DS余额 / 浮层两种余额都显示 / 左上角默认位置」—— 新装默认形态就是这一套。
 
 **共同行为**
 
-**侧栏入口**（标签栏右侧、「恢复默认设置」左边）：开关侧栏里是否出现本插件入口；默认关闭，不影响设置页本身；
-- **恢复默认设置**（标签栏最右）：一次写回「已使用口径 / 5 分钟自动刷新 / 极简模式开 / 浮窗不显示余额 / 参考模型 DeepSeek V4.1 Flash / 金额币种自动 / 左侧来源 DS余额 / 浮层两种余额都显示 / 左上角默认位置」—— 新装默认形态就是这一套。
-
 - **每个操作的提示就地出现在该行**，失败红色、成功绿色；提示放在标题行的槽位里，**出现与消失都不顶动排版**，**停留 3 秒后自动消失**。
+- **说明文字优先换行**：标题 / 说明与右侧控件争空间时，说明文字自动折行，控件始终留在同一行右侧；过长的标题同样换行而不是截断。
 
 因为自带设置页，宿主侧调用了官方的 `settings.configure({ auto: false })` 关掉自动生成的表单页，避免出现两个重复的配置界面。
 
@@ -150,13 +161,13 @@ dsh plugin --profile web add github:verneuil/dsh-opencode-go-usage
 
 > 六张均为**界面示意渲染**：按插件的真实样式与宿主主题令牌生成。设置页两张取自「用量数据」标签（含配额参考模型选择、金额显示计价币种、套餐配额一行小字）；总览图含悬停浮层的最新形态（账户余额行 + 配额剩余行 + 三条进度条，固定宽度 232px，金额右对齐）。 第六张为开启「侧栏入口」后从侧栏打开的整页设置界面。
 
-| 浮窗 · 浅色                                     | 浮窗 · 深色                                    |
-| ------------------------------------------- | ------------------------------------------ |
-| ![浮窗 · 浅色](screenshots/float-light.png)     | ![浮窗 · 深色](screenshots/float-dark.png)     |
-| **设置页 · 浅色**                                | **设置页 · 深色**                               |
-| ![设置页 · 浅色](screenshots/settings-light.png) | ![设置页 · 深色](screenshots/settings-dark.png) |
-| **侧栏入口 · 整页设置**（开启「侧栏入口」后，点侧栏里那一行打开的页面） | |
-| ![侧栏入口 · 整页设置](screenshots/sidebar-light.png) | |
+| 浮窗 · 浅色                                                             | 浮窗 · 深色                                     |
+| ----------------------------------------------------------------------- | ----------------------------------------------- |
+| ![浮窗 · 浅色](screenshots/float-light.png)                             | ![浮窗 · 深色](screenshots/float-dark.png)      |
+| **设置页 · 浅色**                                                       | **设置页 · 深色**                               |
+| ![设置页 · 浅色](screenshots/settings-light.png)                        | ![设置页 · 深色](screenshots/settings-dark.png) |
+| **侧栏入口 · 整页设置**（开启「侧栏入口」后，点侧栏里那一行打开的页面） |                                                 |
+| ![侧栏入口 · 整页设置](screenshots/sidebar-light.png)                   |                                                 |
 
 **形态与配色总览**（更新中 / 成功 / 失败 / 三档配色 / 极简模式 / 最精简形态 / 关掉余额后变窄）
 
@@ -193,38 +204,39 @@ GET https://api.frankfurter.app/latest?from=USD&to=CNY      # USD/CNY 汇率（�
 
 ## 构型
 
-| 部分           | 位置                 | 说明                                                                                                   |
-| ------------ | ------------------ | ---------------------------------------------------------------------------------------------------- |
-| Bundle 清单    | `package.json`     | `dsh.bundle.patch` + `dsh.client`（platform web、immediately）+ `icon` + `locale/*.json` 显示元数据          |
-| Loader patch | `cordis.patch.yml` | 插入一行 `id: opencode-go-usage`（本行 id 同时是设置表单的 ns）                                                      |
-| 宿主半侧         | `index.js`         | `export const Config`（schemastery）+ `apply(ctx, config)`；拉取、解析、写回快照、自动刷新                             |
-| 客户端半侧        | `client.js`        | `window.__ModuleLoader__` 惰性工厂；只 `require('react')`，注册进 `shell.overlay`（浮窗）与 `settings.section`（设置页） |
+| 部分         | 位置               | 说明                                                                                                                     |
+| ------------ | ------------------ | ------------------------------------------------------------------------------------------------------------------------ |
+| Bundle 清单  | `package.json`     | `dsh.bundle.patch` + `dsh.client`（platform web、immediately）+ `icon` + `locale/*.json` 显示元数据                      |
+| Loader patch | `cordis.patch.yml` | 插入一行 `id: opencode-go-usage`（本行 id 同时是设置表单的 ns）                                                          |
+| 宿主半侧     | `index.js`         | `export const Config`（schemastery）+ `apply(ctx, config)`；拉取、解析、写回快照、自动刷新                               |
+| 客户端半侧   | `client.js`        | `window.__ModuleLoader__` 惰性工厂；只 `require('react')`，注册进 `shell.overlay`（浮窗）与 `settings.section`（设置页） |
 
 ## 配置项
 
 设置页覆盖了常用项；下表中的字段也可以直接改本行 patch 的 `config`。
 
-| 字段                                                           | 说明                                                   |
-| ------------------------------------------------------------ | ---------------------------------------------------- |
-| `apiKey`                                                     | OpenCode Go 的手动 API Key（secret）。留空则自动使用 DSH 凭据库      |
-| `deepseekApiKey`                                             | DeepSeek 的手动 API Key（secret）。留空则自动使用 DSH 凭据库         |
-| `refreshMinutes`                                             | 自动刷新间隔（分钟，默认 5）；一轮同时刷新余额与用量                          |
-| `widgetVisible`                                              | 浮窗显示开关                                               |
-| `showBalance`                                                | 浮窗左侧是否显示余额那一行（默认关）                                   |
-| `pillBalanceSource`                                          | 浮窗左侧余额数据：`deepseek` DS 余额（默认）/ `quota` OCG 配额剩余      |
-| `tipShowBalance`、`tipShowQuota`                              | 悬停浮层里两行余额是否显示（默认都开；都关则浮层只留进度条）                       |
-| `sidebarEntry` | 侧栏里是否出现本插件入口（默认关闭；等同于设置页的「侧栏入口」开关） |
-| `quotaRefModel`                                              | 配额参考模型 ID（默认 `deepseek-v4.1-flash`，可选项来自官方模型表）       |
-| `currencyMode`                                               | 金额计价币种：`auto` 自动（默认）/ `cny` 人民币 / `usd` 美元           |
-| `percentMode`                                                | 用量进度口径：`used` 已使用（默认）/ `left` 剩余                     |
-| `widgetAnchorX/Y`、`widgetOffsetX/Y`                          | 浮窗锚定（拖动时由客户端写入；默认窗口左上角 11 / 50）                      |
-| `refreshRequest`                                             | 手动刷新计数（点击浮窗时由客户端递增）                                  |
-| `refreshTick`                                                | 宿主每轮拉取前自增的「更新中」信号（客户端只读，用来点亮边框反馈）                    |
-| `minimalMode`                                                | 极简模式：三环嵌套（余额取整显示在环旁，默认开）                             |
-| `keyStatus`、`keyHint`、`usageError`、`lastUpdated`、`usage`     | OCG 用量的派生快照（宿主写入，客户端读取）                              |
-| `balanceKeyStatus`、`balanceKeyHint`、`balanceError`、`balance` | DeepSeek 余额的派生快照（宿主写入，客户端读取）                         |
-| `goModels`、`goModelsAt`、`goModelsSource`、`goModelsError`     | 模型清单与配额的派生快照（`source` = `live` 实时 / `snapshot` 内置快照） |
-| `fxUsdCny`、`fxAt`、`fxRateDate`、`fxSource`、`fxError`          | USD/CNY 汇率、汇率数据日期与采集时刻的派生快照                          |
+| 字段                                                            | 说明                                                                                                                                         |
+| --------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `apiKey`                                                        | OpenCode Go 的手动 API Key（secret）。留空则自动使用 DSH 凭据库                                                                              |
+| `deepseekApiKey`                                                | DeepSeek 的手动 API Key（secret）。留空则自动使用 DSH 凭据库                                                                                 |
+| `refreshMinutes`                                                | 自动刷新间隔（分钟，默认 5）；一轮同时刷新余额与用量                                                                                         |
+| `widgetVisible`                                                 | 浮窗显示开关                                                                                                                                 |
+| `showBalance`                                                   | 浮窗左侧是否显示余额那一行（默认关）                                                                                                         |
+| `pillBalanceSource`                                             | 浮窗左侧余额数据：`deepseek` DS 余额（默认）/ `quota` OCG 配额剩余                                                                           |
+| `tipShowBalance`、`tipShowQuota`                                | 悬停浮层里两行余额是否显示（默认都开；都关则浮层只留进度条）                                                                                 |
+| `sidebarEntry`                                                  | 侧栏里是否出现本插件入口（默认关闭；等同于设置页的「侧栏入口」开关）                                                                         |
+| `ringOuter` / `ringMiddle` / `ringInner`                        | 极简模式下外 / 中 / 内三环各自显示的窗口：`rolling` = 5 小时、`weekly` = 本周、`monthly` = 本月（默认分别 `monthly` / `weekly` / `rolling`） |
+| `quotaRefModel`                                                 | 配额参考模型 ID（默认 `deepseek-v4.1-flash`，可选项来自官方模型表）                                                                          |
+| `currencyMode`                                                  | 金额计价币种：`auto` 自动（默认）/ `cny` 人民币 / `usd` 美元                                                                                 |
+| `percentMode`                                                   | 用量进度口径：`used` 已使用（默认）/ `left` 剩余                                                                                             |
+| `widgetAnchorX/Y`、`widgetOffsetX/Y`                            | 浮窗锚定（拖动时由客户端写入；默认窗口左上角 11 / 50）                                                                                       |
+| `refreshRequest`                                                | 手动刷新计数（点击浮窗时由客户端递增）                                                                                                       |
+| `refreshTick`                                                   | 宿主每轮拉取前自增的「更新中」信号（客户端只读，用来点亮边框反馈）                                                                           |
+| `minimalMode`                                                   | 极简模式：三环嵌套（余额取整显示在环旁，默认开）                                                                                             |
+| `keyStatus`、`keyHint`、`usageError`、`lastUpdated`、`usage`    | OCG 用量的派生快照（宿主写入，客户端读取）                                                                                                   |
+| `balanceKeyStatus`、`balanceKeyHint`、`balanceError`、`balance` | DeepSeek 余额的派生快照（宿主写入，客户端读取）                                                                                              |
+| `goModels`、`goModelsAt`、`goModelsSource`、`goModelsError`     | 模型清单与配额的派生快照（`source` = `live` 实时 / `snapshot` 内置快照）                                                                     |
+| `fxUsdCny`、`fxAt`、`fxRateDate`、`fxSource`、`fxError`         | USD/CNY 汇率、汇率数据日期与采集时刻的派生快照                                                                                               |
 
 ## 稳健性设计
 
