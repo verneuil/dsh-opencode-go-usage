@@ -1,0 +1,11 @@
+version: 2
+updates:
+  # 没有运行时依赖，因此只跟 GitHub Actions 的版本，避免无意义 PR
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly
+    commit-message:
+      prefix: ci
+    labels:
+      - dependencies
