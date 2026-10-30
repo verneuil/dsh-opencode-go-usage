@@ -1,3 +1,27 @@
+## 3.2.1
+
+### 改进
+- 「API Key」标签更名为「通用设置」并重新组织：两把密钥归入「API Key」小节；「侧栏入口」与「恢复默认设置」从标题右侧的常驻位置移入该标签的「设置」小节，各带一行说明；
+- 设置页顶部的说明文字、以及各标签下与标签名重复的标题（用量数据 / 浮窗管理）均已删除，标签栏与内容间距统一；
+- 「用量数据」标签里跳转 OpenCode 控制台的图标移到「已使用 / 剩余」切换按钮旁；
+- 说明文字与右侧控件争空间时改为自动换行，控件保持同一行右侧对齐，不再把整行折行撑高；
+- 文案精简：三环显示数据的说明去掉交换解释、悬停浮层余额的说明去掉重复括号、DeepSeek API Key 的说明去掉「余额明细见 DSH 官方账号菜单」。
+
+### 修复
+- 修复英文界面下切换到「浮窗管理」标签时出现横向滚动条的问题。
+
+---
+
+### Improvements
+- Renamed the "API Key" tab to "General settings" and reorganised it: both keys now sit under an "API Key" section, while the sidebar-entry switch and the restore-defaults button moved from the header into a "Settings" section, each with an explanatory hint;
+- Removed the intro paragraph under the settings title and the headings that only repeated the tab names (Usage data / Floating pill); the tab bar now has a consistent gap;
+- Moved the OpenCode console shortcut in the "Usage data" tab next to the Used / Left switch;
+- Hints now wrap onto a second line instead of forcing the row to break, so the control stays right-aligned on the same row;
+- Tightened the copy: dropped the swap explanation from the ring-mapping hint, the duplicated parenthetical from the hover-popover hint, and the "balance details live in the DSH account menu" note from the DeepSeek API key hint.
+
+### Fixes
+- Fixed a horizontal scrollbar that appeared on the "Floating pill" tab in the English UI.
+
 ## 3.2.0
 
 ### 新功能

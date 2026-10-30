@@ -80,8 +80,8 @@ In DSH, open the **plugin manager → “Install plugin” dialog → paste one 
 | ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------- |
 | **Straight from GitHub** (recommended)      | `github:verneuil/dsh-opencode-go-usage`                                                                          |
 | **From npm**                              | `dsh plugin --profile web add @verneuil/dsh-opencode-go-usage`                                                                 |
-| **Pin a version**                          | `github:verneuil/dsh-opencode-go-usage#v3.2.0` (replace with any published tag)                                    |
-| **Release tarball**                        | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v3.2.0/dsh-opencode-go-usage-3.2.0.tgz`    |
+| **Pin a version**                          | `github:verneuil/dsh-opencode-go-usage#v3.2.1` (replace with any published tag)                                    |
+| **Release tarball**                        | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v3.2.1/dsh-opencode-go-usage-3.2.0.tgz`    |
 | **Release URL (always latest)**            | `https://github.com/verneuil/dsh-opencode-go-usage/releases/latest/download/dsh-opencode-go-usage.tgz`            |
 | **Offline tgz**                            | `file:D:/your/path/dsh-opencode-go-usage-3.2.0.tgz`                                                             |
 
@@ -111,7 +111,7 @@ The settings page has three tabs: **Usage data** (default) / **Floating pill** /
 **Sidebar entry** (right of the tabs, left of "Restore defaults"): whether the sidebar shows a row for this plugin; off by default and it never affects the settings page itself;
 **Restore defaults** sits permanently at the right end of the tab bar and writes everything back from any tab.
 
-Next to the page title sit the **GitHub icon and the current version** (e.g. `v3.2.0`); clicking the icon opens this repository.
+Next to the page title sit the **GitHub icon and the current version** (e.g. `v3.2.1`); clicking the icon opens this repository.
 
 **Usage data**
 

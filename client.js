@@ -230,7 +230,15 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
     '.ocgu-subrow-right{display:flex;align-items:center;gap:10px;flex:none}' +
     '.ocgu-subrow-right .ocgu-msg{max-width:none}' +
     // 标签栏：左侧三个标签（复用 .ocgu-seg 分段控件），右侧常驻「恢复默认设置」+ 结果提示
-    '.ocgu-tabs{display:flex;align-items:center;gap:12px;margin:18px 0 2px}' +
+    '.ocgu-tabs{display:flex;align-items:center;gap:12px;margin:22px 0 16px}' +
+    // 防横向溢出：flex 子项默认 min-width:auto，英文长文案会把整行撑出容器
+    '.ocgu-field,.ocgu-field-main,.ocgu-field-right,.ocgu-field-control,.ocgu-tabs,.ocgu-seg{min-width:0}' +
+    '.ocgu-field[data-layout="inline"]>.ocgu-field-main{flex:1 1 auto}' +
+    // 说明文字过长时：主列变窄并自动换行，右侧控件留在同一行（不再整行折行把行撑高）
+    '.ocgu-field[data-layout="inline"]{flex-wrap:nowrap}' +
+    '.ocgu-field[data-layout="inline"] .ocgu-hint{white-space:normal;overflow-wrap:anywhere}' +
+    '.ocgu-field[data-layout="inline"]>.ocgu-field-right{flex:0 0 auto;margin-left:auto}' +
+    '.ocgu-field[data-layout="inline"] .ocgu-field-title{white-space:normal}' +
     '.ocgu-tabs .ocgu-seg{flex:0 0 auto;gap:4px;padding:2px}' +
     // 标签：更宽、高度压到与「恢复默认设置」按钮等高（按钮 28px = 24px 标签 + 上下各 2px 容器内边距）
     '.ocgu-tabs .ocgu-seg-item{height:24px;padding:0 22px;font-size:13px;line-height:1;border-radius:7px}' +
@@ -748,7 +756,12 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
       'settings.intro': 'OpenCode Go 的 5 小时 / 本周 / 本月用量。点击浮窗即刷新，拖动可移动位置。',
       'tab.usage': '用量数据',
       'tab.widget': '浮窗管理',
-      'tab.general': 'API Key',
+      'tab.general': '通用设置',
+      'sec.apiKey': 'API Key',
+      'sec.settings': '设置',
+      'field.sidebarEntry.hint': '开启后插件设置菜单会出现在 DSH 侧边栏上，默认关闭',
+      'field.restoreDefaults': '恢复默认设置',
+      'field.restoreDefaults.hint': '恢复所有设置为默认状态',
       'aria.tabs': '设置分组',
       'title.console': '打开 OpenCode 账户页（opencode.ai/console）',      'field.widget.master': '浮窗总开关',
       'field.pillBalance': '在浮窗左侧显示余额',
@@ -756,7 +769,7 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
       'field.pillBalanceSrc': '浮窗左侧余额数据',
       'field.pillBalanceSrc.hint': 'DS余额包含赠金',
       'field.ringMap': '三环显示数据',
-      'field.ringMap.hint': '分别指定极简模式下外 / 中 / 内三环显示哪个窗口；选到已被占用的窗口会与另一环自动交换',
+      'field.ringMap.hint': '分别指定极简模式下外 / 中 / 内三环显示哪个窗口',
       'ring.outer': '外环',
       'ring.middle': '中环',
       'ring.inner': '内环',
@@ -768,7 +781,7 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
       'pill.srcDeepseek': 'DS余额',
       'pill.srcQuota': 'OCG配额剩余',
       'field.tipBalanceSrc': '鼠标悬停浮层余额数据',
-      'field.tipBalanceSrc.hint': '两个都不勾选时，浮层只显示三条进度条（DS余额包含赠金）',
+      'field.tipBalanceSrc.hint': '两个都不勾选时，浮层只显示三条进度条',
       'tip.chkDeepseek': 'DS余额',
       'tip.chkQuota': 'OCG配额剩余',
       'tip.ddNone': '都不显示',
@@ -801,7 +814,7 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
       'field.widget.shown': '显示中（{anchor}）',
       'field.widget.hidden': '已隐藏（后台仍按间隔刷新）',
       'field.dsKey': 'DeepSeek API Key（可选覆盖）',
-      'field.dsKey.hint': '留空 = 使用 DSH 凭据库的 DEEPSEEK_API_KEY · 当前 {mask}。余额明细见 DSH 官方账号菜单。',
+      'field.dsKey.hint': '留空 = 使用 DSH 凭据库的 DEEPSEEK_API_KEY · 当前 {mask}',
       'field.ocgKey': 'OpenCode Go API Key（可选覆盖）',
       'field.ocgKey.hint': '留空 = 使用 DSH 凭据库的 OPENCODE_GO_API_KEY · 当前 {mask}',
       'ph.key': 'sk-...（留空则不覆盖）',
@@ -903,7 +916,12 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
       'settings.intro': 'OpenCode Go usage for the Rolling, weekly and monthly windows. Click the pill to refresh; drag it to move.',
       'tab.usage': 'Usage data',
       'tab.widget': 'Floating pill',
-      'tab.general': 'API Key',
+      'tab.general': 'General',
+      'sec.apiKey': 'API Key',
+      'sec.settings': 'Settings',
+      'field.sidebarEntry.hint': 'When enabled, the plugin also gets an entry in the DSH sidebar; off by default',
+      'field.restoreDefaults': 'Restore defaults',
+      'field.restoreDefaults.hint': 'Restore every setting to its default value',
       'aria.tabs': 'Settings groups',
       'title.console': 'Open the OpenCode account page (opencode.ai/console)',
       'field.widget.master': 'Floating pill',
@@ -912,7 +930,7 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
       'field.pillBalanceSrc': 'Pill left-side balance data',
       'field.pillBalanceSrc.hint': 'The DS balance includes bonus credit',
       'field.ringMap': 'Ring data mapping',
-      'field.ringMap.hint': 'Choose which window each outer / middle / inner ring shows in minimal mode; picking a window already in use swaps the two rings',
+      'field.ringMap.hint': 'Choose which window each outer / middle / inner ring shows in minimal mode',
       'ring.outer': 'Outer',
       'ring.middle': 'Middle',
       'ring.inner': 'Inner',
@@ -924,7 +942,7 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
       'pill.srcDeepseek': 'DS balance',
       'pill.srcQuota': 'OCG quota left',
       'field.tipBalanceSrc': 'Hover popover balance data',
-      'field.tipBalanceSrc.hint': 'With neither box ticked the popover shows only the three progress bars (the DS balance includes bonus credit)',
+      'field.tipBalanceSrc.hint': 'With neither box ticked the popover shows only the three progress bars',
       'tip.chkDeepseek': 'DS balance',
       'tip.chkQuota': 'OCG quota',
       'tip.ddNone': 'None',
@@ -957,7 +975,7 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
       'field.widget.shown': 'Shown ({anchor})',
       'field.widget.hidden': 'Hidden (still refreshing on schedule)',
       'field.dsKey': 'DeepSeek API key (optional override)',
-      'field.dsKey.hint': 'Empty = use DEEPSEEK_API_KEY from the DSH credential store · current {mask}. Balance details are in the DSH account menu.',
+      'field.dsKey.hint': 'Empty = use DEEPSEEK_API_KEY from the DSH credential store · current {mask}',
       'field.ocgKey': 'OpenCode Go API key (optional override)',
       'field.ocgKey.hint': 'Empty = use OPENCODE_GO_API_KEY from the DSH credential store · current {mask}',
       'ph.key': 'sk-... (empty = keep current)',
@@ -2151,36 +2169,16 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
           ? React.createElement('span', { className: 'ocgu-ver', title: 'dsh-opencode-go-usage v' + value.pluginVersion },
             'v' + value.pluginVersion)
           : null),
-      React.createElement('div', { className: 'ocgu-hint', style: { marginTop: '4px' } },
-        t('settings.intro')),
-      // ── 标签栏（左：用量 / 通用 / 悬浮窗）＋ 常驻「恢复默认设置」（最右）──
+      // 标签栏：紧跟标题，不再有说明文字与右上角常驻控件（两者已移入「通用」标签）
       React.createElement('div', { className: 'ocgu-tabs' },
         React.createElement('div', { className: 'ocgu-seg', role: 'tablist', 'aria-label': t('aria.tabs') },
           tabButton('usage', 'tab.usage'),
           tabButton('widget', 'tab.widget'),
-          tabButton('general', 'tab.general')),
-        React.createElement('span', {
-          className: 'ocgu-msg', 'data-tone': msgOf('resetAll') ? toneOf('resetAll') : 'muted',
-          role: 'status', 'aria-live': 'polite', title: msgOf('resetAll') || ''
-        }, msgOf('resetAll')),
-        // 侧栏入口开关：三个标签右边、「恢复默认设置」左边；宿主不支持该槽位时不显示
-        props.sidebarApi && props.sidebarApi.supported ? React.createElement('div', { className: 'ocgu-tabs-toggle' },
-          React.createElement('span', { className: 'ocgu-tabs-label' }, t('field.sidebarEntry')),
-          sw(value.sidebarEntry === true, toggleSidebarEntry, t('field.sidebarEntry'), false)) : null,
-        React.createElement('button', {
-          className: 'ocgu-btn', 'data-kind': 'outline', onClick: resetAll, title: t('title.resetAll')
-        }, t('btn.resetAll'))),
+          tabButton('general', 'tab.general'))),
 
-      // ── 标签一：用量（用量详情 + 官网入口 + 自动刷新间隔 + 手动刷新）──
+      // ── 标签一：用量（配额参考 + 计价币种 + 套餐配额卡片 + 自动刷新间隔）──
       tab === 'usage' ? React.createElement('div', null,
-      // 标题行：标题 + 紧跟其后的 OpenCode 官方图标（左对齐，不靠右）
-      React.createElement('div', { className: 'ocgu-subrow' },
-        React.createElement('div', { className: 'ocgu-sub', style: { flex: '0 1 auto' } }, t('settings.usageTitle')),
-        React.createElement('button', {
-          className: 'ocgu-iconbtn', onClick: openConsole,
-          title: t('title.console'), 'aria-label': t('title.console')
-        }, opencodeIcon())),
-      // 配额参考模型选择（位于「用量详情」标题与进度条卡片之间）
+      // 配额参考模型选择（本标签第一项；原「用量详情」标题与标签名重复，已删除）
       React.createElement(FieldRow, {
         title: t('quota.pick'),
         hint: quotaModelHint(value, t),
@@ -2239,7 +2237,12 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
               type: 'button', className: 'ocgu-seg-item', role: 'radio',
               'aria-checked': mode === 'left' ? 'true' : 'false', 'data-on': mode === 'left' ? '1' : '0',
               onClick: function () { setMode('left'); }
-            }, t('mode.left')))),
+            }, t('mode.left'))),
+          // 跳转 OpenCode 控制台：紧随「已使用 / 剩余」切换（原在页面标题右侧）
+          React.createElement('button', {
+            className: 'ocgu-iconbtn', onClick: openConsole,
+            title: t('title.console'), 'aria-label': t('title.console')
+          }, opencodeIcon())),
         winList,
         React.createElement('div', { className: 'ocgu-hint', style: { marginTop: '6px' } },
           t(mode === 'used' ? 'settings.cardHintUsed' : 'settings.cardHint')),
@@ -2290,12 +2293,11 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
 
       // ── 标签三：Key 管理（两把 Key）──
       tab === 'general' ? React.createElement('div', null,
-      React.createElement('div', { className: 'ocgu-sub' }, t('settings.section')),
+      React.createElement('div', { className: 'ocgu-sub' }, t('sec.apiKey')),
       ) : null,
 
       // ── 标签三：悬浮窗（总开关 + 三项；总开关关闭后三项变灰且不可操作）──
       tab === 'widget' ? React.createElement('div', null,
-        React.createElement('div', { className: 'ocgu-sub' }, t('tab.widget')),
         React.createElement(FieldRow, {
           title: t('field.widget.master'),
           hint: value.widgetVisible
@@ -2452,6 +2454,27 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
           }, t('btn.clear'))
         ],
         nowrap: true
+      }),
+      // ── 「设置」小节：两个全局动作（原在标题右侧常驻，现改为本标签内的普通设置项）──
+      React.createElement('div', { className: 'ocgu-sub', style: { marginTop: '28px' } }, t('sec.settings')),
+      props.sidebarApi && props.sidebarApi.supported ? React.createElement(FieldRow, {
+        title: t('field.sidebarEntry'),
+        hint: t('field.sidebarEntry.hint'),
+        msg: msgOf('sidebar'),
+        tone: toneOf('sidebar'),
+        nowrap: true,
+        control: [sw(value.sidebarEntry === true, toggleSidebarEntry, t('field.sidebarEntry'), false)]
+      }) : null,
+      React.createElement(FieldRow, {
+        title: t('field.restoreDefaults'),
+        hint: t('field.restoreDefaults.hint'),
+        msg: msgOf('resetAll'),
+        tone: toneOf('resetAll'),
+        nowrap: true,
+        control: [React.createElement('button', {
+          key: 'resetAll', className: 'ocgu-btn', 'data-kind': 'outline', onClick: resetAll,
+          title: t('title.resetAll')
+        }, t('btn.resetAll'))]
       }),
       ) : null);
   }
