@@ -1,6 +1,5 @@
 window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (require) => {
   var module = { exports: {} };
-  var exports = module.exports;
   var React = require('react');
 
   // 配置表单的 ns = 本插件 patch 行的 id（宿主侧 settings.describe() 按 entry id 投影）
@@ -606,8 +605,8 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
   function resolvePos(cfg, cardRect, node) {
     var vw = window.innerWidth || 0;
     var vh = window.innerHeight || 0;
-    var w = node ? (node.offsetWidth || 0) : 0;
-    var h = node ? (node.offsetHeight || 0) : 0;
+    var w = (node && node.offsetWidth) || 0;
+    var h = (node && node.offsetHeight) || 0;
     var ax = cfg.widgetAnchorX, ox = cfg.widgetOffsetX;
     var ay = cfg.widgetAnchorY, oy = cfg.widgetOffsetY;
     var x, y;
@@ -981,10 +980,6 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
       resetsAt: typeof w.resetsAt === 'string' ? w.resetsAt : ''
     };
   }
-  function balanceOf(value) {
-    var b = value && typeof value.balance === 'object' && value.balance ? value.balance : null;
-    return b && b.totalBalance ? b : null;
-  }
   function floatWarn(value) {
     return value.keyStatus === 'missing' || value.balanceKeyStatus === 'missing'
       || !!value.usageError || !!value.balanceError;
@@ -1017,9 +1012,7 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
     var rsState = React.useState('idle');
     var refreshState = rsState[0];
     var setRefreshState = rsState[1];
-    var rminState = React.useState(5);
-    var refreshMinutes = rminState[0];
-    var setRefreshMinutes = rminState[1];
+    var setRefreshMinutes = React.useState(5)[1];
     var tickState = React.useState(0);
     var setTick = tickState[1];
     // 悬停临时浮层（余额 + 三条精简进度）：hovering 控制显隐，tipUp 决定向上/向下展开

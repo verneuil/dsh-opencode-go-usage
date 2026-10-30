@@ -55,7 +55,7 @@ console.log('# version triple')
 const pkg = JSON.parse(read('package.json'))
 check('semver-ish version', () => /^\d+\.\d+\.\d+$/.test(pkg.version))
 check('go-fetch User-Agent carries the same version', () => read('go-fetch.js').includes(`dsh-opencode-go-usage/${pkg.version}`))
-check('CHANGELOG has a section for this version', () => new RegExp(`^## ${pkg.version.replace(/\./g, '\\.')}$`, 'm').test(read('CHANGELOG.md')))
+check('CHANGELOG has a section for this version', () => read('CHANGELOG.md').split('\n').includes(`## ${pkg.version}`))
 check('CHANGELOG newest section is this version', () => (read('CHANGELOG.md').match(/^## (\d+\.\d+\.\d+)$/m) || [])[1] === pkg.version)
 
 console.log('# manifest')

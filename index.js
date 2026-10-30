@@ -569,7 +569,6 @@ export function apply(ctx, config) {
       await writeBack({ refreshTick: cfg.refreshTick + 1 })
 
       const patch = {}
-      let answered = false
 
       // ── OpenCode Go 用量 ──────────────────────────────────────────────
       if (ocgNotReady) {
@@ -580,7 +579,6 @@ export function apply(ctx, config) {
         fetchRetryStep = 0
         patch.keyStatus = ocg.status
         patch.keyHint = ocg.hint
-        answered = true
         try {
           patch.usage = await fetchUsage(ocg.key)
           patch.usageError = ""
@@ -608,7 +606,6 @@ export function apply(ctx, config) {
           patch.usageError = "未配置 OpenCode Go API Key（可在本插件设置页填写，或写入 DSH 凭据库的 OPENCODE_GO_API_KEY）"
           patch.usage = {}
         }
-        answered = true
         scheduleMissingRetry()
       }
 
@@ -621,7 +618,6 @@ export function apply(ctx, config) {
         fetchRetryStep = 0
         patch.balanceKeyStatus = ds.status
         patch.balanceKeyHint = ds.hint
-        answered = true
         try {
           patch.balance = await fetchBalance(ds.key)
           patch.balanceError = ""
@@ -644,16 +640,12 @@ export function apply(ctx, config) {
           patch.balanceError = "未配置 DeepSeek API Key（可在本插件设置页填写，或写入 DSH 凭据库的 DEEPSEEK_API_KEY）"
           patch.balance = {}
         }
-        answered = true
         scheduleMissingRetry()
       }
 
       // 模型表与汇率总有结论（实时值或内置快照），因此本轮一定有内容可写
       Object.assign(patch, auxPatch)
-      answered = true
-
-      // 两侧都没给出结论时不写盘（也不更新「本轮刷新时间」）
-      if (!answered) return
+      // 模型表与汇率总有结论（实时值或内置快照），因此本轮一定有内容可写：直接落盘并刷新本轮时间
       patch.lastUpdated = new Date().toISOString()
       await writeBack(patch)
     })().finally(function () { inflight = null })

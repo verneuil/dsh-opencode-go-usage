@@ -14,6 +14,9 @@ pnpm-debug.log*
 _tmp/
 _v/
 
+# 本地经验文档（只在本机使用，禁止提交/推送）
+LOCAL_DEV_NOTES/
+
 # 编辑器与系统
 .vscode/
 .idea/
