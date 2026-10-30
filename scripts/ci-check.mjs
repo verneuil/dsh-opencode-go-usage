@@ -113,6 +113,13 @@ for (const [label, needle] of [
   check(`client contains ${label}`, () => client.includes(needle))
 }
 
+console.log('# ring mapping')
+check('Config declares the three ring fields', () => ['ringOuter', 'ringMiddle', 'ringInner'].every((k) => read('index.js').includes('  ' + k + ': z.string()')))
+check('ring defaults keep outer=M / middle=W / inner=R', () => /ringOuter: z\.string\(\)\.default\("monthly"\)/.test(read('index.js')) && /ringMiddle: z\.string\(\)\.default\("weekly"\)/.test(read('index.js')) && /ringInner: z\.string\(\)\.default\("rolling"\)/.test(read('index.js')))
+check('client resolves the mapping with a uniqueness fallback', () => read('client.js').includes('function ringKeysOf'))
+check('client renders the live preview block', () => read('client.js').includes('ocgu-rmap') && read('client.js').includes('ringMapPreview'))
+check('minimal pill consumes the mapping', () => read('client.js').includes('NEST_RADII'))
+
 console.log('# locale bundles')
 for (const file of ['locale/zh.json', 'locale/en.json']) {
   check(`${file} parses and carries meta.title`, () => {

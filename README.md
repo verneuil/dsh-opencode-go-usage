@@ -54,6 +54,7 @@
   - 所有金额（DS 余额与 OCG 配额）可选 **¥ 人民币 / ＄ 美元 / 自动**（中文界面 ¥、英文界面 ＄）三种计价方式。
   - 汇率自动获取，取不到就用内置汇率，换算只影响显示。
 - **极简模式**：
+- **三环显示数据**：极简模式下的外 / 中 / 内三环可分别绑定 R（5 小时）/ W（本周）/ M（本月），右侧带实时预览；选到已被占用的窗口会自动与另一环交换。
   - 使用三环**嵌套**（内 R / 中 W / 外 M）+ 余额**取整到元**显示在环旁，胶囊更紧凑（非极简模式为「余额 + 三颗独立圆环」）；
   - 再关掉「在浮窗左侧显示余额」即为**最精简形态**：只留三环嵌套，占地最小。
 - **其他特性**：
@@ -78,10 +79,10 @@
 | -------------------- | -------------------------------------------------------------------------------------------------------------- |
 | **GitHub 直装**（推荐）    | `github:verneuil/dsh-opencode-go-usage`                                                                        |
 | **npm 安装**                 | `dsh plugin --profile web add @verneuil/dsh-opencode-go-usage`                                                                 |
-| **固定某个版本**           | `github:verneuil/dsh-opencode-go-usage#v3.1.4`（换成任意已发布 tag）                                                   |
-| **Release 包**        | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v3.1.4/dsh-opencode-go-usage-3.1.4.tgz` |
+| **固定某个版本**           | `github:verneuil/dsh-opencode-go-usage#v3.2.0`（换成任意已发布 tag）                                                   |
+| **Release 包**        | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v3.2.0/dsh-opencode-go-usage-3.2.0.tgz` |
 | **Release 直链（始终最新）** | `https://github.com/verneuil/dsh-opencode-go-usage/releases/latest/download/dsh-opencode-go-usage.tgz`         |
-| **离线 tgz**           | `file:D:/你的路径/dsh-opencode-go-usage-3.1.4.tgz`                                                                |
+| **离线 tgz**           | `file:D:/你的路径/dsh-opencode-go-usage-3.2.0.tgz`                                                                |
 
 命令行等价写法（`dsh plugin` 会把声明了 `dsh.bundle` 的依赖自动加进 profile 的 bundles，无需手写 patch）：
 
@@ -108,7 +109,7 @@ dsh plugin --profile web add github:verneuil/dsh-opencode-go-usage
 
 标签栏右侧常驻 **恢复默认设置**，任何标签下都能一键写回。
 
-页面顶部标题右侧是 **GitHub 图标 + 当前版本号**（如 `v3.1.4`），点击图标打开本插件仓库。
+页面顶部标题右侧是 **GitHub 图标 + 当前版本号**（如 `v3.2.0`），点击图标打开本插件仓库。
 
 **用量数据**
 

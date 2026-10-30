@@ -1,3 +1,19 @@
+## 3.2.0
+
+### 新功能
+- 极简模式三环可自定义设置：可分别指定外 / 中 / 内环显示「5 小时 / 本周 / 本月」中的哪一个，右侧带实时预览；
+
+### 改进
+- 插件主图标改用插件默认配色；
+
+---
+
+### New features
+- The three rings in minimal mode are now configurable: each of the outer / middle / inner rings can show any one of "5 hours / Weekly / Monthly", with a live preview on the right;
+
+### Improvements
+- The plugin icon now uses the plugin default colour palette;
+
 ## 3.1.4
 
 ### 改进

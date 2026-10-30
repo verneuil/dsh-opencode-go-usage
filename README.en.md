@@ -54,6 +54,7 @@
   - every amount (the DS balance and the OCG quota) can be priced in **¥ CNY / ＄ USD / auto** (¥ in the Chinese UI, ＄ in the English UI);
   - the rate is fetched automatically, falls back to a bundled rate, and conversion only affects the display.
 - **Minimal mode**:
+- **Ring data mapping**: in minimal mode each of the outer / middle / inner rings can show R (5-hour), W (weekly) or M (monthly); a live preview sits next to the controls and picking a window already in use swaps the two rings.
   - three **nested** rings (R inner / W middle / M outer) with the balance **rounded to whole units** shown beside them — a more compact pill (the normal mode is “balance + three separate rings”);
   - turning “show a balance on the pill's left” off as well gives the **most compact form**: nested rings only, taking up the least space.
 - **Other details**:
@@ -79,10 +80,10 @@ In DSH, open the **plugin manager → “Install plugin” dialog → paste one 
 | ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------- |
 | **Straight from GitHub** (recommended)      | `github:verneuil/dsh-opencode-go-usage`                                                                          |
 | **From npm**                              | `dsh plugin --profile web add @verneuil/dsh-opencode-go-usage`                                                                 |
-| **Pin a version**                          | `github:verneuil/dsh-opencode-go-usage#v3.1.4` (replace with any published tag)                                    |
-| **Release tarball**                        | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v3.1.4/dsh-opencode-go-usage-3.1.4.tgz`    |
+| **Pin a version**                          | `github:verneuil/dsh-opencode-go-usage#v3.2.0` (replace with any published tag)                                    |
+| **Release tarball**                        | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v3.2.0/dsh-opencode-go-usage-3.2.0.tgz`    |
 | **Release URL (always latest)**            | `https://github.com/verneuil/dsh-opencode-go-usage/releases/latest/download/dsh-opencode-go-usage.tgz`            |
-| **Offline tgz**                            | `file:D:/your/path/dsh-opencode-go-usage-3.1.4.tgz`                                                             |
+| **Offline tgz**                            | `file:D:/your/path/dsh-opencode-go-usage-3.2.0.tgz`                                                             |
 
 The equivalent command line (`dsh plugin` automatically adds dependencies that declare `dsh.bundle` to the profile's bundles — no hand-written patch needed):
 
@@ -110,7 +111,7 @@ The settings page has three tabs: **Usage data** (default) / **Floating pill** /
 **Sidebar entry** (right of the tabs, left of "Restore defaults"): whether the sidebar shows a row for this plugin; off by default and it never affects the settings page itself;
 **Restore defaults** sits permanently at the right end of the tab bar and writes everything back from any tab.
 
-Next to the page title sit the **GitHub icon and the current version** (e.g. `v3.1.4`); clicking the icon opens this repository.
+Next to the page title sit the **GitHub icon and the current version** (e.g. `v3.2.0`); clicking the icon opens this repository.
 
 **Usage data**
 

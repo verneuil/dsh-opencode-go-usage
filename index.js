@@ -96,6 +96,11 @@ export const Config = zReal ? z.object({
   currencyMode: z.string().default("auto").volatile(),
   // 极简模式（默认开）：三环嵌套（外 M / 中 W / 内 R）+ 环旁余额（只到元）
   minimalMode: z.boolean().default(true).volatile(),
+  // 极简模式下外 / 中 / 内三环各显示哪个窗口（rolling = R 5 小时 / weekly = W 本周 / monthly = M 本月），
+  // 三个值互不相同；设置页里选到已占用的窗口会与另一环自动交换
+  ringOuter: z.string().default("monthly").volatile(),
+  ringMiddle: z.string().default("weekly").volatile(),
+  ringInner: z.string().default("rolling").volatile(),
   // 浮窗锚定（「最近锚线」模型）：拖动松手时只记「锚线 + 偏移」，窗口或输入框
   // 尺寸变化时按锚线重算像素位置，而不是记住绝对坐标。
   // 默认 = 窗口左上角（贴左边 11px、距顶 50px）—— 「重置位置」按钮回到这里。

@@ -135,6 +135,18 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
     '.ocgu-nest-arc[data-level="warn"]{stroke:var(--dsw-alias-state-warn-primary)}' +
     '.ocgu-nest-arc[data-level="danger"]{stroke:var(--dsw-alias-state-error-primary)}' +
     '.ocgu-nest-arc[data-level="empty"]{stroke:var(--dsw-alias-label-tertiary)}' +
+    '.ocgu-rmap-wrap{display:flex;align-items:center;gap:28px;flex-wrap:wrap}' +
+    '.ocgu-rmap-segs{display:flex;flex-direction:column;gap:10px}' +
+    '.ocgu-rmap-segrow{display:flex;align-items:center;gap:10px}' +
+    '.ocgu-rmap-seglabel{flex:none;min-width:38px;font-size:11.5px;color:var(--dsw-alias-label-secondary)}' +
+    '.ocgu-rmap-preview{display:flex;flex-direction:column;gap:8px;align-items:flex-start}' +
+    '.ocgu-rmap-cap{font-size:11px;letter-spacing:.3px;color:var(--dsw-alias-label-tertiary)}' +
+    '.ocgu-rmap{display:flex;align-items:center;gap:18px}' +
+    '.ocgu-rmap svg{display:block;overflow:visible}' +
+    '.ocgu-rmap-legend{display:grid;grid-template-columns:11px auto 52px;column-gap:7px;row-gap:5px;align-items:center}' +
+    '.ocgu-rmap-row{display:contents;font-size:12px;color:var(--dsw-alias-label-secondary);white-space:nowrap}' +
+    '.ocgu-rmap-dot{width:7px;height:7px;border-radius:50%;display:block;justify-self:center}' +
+    '.ocgu-rmap-row em{font-style:normal;font-variant-numeric:tabular-nums;color:var(--dsw-alias-label-tertiary);text-align:right}' +
     // 设置导航图标：官方 settings.section 契约只投影 id/order/label，第三方分区一律戴默认齿轮；
     // 这里照官方同款做法（dshmarket 与 Claude Style 均如此）：给自己的导航行打标记 →
     // 隐藏行内默认齿轮（它是 <svg>）→ 用 CSS mask 画自己的标记（背景取 currentColor，随主题着色）。
@@ -743,6 +755,16 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
       'field.pillBalance.hint': '在浮窗胶囊左侧显示一行余额；关闭后下一项一并收起',
       'field.pillBalanceSrc': '浮窗左侧余额数据',
       'field.pillBalanceSrc.hint': 'DS余额包含赠金',
+      'field.ringMap': '三环显示数据',
+      'field.ringMap.hint': '分别指定极简模式下外 / 中 / 内三环显示哪个窗口；选到已被占用的窗口会与另一环自动交换',
+      'ring.outer': '外环',
+      'ring.middle': '中环',
+      'ring.inner': '内环',
+      'ring.preview': '实时预览',
+      'ring.none': '暂无数据',
+      'ring.w.rolling': '5 小时',
+      'ring.w.weekly': '本周',
+      'ring.w.monthly': '本月',
       'pill.srcDeepseek': 'DS余额',
       'pill.srcQuota': 'OCG配额剩余',
       'field.tipBalanceSrc': '鼠标悬停浮层余额数据',
@@ -889,6 +911,16 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
       'field.pillBalance.hint': 'One balance line on the left of the pill; turning it off also collapses the row below',
       'field.pillBalanceSrc': 'Pill left-side balance data',
       'field.pillBalanceSrc.hint': 'The DS balance includes bonus credit',
+      'field.ringMap': 'Ring data mapping',
+      'field.ringMap.hint': 'Choose which window each outer / middle / inner ring shows in minimal mode; picking a window already in use swaps the two rings',
+      'ring.outer': 'Outer',
+      'ring.middle': 'Middle',
+      'ring.inner': 'Inner',
+      'ring.preview': 'Live preview',
+      'ring.none': 'No data',
+      'ring.w.rolling': '5 hours',
+      'ring.w.weekly': 'Weekly',
+      'ring.w.monthly': 'Monthly',
       'pill.srcDeepseek': 'DS balance',
       'pill.srcQuota': 'OCG quota left',
       'field.tipBalanceSrc': 'Hover popover balance data',
@@ -983,6 +1015,38 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
   function floatWarn(value) {
     return value.keyStatus === 'missing' || value.balanceKeyStatus === 'missing'
       || !!value.usageError || !!value.balanceError;
+  }
+  // ---------- 极简模式三环映射（外 / 中 / 内 各显示哪个窗口） ----------
+  // 三个值必须互不相同；非法或冲突的配置一律回退默认（外 M / 中 W / 内 R），保证渲染永远拿到合法三元组。
+  var RING_ROLES = ['outer', 'middle', 'inner'];
+  var RING_FIELDS = { outer: 'ringOuter', middle: 'ringMiddle', inner: 'ringInner' };
+  var RING_DEFAULT = { outer: 'monthly', middle: 'weekly', inner: 'rolling' };
+  function windowByKey(key) {
+    for (var i = 0; i < WINDOWS.length; i++) if (WINDOWS[i].key === key) return WINDOWS[i];
+    return null;
+  }
+  function ringKeysOf(value) {
+    var out = {};
+    var used = [];
+    var i, j;
+    for (i = 0; i < RING_ROLES.length; i++) {
+      var role = RING_ROLES[i];
+      var raw = value ? value[RING_FIELDS[role]] : '';
+      if (!windowByKey(raw) || used.indexOf(raw) >= 0) { out[role] = ''; continue; }
+      out[role] = raw;
+      used.push(raw);
+    }
+    for (i = 0; i < RING_ROLES.length; i++) {
+      var r = RING_ROLES[i];
+      if (out[r]) continue;
+      var cand = RING_DEFAULT[r];
+      if (used.indexOf(cand) >= 0) {
+        for (j = 0; j < WINDOWS.length; j++) if (used.indexOf(WINDOWS[j].key) < 0) { cand = WINDOWS[j].key; break; }
+      }
+      out[r] = cand;
+      used.push(cand);
+    }
+    return out;
   }
   // 浮窗左侧那一行余额：按「浮窗左侧余额数据」取 DeepSeek 余额或 OCG 配额剩余
   // 两路都先换算成当前「金额显示计价币种」；rounded = true 用于极简模式（去掉小数）
@@ -1406,11 +1470,12 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
           React.createElement('span', { key: 'sep', className: 'ocgu-sep' }));
       }
       var NEST = 26, NC = NEST / 2;
-      var NEST_RINGS = [
-        { w: WINDOWS[2], r: 11.5 },
-        { w: WINDOWS[1], r: 7.5 },
-        { w: WINDOWS[0], r: 3.5 }
-      ];
+      // 外 / 中 / 内 三环的窗口由设置页「三环显示数据」决定（默认 外 M / 中 W / 内 R）
+      var NEST_RADII = { outer: 11.5, middle: 7.5, inner: 3.5 };
+      var ringMap = ringKeysOf(value);
+      var NEST_RINGS = RING_ROLES.map(function (role) {
+        return { w: windowByKey(ringMap[role]) || WINDOWS[0], r: NEST_RADII[role] };
+      });
       var nestKids = [];
       var nestAria = [];
       NEST_RINGS.forEach(function (rg, i) {
@@ -1862,6 +1927,9 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
         percentMode: 'used',
         refreshMinutes: 5,
         minimalMode: true,
+        ringOuter: 'monthly',
+        ringMiddle: 'weekly',
+        ringInner: 'rolling',
         showBalance: false,
         widgetVisible: true,
         quotaRefModel: 'deepseek-v4.1-flash',
@@ -1959,6 +2027,93 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
         'aria-checked': on ? 'true' : 'false', 'data-on': on ? '1' : '0',
         onClick: function () { setPillSrc(v); }
       }, t(key));
+    };
+    // 三环映射：选到已被占用的窗口时两个环互换（保证三环数据不重复）
+    var setRingRole = function (role, key) {
+      var cur = ringKeysOf(value);
+      if (cur[role] === key) return;
+      var patch = {};
+      var other = null;
+      var i;
+      for (i = 0; i < RING_ROLES.length; i++) {
+        var r = RING_ROLES[i];
+        if (r !== role && cur[r] === key) other = r;
+      }
+      for (i = 0; i < RING_ROLES.length; i++) patch[RING_FIELDS[RING_ROLES[i]]] = cur[RING_ROLES[i]];
+      patch[RING_FIELDS[role]] = key;
+      if (other) patch[RING_FIELDS[other]] = cur[role];
+      updateNs(remote, viewRef.current, patch, function (err, nv) {
+        if (err || !nv) { say('ringMap', t('msg.saveFailed', { err: err || t('msg.unknownErr') }), 'error'); return; }
+        apply(nv);
+      });
+    };
+    var ringRoleSeg = function (role) {
+      var cur = ringKeysOf(value);
+      var off = !value.widgetVisible || value.minimalMode !== true;
+      var buttons = WINDOWS.map(function (w) {
+        var on = cur[role] === w.key;
+        return React.createElement('button', {
+          key: w.key, type: 'button', className: 'ocgu-seg-item', role: 'radio',
+          'aria-checked': on ? 'true' : 'false', 'data-on': on ? '1' : '0',
+          disabled: off, title: t('win.' + w.key),
+          'aria-label': t('ring.' + role) + ' ' + t('win.' + w.key),
+          onClick: function () { setRingRole(role, w.key); }
+        }, t('ring.w.' + w.key));
+      });
+      return React.createElement('div', { key: role, className: 'ocgu-rmap-segrow' },
+        React.createElement('span', { className: 'ocgu-rmap-seglabel' }, t('ring.' + role)),
+        React.createElement('span', {
+          className: 'ocgu-seg', role: 'radiogroup',
+          'aria-label': t('ring.' + role), title: t('ring.' + role)
+        }, buttons));
+    };
+    // 实时预览：按当前映射画三环，数据与口径跟浮窗一致
+    var ringMapPreview = function () {
+      var pmode = modeOf(value);
+      var hasData = !!value.lastUpdated;
+      var cur = ringKeysOf(value);
+      var RAD = { outer: 34.2, middle: 22.8, inner: 11.4 };
+      var CX = 40, CY = 40;
+      var LEVEL_COLOR = {
+        ok: 'var(--dsw-alias-state-success-primary)',
+        warn: 'var(--dsw-alias-state-warn-primary)',
+        danger: 'var(--dsw-alias-state-error-primary)',
+        empty: 'var(--dsw-alias-label-tertiary)'
+      };
+      var circles = [];
+      var rows = [];
+      RING_ROLES.forEach(function (role) {
+        var key = cur[role];
+        var w = windowByKey(key) || WINDOWS[0];
+        var win = windowOf(value.usage, key);
+        var has = hasData && !!(win.status || win.resetsAt);
+        var d = dispOf(win.percent, pmode);
+        var rr = RAD[role];
+        var cc = 2 * Math.PI * rr;
+        circles.push(React.createElement('circle', {
+          key: 't' + role, cx: CX, cy: CY, r: rr, fill: 'none',
+          stroke: 'var(--dsw-alias-label-tertiary)', strokeOpacity: 0.26, strokeWidth: 5.2
+        }));
+        circles.push(React.createElement('circle', {
+          key: 'a' + role, cx: CX, cy: CY, r: rr, fill: 'none',
+          stroke: LEVEL_COLOR[has ? d.level : 'empty'], strokeWidth: 6.0, strokeLinecap: 'round',
+          strokeDasharray: String(cc),
+          strokeDashoffset: String(has ? cc * (1 - d.value / 100) : cc),
+          transform: 'rotate(-90 ' + CX + ' ' + CY + ')'
+        }));
+        rows.push(React.createElement('div', { key: role, className: 'ocgu-rmap-row' },
+          React.createElement('span', {
+            className: 'ocgu-rmap-dot',
+            style: { background: LEVEL_COLOR[has ? d.level : 'empty'] }
+          }),
+          React.createElement('span', null, t('ring.' + role) + ' · ' + t('ring.w.' + key)),
+          React.createElement('em', null, has ? d.value + '%' : t('ring.none'))));
+      });
+      return React.createElement('div', { className: 'ocgu-rmap' },
+        React.createElement('svg', {
+          width: '80', height: '80', viewBox: '0 0 80 80', 'aria-hidden': 'true', focusable: 'false'
+        }, circles),
+        React.createElement('div', { className: 'ocgu-rmap-legend' }, rows));
     };
     var openRepo = function () {
       try { window.open('https://github.com/verneuil/dsh-opencode-go-usage', '_blank', 'noopener'); } catch (e) { /* 同上 */ }
@@ -2214,6 +2369,23 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
           nowrap: true,
           disabled: !value.widgetVisible,
           control: [sw(value.minimalMode === true, toggleMinimal, t('label.minimal'), !value.widgetVisible)]
+        }),
+        // 三环显示数据：外 / 中 / 内 各选一个窗口（仅极简模式生效），右侧实时预览
+        React.createElement(FieldRow, {
+          title: t('field.ringMap'),
+          hint: t('field.ringMap.hint'),
+          msg: msgOf('ringMap'),
+          tone: toneOf('ringMap'),
+          layout: 'block',
+          disabled: !value.widgetVisible || value.minimalMode !== true,
+          control: [
+            React.createElement('div', { key: 'rmap', className: 'ocgu-rmap-wrap' },
+              React.createElement('div', { className: 'ocgu-rmap-segs' },
+                ringRoleSeg('outer'), ringRoleSeg('middle'), ringRoleSeg('inner')),
+              React.createElement('div', { className: 'ocgu-rmap-preview' },
+                React.createElement('span', { className: 'ocgu-rmap-cap' }, t('ring.preview')),
+                ringMapPreview()))
+          ]
         }),
         React.createElement(FieldRow, {
           title: t('field.pos'),
