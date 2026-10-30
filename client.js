@@ -2102,7 +2102,6 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
       var rows = [];
       RING_ROLES.forEach(function (role) {
         var key = cur[role];
-        var w = windowByKey(key) || WINDOWS[0];
         var win = windowOf(value.usage, key);
         var has = hasData && !!(win.status || win.resetsAt);
         var d = dispOf(win.percent, pmode);
