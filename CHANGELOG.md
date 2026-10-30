@@ -1,11 +1,16 @@
-## 3.1.3
+## 3.1.4
 
 ### 改进
-- 发布流程迁入 GitHub Actions；
+- 发布流程迁入 GitHub Actions：由 CI 完成 npm 发布并附带构建来源证明；
 - 清理代码质量问题：移除未使用的变量与函数、简化恒真条件、修正仓库自检脚本中的正则拼装；
-- 完善发布工作流；
+- 更新模型表抓取代码：数据只保留 Go 档配额（Go Plus / Go Teams 档暂不纳入）。
 
-*插件行为无任何变化*
+---
+
+### Improvements
+- Moved npm publishing into GitHub Actions: CI publishes the package with build provenance;
+- Cleaned up the code-quality findings: removed unused variables and functions, simplified a tautological condition, and fixed how the repository self-check builds its regex;
+- Reworked the model-table fetcher so the bundled data keeps only the Go-tier quotas (Go Plus / Go Teams tiers are not included).
 
 ## 3.1.2
 

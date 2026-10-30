@@ -130,7 +130,7 @@ check('snapshotDate is not older than 400 days', () => Date.now() - new Date(`${
 check('usdCny looks like a real rate', () => typeof data.fx?.usdCny === 'number' && data.fx.usdCny > 1 && data.fx.usdCny < 20)
 check('model table has at least 20 entries', () => Array.isArray(data.models) && data.models.length >= 20)
 check('every model has id and name', () => data.models.every((m) => typeof m.id === 'string' && m.id && typeof m.name === 'string' && m.name))
-check('quota values are null or positive numbers', () => data.models.every((m) => [m.go, m.goPlus].every((v) => v === null || (typeof v === 'number' && v > 0))))
+check('quota values are null or positive numbers', () => data.models.every((m) => m.go === null || (typeof m.go === 'number' && m.go > 0)))
 
 console.log('# docs stay pinned to the shipped version')
 for (const file of ['README.md', 'README.en.md']) {
