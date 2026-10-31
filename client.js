@@ -638,8 +638,8 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
     var vh = window.innerHeight || 0;
     // 尺寸取「视觉尺寸」：缩放档位用 transform 实现，offsetWidth 不含变换，会算错右/下锚线
     var rect = (node && typeof node.getBoundingClientRect === 'function') ? node.getBoundingClientRect() : null;
-    var w = rect ? rect.width : ((node && node.offsetWidth) || 0);
-    var h = rect ? rect.height : ((node && node.offsetHeight) || 0);
+    var w = rect ? rect.width : 0;
+    var h = rect ? rect.height : 0;
     var ax = cfg.widgetAnchorX, ox = cfg.widgetOffsetX;
     var ay = cfg.widgetAnchorY, oy = cfg.widgetOffsetY;
     var x, y;
@@ -681,7 +681,6 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
   // 档位（从左到右）：减小 20% / 减小 10% / 默认 / +15% / +30% / +50% / +75% / +100%
   var SCALE_STEPS = [0.8, 0.9, 1, 1.15, 1.3, 1.5, 1.75, 2];
   var SCALE_DEFAULT_INDEX = 2;
-  var SCALE_DEFAULT = SCALE_STEPS[SCALE_DEFAULT_INDEX];
   function scaleIndexOf(value) {
     var n = Number(value && value.widgetScale);
     if (!isFinite(n)) return SCALE_DEFAULT_INDEX;
