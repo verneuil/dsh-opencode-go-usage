@@ -1,3 +1,21 @@
+## 3.3.0
+
+### 新功能
+- 「浮窗管理」新增浮窗大小调整，浮窗浮层同步缩放。
+
+### 改进
+- 更新内置兜底数据：快照更新到 2026-10-31；
+- 删除一处代码扫描提示的未使用变量。
+
+---
+
+### New features
+- New pill-size control under “Floating pill”; the pill and its hover popover scale together.
+
+### Improvements
+- Refreshed the bundled fallback data: snapshot updated to 2026-10-31;
+- Removed a variable flagged by code scanning.
+
 ## 3.2.1
 
 ### 改进

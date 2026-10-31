@@ -19,7 +19,7 @@ export const FX_SOURCES = [
 export { GO_DATA_SNAPSHOT }
 
 // UA 只在这里定义一次，宿主半侧 import 复用（避免版本号两处漂移）
-export const USER_AGENT = "dsh-opencode-go-usage/3.2.1 (+DeepSeek Harness plugin; +https://github.com/verneuil/dsh-opencode-go-usage)"
+export const USER_AGENT = "dsh-opencode-go-usage/3.3.0 (+DeepSeek Harness plugin; +https://github.com/verneuil/dsh-opencode-go-usage)"
 const UA = USER_AGENT
 
 function stripTags(s) {

@@ -80,6 +80,8 @@ export const Config = zReal ? z.object({
   refreshMinutes: z.number().default(5).volatile(),
   // 浮窗显示开关
   widgetVisible: z.boolean().default(true).volatile(),
+  // 浮窗大小：1 = 默认；0.9 小 / 1.1 大 / 1.2 更大 / 1.3 最大（客户端整体等比缩放）
+  widgetScale: z.number().default(1).volatile(),
   sidebarEntry: z.boolean().default(false).volatile(),
   // 浮窗上是否显示左侧那一行余额（默认关：极简形态只留三环）
   showBalance: z.boolean().default(false).volatile(),

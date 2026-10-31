@@ -92,10 +92,10 @@ In DSH, open the **plugin manager → “Install plugin” dialog → paste one 
 | -------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
 | **Straight from GitHub** (recommended) | `github:verneuil/dsh-opencode-go-usage`                                                                      |
 | **From npm**                           | `dsh plugin --profile web add @verneuil/dsh-opencode-go-usage`                                               |
-| **Pin a version**                      | `github:verneuil/dsh-opencode-go-usage#v3.2.1` (replace with any published tag)                              |
-| **Release tarball**                    | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v3.2.1/dsh-opencode-go-usage-3.2.1.tgz` |
+| **Pin a version**                      | `github:verneuil/dsh-opencode-go-usage#v3.3.0` (replace with any published tag)                              |
+| **Release tarball**                    | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v3.3.0/dsh-opencode-go-usage-3.3.0.tgz` |
 | **Release URL (always latest)**        | `https://github.com/verneuil/dsh-opencode-go-usage/releases/latest/download/dsh-opencode-go-usage.tgz`       |
-| **Offline tgz**                        | `file:D:/your/path/dsh-opencode-go-usage-3.2.1.tgz`                                                          |
+| **Offline tgz**                        | `file:D:/your/path/dsh-opencode-go-usage-3.3.0.tgz`                                                          |
 
 The equivalent command line (`dsh plugin` automatically adds dependencies that declare `dsh.bundle` to the profile's bundles — no hand-written patch needed):
 
@@ -120,7 +120,7 @@ Follow the on-screen prompt to reload afterwards (replacing an installed JavaScr
 
 The settings page has three tabs: **Usage data** (default) / **Floating pill** / **General settings**.
 
-Next to the page title sit the **GitHub icon and the current version** (e.g. `v3.2.1`); clicking the icon opens this repository.
+Next to the page title sit the **GitHub icon and the current version** (e.g. `v3.3.0`); clicking the icon opens this repository.
 
 **Usage data**
 
@@ -137,6 +137,7 @@ Next to the page title sit the **GitHub icon and the current version** (e.g. `v3
 **Floating pill**
 
 - **Pill master switch**: turning it off greys out the rows below and makes them non-interactive.
+- **Pill size**: a slider with eight stops where only the “Default 100%” stop carries a label — two stops to the left (−10%, −20%) and five to the right (+15%, +30%, +50%, +75%, +100%), i.e. 80% – 200%; the balance, the rings and the hover popover scale together and anchor-based positioning keeps working.
 - **Show a balance on the pill's left** (switch): shows one balance line on the pill's left; turning it off also collapses the row below.
 - **Pill left-side balance data** (two-way): `DS balance` / `OCG quota left` — which data that left line uses.
 - **Hover popover balance data** (checkbox dropdown): `DS balance` / `OCG quota left` — show one, both, or **neither** (the popover then keeps only the three progress bars); **clicking outside the dropdown closes it**.
@@ -196,7 +197,7 @@ GET https://api.frankfurter.app/latest?from=USD&to=CNY      # USD/CNY rate (back
 The usage endpoint returns `{ usage: { rolling, weekly, monthly } }`, where each window carries `status` / `percent` (**used** percentage) / `resetsAt`; the balance endpoint returns `balance_infos[]` (the CNY entry is preferred). The UI shows **Used** by default and can be switched to **Left** in settings; the internal value always stays “used”.
 The host half performs the fetching and parsing (neither key ever leaves the host process); the client half only reads the configuration projection the host writes.
 
-**The model list and the rate** refresh together with everything else: **manual refresh (button or pill click) forces a refetch**, while auto-refresh reuses the **model table for 24 h and the rate for 1 h**. If both fail, the plugin falls back to its **bundled snapshot** (`go-data.js`, generated 2026-10-30: 30 official models + a rate of 6.676858) and names the failure in the UI. **Quota conversion uses the Go-tier monthly quota from that model table.**
+**The model list and the rate** refresh together with everything else: **manual refresh (button or pill click) forces a refetch**, while auto-refresh reuses the **model table for 24 h and the rate for 1 h**. If both fail, the plugin falls back to its **bundled snapshot** (`go-data.js`, generated 2026-10-31: 30 official models + a rate of 6.669566) and names the failure in the UI. **Quota conversion uses the Go-tier monthly quota from that model table.**
 
 **Key resolution** (independent per side, in priority order):
 
@@ -222,6 +223,7 @@ The settings page covers the common options; the fields below can also be edited
 | `deepseekApiKey`                                                | Manual DeepSeek API key (secret). Leave empty to use the DSH credential store                                                                                     |
 | `refreshMinutes`                                                | Auto-refresh interval in minutes (default 5); one round refreshes both balance and usage                                                                          |
 | `widgetVisible`                                                 | Pill visibility switch                                                                                                                                            |
+| `widgetScale`                                                   | Pill scale: `1` default (initial value) / `0.9` −10% / `0.8` −20% / `1.15` +15% / `1.3` +30% / `1.5` +50% / `1.75` +75% / `2` +100% |
 | `showBalance`                                                   | Whether the pill shows a balance line on its left (default off)                                                                                                   |
 | `pillBalanceSource`                                             | Data for that left line: `deepseek` DS balance (default) / `quota` OCG quota left                                                                                 |
 | `tipShowBalance`, `tipShowQuota`                                | Whether each popover balance row is shown (both default on; both off leaves only the bars)                                                                        |
@@ -269,7 +271,7 @@ The settings page covers the common options; the fields below can also be edited
 - **Interface language**: the pill and the settings page are **bilingual (Chinese / English)** and follow the DSH language setting. **Error details** produced by the API layer (such as 401/403 or an unexpected response shape) are still in Chinese.
 - **The quota figure is an estimate**: no official endpoint exposes “how much of model X is left right now”, so the plugin estimates it as “that model's **Go-tier** monthly quota × **this month's used percentage**” — for reference only. The monthly percentage is the **whole plan's** progress, not that model's own share. The **Go Plus tier is not covered yet** (the Go tier is always used).
 - **The rate only affects display**: the DS balance is originally in CNY and the quota in USD; conversion is purely cosmetic (`auto` = ¥ in Chinese, ＄ in English) and never changes a real bill.
-- **The model list can lag**: the bundled snapshot is the official data of 2026-10-30; it updates with each refresh while online, and while offline (or when fetching fails) the snapshot is shown and labelled in the UI.
+- **The model list can lag**: the bundled snapshot is the official data of 2026-10-31; it updates with each refresh while online, and while offline (or when fetching fails) the snapshot is shown and labelled in the UI.
 - **Use at your own risk**: this software is provided “as is” under the MIT licence, without warranty of any kind.
 
 ## License

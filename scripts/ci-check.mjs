@@ -119,6 +119,9 @@ check('ring defaults keep outer=M / middle=W / inner=R', () => /ringOuter: z\.st
 check('client resolves the mapping with a uniqueness fallback', () => read('client.js').includes('function ringKeysOf'))
 check('client renders the live preview block', () => read('client.js').includes('ocgu-rmap') && read('client.js').includes('ringMapPreview'))
 check('minimal pill consumes the mapping', () => read('client.js').includes('NEST_RADII'))
+check('Config declares the pill scale', () => read('index.js').includes('widgetScale: z.number().default(1)'))
+check('client exposes the eight slider stops', () => read('client.js').includes('var SCALE_STEPS = [0.8, 0.9, 1, 1.15, 1.3, 1.5, 1.75, 2]') && read('client.js').includes('ocgu-scale-input'))
+check('pill root applies the scale transform', () => read('client.js').includes("transform: 'scale(' + pillScale + ')'"))
 
 console.log('# locale bundles')
 for (const file of ['locale/zh.json', 'locale/en.json']) {

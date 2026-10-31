@@ -147,6 +147,17 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
     '.ocgu-rmap-row{display:contents;font-size:12px;color:var(--dsw-alias-label-secondary);white-space:nowrap}' +
     '.ocgu-rmap-dot{width:7px;height:7px;border-radius:50%;display:block;justify-self:center}' +
     '.ocgu-rmap-row em{font-style:normal;font-variant-numeric:tabular-nums;color:var(--dsw-alias-label-tertiary);text-align:right}' +
+    // 浮窗大小拖动条
+    '.ocgu-scale{display:flex;align-items:flex-start;gap:14px;flex:1 1 auto;min-width:220px;max-width:460px}' +
+    '.ocgu-scale-track{position:relative;flex:1 1 auto;min-width:180px;padding:0 0 15px}' +
+    '.ocgu-scale-input{width:100%;margin:0;height:16px;background:transparent;cursor:pointer;-webkit-appearance:none;appearance:none}' +
+    '.ocgu-scale-input::-webkit-slider-runnable-track{height:4px;border-radius:999px;background:color-mix(in srgb,var(--dsw-alias-label-tertiary) 34%,transparent)}' +
+    '.ocgu-scale-input::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:14px;height:14px;margin-top:-5px;border-radius:50%;background:var(--dsw-alias-brand-primary);box-shadow:0 1px 3px rgba(0,0,0,.35)}' +
+    '.ocgu-scale-ticks{position:absolute;left:7px;right:7px;bottom:0;height:12px}' +
+    '.ocgu-scale-tick{position:absolute;transform:translateX(-50%);font-size:10px;line-height:12px;white-space:nowrap;color:var(--dsw-alias-label-tertiary)}' +
+    '.ocgu-scale-tick[data-on="1"]{color:var(--dsw-alias-label-primary)}' +
+    '.ocgu-scale-tick::before{content:"";position:absolute;left:50%;top:-5px;width:1px;height:3px;background:currentColor;opacity:.5;transform:translateX(-50%)}' +
+    '.ocgu-scale-val{flex:none;min-width:44px;text-align:right;font-size:12px;line-height:16px;font-variant-numeric:tabular-nums;color:var(--dsw-alias-label-secondary)}' +
     // 设置导航图标：官方 settings.section 契约只投影 id/order/label，第三方分区一律戴默认齿轮；
     // 这里照官方同款做法（dshmarket 与 Claude Style 均如此）：给自己的导航行打标记 →
     // 隐藏行内默认齿轮（它是 <svg>）→ 用 CSS mask 画自己的标记（背景取 currentColor，随主题着色）。
@@ -625,8 +636,10 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
   function resolvePos(cfg, cardRect, node) {
     var vw = window.innerWidth || 0;
     var vh = window.innerHeight || 0;
-    var w = (node && node.offsetWidth) || 0;
-    var h = (node && node.offsetHeight) || 0;
+    // 尺寸取「视觉尺寸」：缩放档位用 transform 实现，offsetWidth 不含变换，会算错右/下锚线
+    var rect = (node && typeof node.getBoundingClientRect === 'function') ? node.getBoundingClientRect() : null;
+    var w = rect ? rect.width : ((node && node.offsetWidth) || 0);
+    var h = rect ? rect.height : ((node && node.offsetHeight) || 0);
     var ax = cfg.widgetAnchorX, ox = cfg.widgetOffsetX;
     var ay = cfg.widgetAnchorY, oy = cfg.widgetOffsetY;
     var x, y;
@@ -663,6 +676,23 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
   // 迷你圆环几何：viewBox 24×24、r=10（描边 2.2 → 外径 22.2），周长即 dash 总长；
   // 弧长按剩余百分比取：strokeDashoffset = C × (1 - left/100)，剩余 0% 时偏移全长 = 不画。
   // （原 viewBox 18×18、r=8：环小、环心 8px 数字放两位数很挤，故整体放大）
+  // 浮窗缩放档位：默认 1；小 0.9 / 大 1.1 / 更大 1.2 / 最大 1.3。
+  // 用 CSS transform 对浮窗根元素整体缩放 —— 余额、三环、悬停浮层一起等比变化，无需改任何尺寸常量。
+  // 档位（从左到右）：减小 20% / 减小 10% / 默认 / +15% / +30% / +50% / +75% / +100%
+  var SCALE_STEPS = [0.8, 0.9, 1, 1.15, 1.3, 1.5, 1.75, 2];
+  var SCALE_DEFAULT_INDEX = 2;
+  var SCALE_DEFAULT = SCALE_STEPS[SCALE_DEFAULT_INDEX];
+  function scaleIndexOf(value) {
+    var n = Number(value && value.widgetScale);
+    if (!isFinite(n)) return SCALE_DEFAULT_INDEX;
+    var best = SCALE_DEFAULT_INDEX, bestD = Infinity;
+    for (var i = 0; i < SCALE_STEPS.length; i++) {
+      var d = Math.abs(SCALE_STEPS[i] - n);
+      if (d < bestD) { bestD = d; best = i; }
+    }
+    return best;
+  }
+  function scaleOf(value) { return SCALE_STEPS[scaleIndexOf(value)]; }
   var RING_BOX = 24;
   var RING_MID = RING_BOX / 2;
   var RING_R = 10;
@@ -764,6 +794,9 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
       'field.restoreDefaults.hint': '恢复所有设置为默认状态',
       'aria.tabs': '设置分组',
       'title.console': '打开 OpenCode 账户页（opencode.ai/console）',      'field.widget.master': '浮窗总开关',
+      'field.scale': '浮窗大小',
+      'field.scale.hint': '拖动调整整体大小（默认 100%）；余额、三环与悬停浮层同比例缩放',
+      'scale.default': '默认',
       'field.pillBalance': '在浮窗左侧显示余额',
       'field.pillBalance.hint': '在浮窗胶囊左侧显示一行余额；关闭后下一项一并收起',
       'field.pillBalanceSrc': '浮窗左侧余额数据',
@@ -925,6 +958,9 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
       'aria.tabs': 'Settings groups',
       'title.console': 'Open the OpenCode account page (opencode.ai/console)',
       'field.widget.master': 'Floating pill',
+      'field.scale': 'Pill size',
+      'field.scale.hint': 'Drag to scale the whole pill (100% is the default); balance, rings and hover popover scale together',
+      'scale.default': 'Default',
       'field.pillBalance': "Show a balance on the pill's left",
       'field.pillBalance.hint': 'One balance line on the left of the pill; turning it off also collapses the row below',
       'field.pillBalanceSrc': 'Pill left-side balance data',
@@ -1583,9 +1619,13 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
         }, t('err.prefix') + tipErrs.join(isZhLocale(t) ? '、' : ', ')) : null));
     }
 
+    var pillScale = scaleOf(value);
     return React.createElement('div', {
       ref: rootRef,
       className: 'ocgu-float',
+      // 整体同比例缩放（含余额、三环与悬停浮层）；原点固定左上，位置换算已按视觉尺寸处理
+      style: pillScale === 1 ? undefined : { transform: 'scale(' + pillScale + ')', transformOrigin: 'top left' },
+      'data-scale': String(pillScale),
       'data-state': refreshState,
       'data-warn': warn ? 'true' : 'false',
       'data-minimal': minimal ? 'true' : 'false',
@@ -1945,6 +1985,7 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
         percentMode: 'used',
         refreshMinutes: 5,
         minimalMode: true,
+        widgetScale: 1,
         ringOuter: 'monthly',
         ringMiddle: 'weekly',
         ringInner: 'rolling',
@@ -2132,6 +2173,54 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
         }, circles),
         React.createElement('div', { className: 'ocgu-rmap-legend' }, rows));
     };
+    // 浮窗大小：拖动条调档（8 档，仅默认位有文字，其余只有刻度）
+    // 拖动会连续触发 onChange，若每次都立刻 updateNs，第二次起就会带着上一版的 revision 去写，
+    // 被宿主的 settings 服务判为 SettingsConflictError（"settings namespace ... changed since it was read"）。
+    // 因此这里做两件事：① 180ms 防抖，合并一次拖动中的多次取值；② 串行写入，前一次回来后再写下一档（用最新的 view）。
+    var scaleTimer = null;
+    var scalePending = null;
+    var scaleBusy = false;
+    var commitScale = function () {
+      if (scaleBusy || scalePending === null) return;
+      var s = scalePending;
+      scalePending = null;
+      scaleBusy = true;
+      updateNs(remote, viewRef.current, { widgetScale: s }, function (err, nv) {
+        scaleBusy = false;
+        if (err || !nv) {
+          say('scale', t('msg.saveFailed', { err: err || t('msg.unknownErr') }), 'error');
+          return;
+        }
+        apply(nv);
+        if (scalePending !== null) commitScale();
+      });
+    };
+    var setScale = function (s) {
+      scalePending = s;
+      if (scaleTimer) clearTimeout(scaleTimer);
+      scaleTimer = setTimeout(function () { scaleTimer = null; commitScale(); }, 180);
+    };
+    var scaleIdx = scaleIndexOf(value);
+    var scaleSlider = React.createElement('div', { className: 'ocgu-scale' },
+      React.createElement('div', { key: 'track', className: 'ocgu-scale-track' },
+        React.createElement('input', {
+          type: 'range', className: 'ocgu-scale-input',
+          min: 0, max: SCALE_STEPS.length - 1, step: 1, value: scaleIdx,
+          'aria-label': t('field.scale'),
+          'aria-valuetext': Math.round(SCALE_STEPS[scaleIdx] * 100) + '%',
+          onChange: function (e) {
+            var i = Number(e.target.value);
+            if (i >= 0 && i < SCALE_STEPS.length) setScale(SCALE_STEPS[i]);
+          }
+        }),
+        React.createElement('div', { key: 'ticks', className: 'ocgu-scale-ticks', 'aria-hidden': 'true' },
+          SCALE_STEPS.map(function (s, i) {
+            return React.createElement('span', {
+              key: i, className: 'ocgu-scale-tick', 'data-on': i === scaleIdx ? '1' : '0',
+              style: { left: (i / (SCALE_STEPS.length - 1) * 100) + '%' }
+            }, i === SCALE_DEFAULT_INDEX ? t('scale.default') : '');
+          }))),
+      React.createElement('span', { key: 'v', className: 'ocgu-scale-val' }, Math.round(SCALE_STEPS[scaleIdx] * 100) + '%'));
     var openRepo = function () {
       try { window.open('https://github.com/verneuil/dsh-opencode-go-usage', '_blank', 'noopener'); } catch (e) { /* 同上 */ }
     };
@@ -2306,6 +2395,16 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
           tone: toneOf('widget'),
           nowrap: true,
           control: [sw(value.widgetVisible === true, toggleWidget, t('aria.widget'), false)]
+        }),
+        // ⓪ 浮窗大小：五档整体缩放（只影响浮窗自身，不影响设置页）
+        React.createElement(FieldRow, {
+          title: t('field.scale'),
+          hint: t('field.scale.hint'),
+          msg: msgOf('scale'),
+          tone: toneOf('scale'),
+          nowrap: true,
+          disabled: !value.widgetVisible,
+          control: [scaleSlider]
         }),
         // ① 浮窗左侧余额总开关：关闭后下一项一并收起
         React.createElement(FieldRow, {
