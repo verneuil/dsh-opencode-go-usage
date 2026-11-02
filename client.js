@@ -303,7 +303,10 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
     '.ocgu-modal-mask{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(0,0,0,.42)}' +
     '.ocgu-modal{box-sizing:border-box;width:min(440px,100%);padding:18px 20px 16px;border-radius:14px;border:.5px solid var(--dsw-alias-border-l2);background:var(--dsw-alias-bg-layer-2);color:var(--dsw-alias-label-primary);box-shadow:0 18px 48px rgba(0,0,0,.28)}' +
     '.ocgu-modal-title{font-size:14px;line-height:22px;font-weight:600;margin-bottom:8px}' +
-    '.ocgu-modal-body{font-size:12.5px;line-height:1.7;color:var(--dsw-alias-label-secondary);margin-bottom:16px}' +
+    '.ocgu-modal-body{font-size:12.5px;line-height:1.75;color:var(--dsw-alias-label-secondary);margin-bottom:16px}' +
+    '.ocgu-modal-p{margin:0 0 6px;padding:0}' +
+    '.ocgu-modal-p:last-child{margin-bottom:0}' +
+    '.ocgu-modal-p[data-em="1"]{font-weight:600;color:var(--dsw-alias-label-primary)}' +
     '.ocgu-modal-actions{display:flex;justify-content:flex-end;gap:8px}' +
     '.ocgu-input{box-sizing:border-box;height:28px;padding:0 10px;border:.5px solid var(--dsw-alias-border-l4);border-radius:var(--dsw-radius-sm,8px);background:var(--dsw-alias-bg-layer-3);color:var(--dsw-alias-label-primary);font-family:inherit;font-size:13px;line-height:1.5;outline:none;transition:border-color .12s ease}' +
     '.ocgu-input::placeholder{color:var(--dsw-alias-label-tertiary)}' +
@@ -805,7 +808,9 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
       'field.importConfig.hint': '选择之前导出的 JSON，一次性恢复全部设置；API Key 不会被导入',
       'btn.import': '选择文件',
       'dlg.export.title': '导出前请注意',
-      'dlg.export.body': '导出的文件只包含界面设置，不包含任何 API Key —— 即使你手动填写过覆盖用的 Key，也不会被导出。请自己另外备份 API Key；导入后 Key 需要重新填写，或继续使用 DSH 凭据库里的那份。',
+      'dlg.export.body1': '导出的文件只包含界面设置，不包含任何 API Key ——',
+      'dlg.export.body2': '即使你手动填写过覆盖用的 Key，也不会被导出，请自己做好备份！',
+      'dlg.export.body3': '导入后 Key 需要重新填写，或自动调用 DSH 凭据库里的那份。',
       'dlg.export.confirm': '仍要导出',
       'dlg.cancel': '取消',
       'msg.exportDone': '配置已导出',
@@ -984,7 +989,9 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
       'field.importConfig.hint': 'Pick a previously exported JSON to restore every setting; API keys are never imported',
       'btn.import': 'Choose file',
       'dlg.export.title': 'Before you export',
-      'dlg.export.body': 'The exported file only contains interface settings and no API keys at all — even keys you typed yourself as overrides are left out. Please back up your API keys separately; after importing, keys have to be entered again or keep coming from the DSH credential store.',
+      'dlg.export.body1': 'The exported file only contains interface settings — no API keys at all.',
+      'dlg.export.body2': 'Keys you typed yourself as overrides are left out too, so back your keys up yourself!',
+      'dlg.export.body3': 'After importing, keys have to be entered again, or the plugin falls back to the one in the DSH credential store automatically.',
       'dlg.export.confirm': 'Export anyway',
       'dlg.cancel': 'Cancel',
       'msg.exportDone': 'Configuration exported',
@@ -2775,7 +2782,10 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
       },
         React.createElement('div', { className: 'ocgu-modal' },
           React.createElement('div', { className: 'ocgu-modal-title' }, t('dlg.export.title')),
-          React.createElement('div', { className: 'ocgu-modal-body' }, t('dlg.export.body')),
+          React.createElement('div', { className: 'ocgu-modal-body' },
+            React.createElement('p', { key: 'p1', className: 'ocgu-modal-p' }, t('dlg.export.body1')),
+            React.createElement('p', { key: 'p2', className: 'ocgu-modal-p', 'data-em': '1' }, t('dlg.export.body2')),
+            React.createElement('p', { key: 'p3', className: 'ocgu-modal-p' }, t('dlg.export.body3'))),
           React.createElement('div', { className: 'ocgu-modal-actions' },
             React.createElement('button', {
               key: 'cancel', className: 'ocgu-btn', 'data-kind': 'outline',

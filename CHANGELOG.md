@@ -1,18 +1,20 @@
 ## 3.4.0
 
 ### 新功能
-- 「通用设置」新增**配置导出 / 导入**：把当前全部设置导出成 JSON 文件（保存位置自选），之后导入即可一次性恢复；导出的文件**不包含任何 API Key**（即使手动填写过覆盖用 Key），导出前会弹窗明确告知并建议自行备份，导入时也不会写入 Key。
+- 「通用设置」新增**配置导出 / 导入**：可把当前除API Key以外的所有设置导出为 JSON 文件到自定义位置（Key请自行备份！）；可通过配置文件的导入一次性恢复除API Key以外的所有设置（Key需自己重新填写覆盖，或插件自动去凭据库里取）。
 
 ### 改进
-- 浮窗默认位置改为**窗口左下角**（贴左边 7px、距底 9.2px）；「重置浮窗位置」与「恢复默认设置」同步跟随。
+- 浮窗默认位置修改；
+- 导入的配置文件按不可信文件处理且限制文件体积。
 
 ---
 
 ### New features
-- New **export / import configuration** under “General settings”: save every current setting as a JSON file wherever you like, then import it to restore everything at once; the exported file **never contains API keys** (not even keys typed into the override fields), a confirmation dialog says so and reminds you to back them up, and importing never writes keys.
+- New **export / import configuration** under “General settings”: export every setting except the API keys to a JSON file at a location of your choice (back your keys up yourself!), and import that file later to restore every setting except the API keys in one go (keys must be re-entered as overrides, or the plugin picks them up from the credential store automatically).
 
 ### Improvements
-- The pill now defaults to the **bottom-left corner** of the window (7 px from the left edge, 9.2 px above the bottom); “Reset the pill position” and “Restore defaults” follow it.
+- Changed the pill’s default position;
+- Imported configuration files are treated as untrusted input, with the file size capped.
 
 ## 3.3.1
 

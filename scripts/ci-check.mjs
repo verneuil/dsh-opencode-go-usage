@@ -127,7 +127,7 @@ check('default pill position is the bottom-left corner', () => read('client.js')
 check('import path is hardened against untrusted JSON', () => read('client.js').includes('IMPORT_MAX_BYTES') && read('client.js').includes('Object.prototype.hasOwnProperty.call(src, k)') && read('client.js').includes('IMPORT_MAX_STRING') && read('client.js').includes('Array.isArray(src)'))
 check('import whitelist never accepts key fields', () => { const m = read('client.js').match(/var IMPORT_TYPES = \{([\s\S]*?)\};/); return !!m && !/apiKey|deepseekApiKey/i.test(m[1]) })
 check('config export never lists API keys', () => { const m = read('client.js').match(/var EXPORT_KEYS = \[([\s\S]*?)\];/); return !!m && !/apiKey|deepseekApiKey/.test(m[1]) })
-check('export asks for confirmation first', () => read('client.js').includes('ocgu-modal-mask') && read('client.js').includes("t('dlg.export.body')"))
+check('export asks for confirmation first', () => read('client.js').includes('ocgu-modal-mask') && read('client.js').includes("t('dlg.export.body1')") && read('client.js').includes("t('dlg.export.body2')") && read('client.js').includes("data-em"))
 check('pill root applies the scale transform', () => read('client.js').includes("transform: 'scale(' + pillScale + ')'"))
 
 console.log('# locale bundles')
