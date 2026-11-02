@@ -91,10 +91,10 @@
 | ---------------------------- | ------------------------------------------------------------------------------------------------------------ |
 | **GitHub 直装**（推荐）      | `github:verneuil/dsh-opencode-go-usage`                                                                      |
 | **npm 安装**                 | `dsh plugin --profile web add @verneuil/dsh-opencode-go-usage`                                               |
-| **固定某个版本**             | `github:verneuil/dsh-opencode-go-usage#v3.3.1`（换成任意已发布 tag）                                         |
-| **Release 包**               | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v3.3.1/dsh-opencode-go-usage-3.3.1.tgz` |
+| **固定某个版本**             | `github:verneuil/dsh-opencode-go-usage#v3.4.0`（换成任意已发布 tag）                                         |
+| **Release 包**               | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v3.4.0/dsh-opencode-go-usage-3.4.0.tgz` |
 | **Release 直链（始终最新）** | `https://github.com/verneuil/dsh-opencode-go-usage/releases/latest/download/dsh-opencode-go-usage.tgz`       |
-| **离线 tgz**                 | `file:D:/你的路径/dsh-opencode-go-usage-3.3.1.tgz`                                                           |
+| **离线 tgz**                 | `file:D:/你的路径/dsh-opencode-go-usage-3.4.0.tgz`                                                           |
 
 命令行等价写法（`dsh plugin` 会把声明了 `dsh.bundle` 的依赖自动加进 profile 的 bundles，无需手写 patch）：
 
@@ -119,7 +119,7 @@ dsh plugin --profile web add github:verneuil/dsh-opencode-go-usage
 
 设置页分三个标签：**用量数据**（默认）/ **浮窗管理** / **通用设置**。
 
-页面顶部标题右侧是 **GitHub 图标 + 当前版本号**（如 `v3.3.1`），点击图标打开本插件仓库。
+页面顶部标题右侧是 **GitHub 图标 + 当前版本号**（如 `v3.4.0`），点击图标打开本插件仓库。
 
 **用量数据**
 
@@ -142,14 +142,15 @@ dsh plugin --profile web add github:verneuil/dsh-opencode-go-usage
 - **鼠标悬停浮层余额数据**（下拉多选）：`DS余额` / `OCG配额剩余` —— 可只显示其一、两个都显示，或**都不显示**（此时浮层只留三条进度条）；**点击下拉范围之外会自动收起**。
 - **极简模式**（开关）：三环嵌套（外 / 中 / 内）+ 余额取整显示在环旁。
 - **三环显示数据**（仅在极简模式下可用）：分别指定外 / 中 / 内三环显示「5 小时 / 本周 / 本月」中的哪一个，右侧带实时预览（三个按钮左侧标注「外环 / 中环 / 内环」）。
-- **重置浮窗位置**：把浮窗放回默认位置（窗口左上角）。
+- **重置浮窗位置**：把浮窗放回默认位置（**窗口左下角**，贴左边 7px、距底 9.2px）。
 
 **通用设置**
 
 - **API Key** 小节：**两把 Key 的覆盖输入**（留空即用 DSH 凭据库；可随时清空改回自动）。
 - **设置** 小节：
   - **侧栏入口**（开关）：开启后 DSH 侧边栏里出现本插件入口，点它直接打开本插件的整页设置界面；默认关闭，不影响设置页本身；
-  - **恢复默认设置**：一次写回「已使用口径 / 5 分钟自动刷新 / 极简模式开 / 浮窗不显示余额 / 参考模型 DeepSeek V4.1 Flash / 金额币种自动 / 左侧来源 DS余额 / 浮层两种余额都显示 / 左上角默认位置」—— 新装默认形态就是这一套。
+  - **恢复默认设置**：一次写回「已使用口径 / 5 分钟自动刷新 / 极简模式开 / 浮窗不显示余额 / 参考模型 DeepSeek V4.1 Flash / 金额币种自动 / 左侧来源 DS余额 / 浮层两种余额都显示 / 左下角默认位置」—— 新装默认形态就是这一套；
+  - **导出配置 / 导入配置**：把当前全部设置导出成 JSON 文件（保存位置自选），导入后一次性恢复所有设置；**导出的文件不包含任何 API Key** —— 即使你手动填写过覆盖用的 Key 也不会导出；导出前会弹窗提醒你自行备份 Key，导入时也不会写入 Key。
 
 **共同行为**
 
@@ -231,7 +232,7 @@ GET https://api.frankfurter.app/latest?from=USD&to=CNY      # USD/CNY 汇率（�
 | `quotaRefModel`                                                 | 配额参考模型 ID（默认 `deepseek-v4.1-flash`，可选项来自官方模型表）                                                                          |
 | `currencyMode`                                                  | 金额计价币种：`auto` 自动（默认）/ `cny` 人民币 / `usd` 美元                                                                                 |
 | `percentMode`                                                   | 用量进度口径：`used` 已使用（默认）/ `left` 剩余                                                                                             |
-| `widgetAnchorX/Y`、`widgetOffsetX/Y`                            | 浮窗锚定（拖动时由客户端写入；默认窗口左上角 11 / 50）                                                                                       |
+| `widgetAnchorX/Y`、`widgetOffsetX/Y`                            | 浮窗锚定（拖动时由客户端写入；默认窗口左下角，距左 7px、距底 9.2px）                                                                                       |
 | `refreshRequest`                                                | 手动刷新计数（点击浮窗时由客户端递增）                                                                                                       |
 | `refreshTick`                                                   | 宿主每轮拉取前自增的「更新中」信号（客户端只读，用来点亮边框反馈）                                                                           |
 | `minimalMode`                                                   | 极简模式：三环嵌套（余额取整显示在环旁，默认开）                                                                                             |

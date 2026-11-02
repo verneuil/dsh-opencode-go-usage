@@ -123,6 +123,11 @@ check('minimal pill consumes the mapping', () => read('client.js').includes('NES
 check('Config declares the pill scale', () => read('index.js').includes('widgetScale: z.number().default(1)'))
 check('apply is wrapped so a boot error cannot fail the tree', () => host.includes('function applyImpl(') && /export function apply\(ctx, config\)/.test(host))
 check('client exposes the eight slider stops', () => read('client.js').includes('var SCALE_STEPS = [0.8, 0.9, 1, 1.15, 1.3, 1.5, 1.75, 2]') && read('client.js').includes('ocgu-scale-input'))
+check('default pill position is the bottom-left corner', () => read('client.js').includes("DEFAULT_ANCHORS = { widgetAnchorX: 'view-left', widgetOffsetX: 7, widgetAnchorY: 'view-bottom', widgetOffsetY: -9.2 }"))
+check('import path is hardened against untrusted JSON', () => read('client.js').includes('IMPORT_MAX_BYTES') && read('client.js').includes('Object.prototype.hasOwnProperty.call(src, k)') && read('client.js').includes('IMPORT_MAX_STRING') && read('client.js').includes('Array.isArray(src)'))
+check('import whitelist never accepts key fields', () => { const m = read('client.js').match(/var IMPORT_TYPES = \{([\s\S]*?)\};/); return !!m && !/apiKey|deepseekApiKey/i.test(m[1]) })
+check('config export never lists API keys', () => { const m = read('client.js').match(/var EXPORT_KEYS = \[([\s\S]*?)\];/); return !!m && !/apiKey|deepseekApiKey/.test(m[1]) })
+check('export asks for confirmation first', () => read('client.js').includes('ocgu-modal-mask') && read('client.js').includes("t('dlg.export.body')"))
 check('pill root applies the scale transform', () => read('client.js').includes("transform: 'scale(' + pillScale + ')'"))
 
 console.log('# locale bundles')

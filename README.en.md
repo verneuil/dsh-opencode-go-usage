@@ -92,10 +92,10 @@ In DSH, open the **plugin manager → “Install plugin” dialog → paste one 
 | -------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
 | **Straight from GitHub** (recommended) | `github:verneuil/dsh-opencode-go-usage`                                                                      |
 | **From npm**                           | `dsh plugin --profile web add @verneuil/dsh-opencode-go-usage`                                               |
-| **Pin a version**                      | `github:verneuil/dsh-opencode-go-usage#v3.3.1` (replace with any published tag)                              |
-| **Release tarball**                    | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v3.3.1/dsh-opencode-go-usage-3.3.1.tgz` |
+| **Pin a version**                      | `github:verneuil/dsh-opencode-go-usage#v3.4.0` (replace with any published tag)                              |
+| **Release tarball**                    | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v3.4.0/dsh-opencode-go-usage-3.4.0.tgz` |
 | **Release URL (always latest)**        | `https://github.com/verneuil/dsh-opencode-go-usage/releases/latest/download/dsh-opencode-go-usage.tgz`       |
-| **Offline tgz**                        | `file:D:/your/path/dsh-opencode-go-usage-3.3.1.tgz`                                                          |
+| **Offline tgz**                        | `file:D:/your/path/dsh-opencode-go-usage-3.4.0.tgz`                                                          |
 
 The equivalent command line (`dsh plugin` automatically adds dependencies that declare `dsh.bundle` to the profile's bundles — no hand-written patch needed):
 
@@ -120,7 +120,7 @@ Follow the on-screen prompt to reload afterwards (replacing an installed JavaScr
 
 The settings page has three tabs: **Usage data** (default) / **Floating pill** / **General settings**.
 
-Next to the page title sit the **GitHub icon and the current version** (e.g. `v3.3.1`); clicking the icon opens this repository.
+Next to the page title sit the **GitHub icon and the current version** (e.g. `v3.4.0`); clicking the icon opens this repository.
 
 **Usage data**
 
@@ -202,6 +202,7 @@ The host half performs the fetching and parsing (neither key ever leaves the hos
 **Key resolution** (independent per side, in priority order):
 
 1. The “manual key” entered on the plugin's settings page (persisted in this row's config; the client-side view masks it);
+  - **Export / import configuration**: export every current setting as a JSON file (you pick where to save it) and import it later to restore everything in one go; **the exported file never contains API keys** — not even keys you typed into the override fields; a confirmation dialog reminds you to back them up first, and importing never writes keys.
 2. The DSH credential store — `OPENCODE_GO_API_KEY` (then `OPENCODE_API_KEY`) for OpenCode Go, and `DEEPSEEK_API_KEY` for DeepSeek.
 
 ## Anatomy
@@ -232,7 +233,7 @@ The settings page covers the common options; the fields below can also be edited
 | `quotaRefModel`                                                 | Reference model id (default `deepseek-v4.1-flash`; options come from the official model table)                                                                    |
 | `currencyMode`                                                  | Amount currency: `auto` (default) / `cny` / `usd`                                                                                                                 |
 | `percentMode`                                                   | Usage progress basis: `used` (default) or `left`                                                                                                                  |
-| `widgetAnchorX/Y`, `widgetOffsetX/Y`                            | Pill anchoring (written by the client while dragging; defaults to 11 / 50 from the window's top-left)                                                             |
+| `widgetAnchorX/Y`, `widgetOffsetX/Y`                            | Pill anchoring (written by the client while dragging; defaults to the window's bottom-left, 7 px in and 9.2 px up)                                                             |
 | `refreshRequest`                                                | Manual-refresh counter (incremented by the client when the pill is clicked)                                                                                       |
 | `refreshTick`                                                   | The “refreshing” signal the host bumps before each round (read-only on the client, used for the border feedback)                                                  |
 | `minimalMode`                                                   | Minimal mode: nested rings (with the rounded balance beside them; default on)                                                                                     |

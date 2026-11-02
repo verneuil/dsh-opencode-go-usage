@@ -299,6 +299,12 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
     '.ocgu-btn[data-kind="link"][data-accent="1"]{color:var(--dsw-alias-brand-primary,#4d6bfe);font-weight:500}' +
     '.ocgu-btn[data-kind="link"][data-accent="1"]:hover:not(:disabled){color:var(--dsw-alias-brand-primary,#4d6bfe);opacity:.82;text-decoration:underline}' +
     '.ocgu-btn[data-kind="link"][data-accent="1"]:disabled{opacity:.5}' +
+    // 导出配置确认弹窗（fixed 覆盖整个视口；面板用宿主层级底色）
+    '.ocgu-modal-mask{position:fixed;inset:0;z-index:2147483000;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(0,0,0,.42)}' +
+    '.ocgu-modal{box-sizing:border-box;width:min(440px,100%);padding:18px 20px 16px;border-radius:14px;border:.5px solid var(--dsw-alias-border-l2);background:var(--dsw-alias-bg-layer-2);color:var(--dsw-alias-label-primary);box-shadow:0 18px 48px rgba(0,0,0,.28)}' +
+    '.ocgu-modal-title{font-size:14px;line-height:22px;font-weight:600;margin-bottom:8px}' +
+    '.ocgu-modal-body{font-size:12.5px;line-height:1.7;color:var(--dsw-alias-label-secondary);margin-bottom:16px}' +
+    '.ocgu-modal-actions{display:flex;justify-content:flex-end;gap:8px}' +
     '.ocgu-input{box-sizing:border-box;height:28px;padding:0 10px;border:.5px solid var(--dsw-alias-border-l4);border-radius:var(--dsw-radius-sm,8px);background:var(--dsw-alias-bg-layer-3);color:var(--dsw-alias-label-primary);font-family:inherit;font-size:13px;line-height:1.5;outline:none;transition:border-color .12s ease}' +
     '.ocgu-input::placeholder{color:var(--dsw-alias-label-tertiary)}' +
     '.ocgu-input:focus{border-color:var(--dsw-alias-border-l3);outline:var(--dsw-focus-ring-width,2px) solid var(--dsw-focus-ring-color,var(--dsw-alias-state-business-primary));outline-offset:1px}' +
@@ -663,8 +669,9 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
     var y = t('anchor.' + (typeof ay === 'string' && ay ? ay : 'view-bottom'));
     return x + ' · ' + y;
   }
-  // 默认位置 = 窗口左上角（贴左边 11px、距顶 50px）；「重置位置」与「恢复默认设置」都回到这里
-  var DEFAULT_ANCHORS = { widgetAnchorX: 'view-left', widgetOffsetX: 11, widgetAnchorY: 'view-top', widgetOffsetY: 50 };
+  // 默认位置 = 窗口左下角（贴左边 7px、距底 9.2px，即用户日常使用的位置）；
+  // 「重置位置」与「恢复默认设置」都回到这里，resetAll 的 patch 直接复用本对象。
+  var DEFAULT_ANCHORS = { widgetAnchorX: 'view-left', widgetOffsetX: 7, widgetAnchorY: 'view-bottom', widgetOffsetY: -9.2 };
   var REVEAL_MS = 3000;
   // 刷新超时的哨兵值：文案交给界面层按语言生成，helper 里不放中文（否则英文界面会中英混排）
   var ERR_TIMEOUT = '@timeout';
@@ -720,9 +727,9 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
       'btn.clear': '清空',
       'btn.resetPos': '重置位置',
       'btn.atDefault': '已在默认位置',
-      'title.resetPos': '把浮窗放回默认位置（窗口左上角）',
+      'title.resetPos': '把浮窗放回默认位置（窗口左下角）',
       'btn.resetAll': '恢复默认设置',
-      'title.resetAll': '一键恢复：已使用 / 5 分钟 / 极简模式 / 不显示余额 / 默认位置',
+      'title.resetAll': '一键恢复：已使用 / 5 分钟 / 极简模式 / 不显示余额 / 左下角默认位置',
       'aria.widget': '显示浮窗',
       'label.minimal': '极简模式',
       'title.minimal': '三环嵌套（R / W / M），余额取整显示在环旁',
@@ -791,6 +798,22 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
       'field.sidebarEntry.hint': '开启后插件设置菜单会出现在 DSH 侧边栏上，默认关闭',
       'field.restoreDefaults': '恢复默认设置',
       'field.restoreDefaults.hint': '恢复所有设置为默认状态',
+      'field.exportConfig': '导出配置',
+      'field.exportConfig.hint': '把当前全部设置保存为 JSON 文件；文件不包含任何 API Key',
+      'btn.export': '导出',
+      'field.importConfig': '导入配置',
+      'field.importConfig.hint': '选择之前导出的 JSON，一次性恢复全部设置；API Key 不会被导入',
+      'btn.import': '选择文件',
+      'dlg.export.title': '导出前请注意',
+      'dlg.export.body': '导出的文件只包含界面设置，不包含任何 API Key —— 即使你手动填写过覆盖用的 Key，也不会被导出。请自己另外备份 API Key；导入后 Key 需要重新填写，或继续使用 DSH 凭据库里的那份。',
+      'dlg.export.confirm': '仍要导出',
+      'dlg.cancel': '取消',
+      'msg.exportDone': '配置已导出',
+      'msg.importDone': '已导入 {n} 项设置',
+      'msg.importEmpty': '文件里没有可导入的设置项',
+      'msg.importFailed': '导入失败：{err}',
+      'msg.importTooLarge': '文件过大（上限 512 KB）',
+      'msg.importBadShape': '文件格式不对：需要本插件导出的 JSON（settings 对象）',
       'aria.tabs': '设置分组',
       'title.console': '打开 OpenCode 账户页（opencode.ai/console）',      'field.widget.master': '浮窗总开关',
       'field.scale': '浮窗大小',
@@ -883,9 +906,9 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
       'btn.clear': 'Clear',
       'btn.resetPos': 'Reset position',
       'btn.atDefault': 'At default',
-      'title.resetPos': 'Move the pill back to its default position (top-left of the window)',
+      'title.resetPos': 'Move the pill back to its default position (bottom-left of the window)',
       'btn.resetAll': 'Restore defaults',
-      'title.resetAll': 'One-click defaults: Used / 5 min / Minimal / no balance / default position',
+      'title.resetAll': 'One-click defaults: Used / 5 min / Minimal / no balance / default bottom-left position',
       'aria.widget': 'Show floating pill',
       'label.minimal': 'Minimal',
       'title.minimal': 'Nested rings (R / W / M) with the rounded balance beside them',
@@ -954,6 +977,22 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
       'field.sidebarEntry.hint': 'When enabled, the plugin also gets an entry in the DSH sidebar; off by default',
       'field.restoreDefaults': 'Restore defaults',
       'field.restoreDefaults.hint': 'Restore every setting to its default value',
+      'field.exportConfig': 'Export configuration',
+      'field.exportConfig.hint': 'Save all current settings as a JSON file; the file contains no API keys',
+      'btn.export': 'Export',
+      'field.importConfig': 'Import configuration',
+      'field.importConfig.hint': 'Pick a previously exported JSON to restore every setting; API keys are never imported',
+      'btn.import': 'Choose file',
+      'dlg.export.title': 'Before you export',
+      'dlg.export.body': 'The exported file only contains interface settings and no API keys at all — even keys you typed yourself as overrides are left out. Please back up your API keys separately; after importing, keys have to be entered again or keep coming from the DSH credential store.',
+      'dlg.export.confirm': 'Export anyway',
+      'dlg.cancel': 'Cancel',
+      'msg.exportDone': 'Configuration exported',
+      'msg.importDone': 'Imported {n} settings',
+      'msg.importEmpty': 'No importable settings found in that file',
+      'msg.importFailed': 'Import failed: {err}',
+      'msg.importTooLarge': 'The file is too large (512 KB limit)',
+      'msg.importBadShape': 'Wrong file format: expected the JSON exported by this plugin (a settings object)',
       'aria.tabs': 'Settings groups',
       'title.console': 'Open the OpenCode account page (opencode.ai/console)',
       'field.widget.master': 'Floating pill',
@@ -1753,6 +1792,11 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
     var msgs = msgState[0];
     var setMsgs = msgState[1];
     var msgTimers = React.useRef({});
+    // 配置导出 / 导入
+    var fileRef = React.useRef(null);
+    var exportState = React.useState(false);
+    var exportOpen = exportState[0];
+    var setExportOpen = exportState[1];
     var say = function (id, text, tone) {
       // 提示按 { text, tone } 存：语气由调用方显式给出，不再靠中文关键词猜
       //（否则英文提示匹配不上 /失败|超时|…/，会被当成「成功绿」）
@@ -1884,13 +1928,19 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
     };
 
     // 浮窗上是否显示 DeepSeek 余额（关掉后只留 OCG 三组环，浮窗变窄）
-    // 侧栏入口：开关只控制「侧栏那一行」是否注册；主面板（main）常驻，隐藏行时不影响
+    // 侧栏入口：开关只控制「侧栏那一行」是否注册；主面板（main）常驻，隐藏行时不影响。
+    // 注意：侧栏行的注册状态不跟配置自动联动，**任何改动 sidebarEntry 的路径都必须调用 syncSidebarRow**，
+    // 否则「导入配置把开关打开」之后侧栏行不会出现，要手动开关一次才生效（3.4.0 修的就是这个）。
+    var syncSidebarRow = function (nv) {
+      if (!props.sidebarApi || typeof props.sidebarApi.apply !== 'function') return;
+      try { props.sidebarApi.apply(nsValue(nv).sidebarEntry === true); } catch (e) { /* 侧栏不可用时忽略 */ }
+    };
     var toggleSidebarEntry = function () {
       var next = !(value.sidebarEntry === true);
       updateNs(remote, viewRef.current, { sidebarEntry: next }, function (err, nv) {
         if (err || !nv) { say('sidebar', t('msg.saveFailed', { err: err || t('msg.unknownErr') }), 'error'); return; }
         apply(nv);
-        if (props.sidebarApi && props.sidebarApi.apply) props.sidebarApi.apply(nsValue(nv).sidebarEntry === true);
+        syncSidebarRow(nv);
         say('sidebar', nsValue(nv).sidebarEntry === true ? t('msg.sidebarOn') : t('msg.sidebarOff'));
       });
     };
@@ -2006,6 +2056,122 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
         setRefreshDraft(String(nsValue(nv).refreshMinutes || 5));
         say('resetAll', t('msg.resetAllDone'));
       });
+    };
+
+    // ── 配置导出 / 导入 ──────────────────────────────────────────────────────
+    // 只导出「界面设置」白名单，API Key（apiKey / deepseekApiKey）永远不导出，即便用户手动填过覆盖值。
+    var EXPORT_KEYS = [
+      'refreshMinutes', 'widgetVisible', 'widgetScale', 'sidebarEntry',
+      'showBalance', 'pillBalanceSource', 'tipShowBalance', 'tipShowQuota',
+      'percentMode', 'quotaRefModel', 'currencyMode', 'minimalMode',
+      'ringOuter', 'ringMiddle', 'ringInner',
+      'widgetAnchorX', 'widgetOffsetX', 'widgetAnchorY', 'widgetOffsetY'
+    ];
+    var readExportable = function () {
+      var v = nsValue(viewRef.current), out = {};
+      for (var i = 0; i < EXPORT_KEYS.length; i++) {
+        var k = EXPORT_KEYS[i];
+        if (v[k] !== undefined && v[k] !== null) out[k] = v[k];
+      }
+      return out;
+    };
+    var doExport = function () {
+      try {
+        var d = new Date(), p2 = function (n) { return (n < 10 ? '0' : '') + n; };
+        var payload = {
+          app: 'dsh-opencode-go-usage',
+          kind: 'settings',
+          configVersion: 1,
+          pluginVersion: String(nsValue(viewRef.current).pluginVersion || ''),
+          exportedAt: d.toISOString(),
+          settings: readExportable()
+        };
+        var blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'ocg-usage-settings-' + d.getFullYear() + p2(d.getMonth() + 1) + p2(d.getDate()) + '-' + p2(d.getHours()) + p2(d.getMinutes()) + '.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(function () { URL.revokeObjectURL(url); }, 5000);
+        setExportOpen(false);
+        say('exportCfg', t('msg.exportDone'));
+      } catch (e) {
+        setExportOpen(false);
+        say('exportCfg', t('msg.importFailed', { err: (e && e.message) || e }), 'error');
+      }
+    };
+    var IMPORT_TYPES = {
+      refreshMinutes: 'number', widgetVisible: 'boolean', widgetScale: 'number', sidebarEntry: 'boolean',
+      showBalance: 'boolean', pillBalanceSource: 'string', tipShowBalance: 'boolean', tipShowQuota: 'boolean',
+      percentMode: 'string', quotaRefModel: 'string', currencyMode: 'string', minimalMode: 'boolean',
+      ringOuter: 'string', ringMiddle: 'string', ringInner: 'string',
+      widgetAnchorX: 'string', widgetOffsetX: 'number', widgetAnchorY: 'string', widgetOffsetY: 'number'
+    };
+    var clampImport = function (v, a, b) { return v < a ? a : (v > b ? b : v); };
+    // 导入是「解析用户的任意 JSON 文件」，按不可信输入处理：
+    // · 只读白名单键（IMPORT_TYPES），且只读**自有属性**，防原型链取值；
+    // · 派生对象 patch 的键全部来自白名单，外部数据不可能写进原型（无原型污染面）；
+    // · 字符串限长、数字限范围、枚举限值，超限/非法直接丢弃；
+    // · 文件体积在 importFile 里先行限制，避免超大 JSON 卡住 UI。
+    var IMPORT_MAX_BYTES = 512 * 1024;
+    var IMPORT_MAX_STRING = 160;
+    var sanitizeImport = function (raw) {
+      var src = raw && typeof raw === 'object' && !Array.isArray(raw) && raw.settings && typeof raw.settings === 'object' && !Array.isArray(raw.settings)
+        ? raw.settings
+        : raw;
+      if (!src || typeof src !== 'object' || Array.isArray(src)) return { patch: {}, count: 0, badShape: true };
+      var patch = {}, count = 0;
+      for (var k in IMPORT_TYPES) {
+        if (!Object.prototype.hasOwnProperty.call(IMPORT_TYPES, k)) continue;
+        if (!Object.prototype.hasOwnProperty.call(src, k)) continue;
+        var want = IMPORT_TYPES[k], val = src[k];
+        if (val === undefined || val === null) continue;
+        if (want === 'number') { if (typeof val !== 'number' || !isFinite(val)) continue; }
+        else if (want === 'boolean') { if (typeof val !== 'boolean') continue; }
+        else {
+          if (typeof val !== 'string') continue;
+          if (!val || val.length > IMPORT_MAX_STRING) continue;
+        }
+        if (k === 'widgetScale') val = clampImport(val, 0.8, 2);
+        if (k === 'refreshMinutes') val = clampImport(val, 0.5, 1440);
+        if (k === 'percentMode' && val !== 'used' && val !== 'left') continue;
+        if (k === 'currencyMode' && ['auto', 'cny', 'usd'].indexOf(val) < 0) continue;
+        if (k === 'pillBalanceSource' && ['deepseek', 'quota'].indexOf(val) < 0) continue;
+        if ((k === 'ringOuter' || k === 'ringMiddle' || k === 'ringInner') && ['rolling', 'weekly', 'monthly'].indexOf(val) < 0) continue;
+        if (k === 'widgetAnchorX' && ['card-left', 'card-right', 'view-left', 'view-right'].indexOf(val) < 0) continue;
+        if (k === 'widgetAnchorY' && ['card-top', 'card-bottom', 'view-top', 'view-bottom'].indexOf(val) < 0) continue;
+        if (k === 'quotaRefModel' && !val) continue;
+        patch[k] = val;
+        count++;
+      }
+      return { patch: patch, count: count, badShape: false };
+    };
+    var importFile = function (file) {
+      if (!file) return;
+      if (typeof file.size === 'number' && file.size > IMPORT_MAX_BYTES) {
+        say('importCfg', t('msg.importFailed', { err: t('msg.importTooLarge') }), 'error');
+        return;
+      }
+      var reader = new FileReader();
+      reader.onload = function () {
+        var parsed = null;
+        try { parsed = JSON.parse(String(reader.result || '')); }
+        catch (e) { say('exportCfg', t('msg.importFailed', { err: (e && e.message) || e }), 'error'); return; }
+        var res = sanitizeImport(parsed);
+        if (res.badShape) { say('importCfg', t('msg.importFailed', { err: t('msg.importBadShape') }), 'error'); return; }
+        if (!res.count) { say('importCfg', t('msg.importFailed', { err: t('msg.importEmpty') }), 'error'); return; }
+        updateNs(remote, viewRef.current, res.patch, function (err, nv) {
+          if (err || !nv) { say('importCfg', t('msg.importFailed', { err: err || t('msg.unknownErr') }), 'error'); return; }
+          apply(nv);
+          setRefreshDraft(String(nsValue(nv).refreshMinutes || 5));
+          syncSidebarRow(nv);
+          say('importCfg', t('msg.importDone', { n: res.count }));
+        });
+      };
+      reader.onerror = function () { say('importCfg', t('msg.importFailed', { err: 'read error' }), 'error'); };
+      reader.readAsText(file);
     };
 
     var statusText = function (s) {
@@ -2573,6 +2739,55 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
           title: t('title.resetAll')
         }, t('btn.resetAll'))]
       }),
+      // ── 配置导出 / 导入（设置项，不是运行时数据；API Key 永不导出）──
+      React.createElement(FieldRow, {
+        title: t('field.exportConfig'),
+        hint: t('field.exportConfig.hint'),
+        msg: msgOf('exportCfg'),
+        tone: toneOf('exportCfg'),
+        nowrap: true,
+        control: [React.createElement('button', {
+          key: 'exp', className: 'ocgu-btn', 'data-kind': 'outline', title: t('field.exportConfig'),
+          onClick: function () { setExportOpen(true); }
+        }, t('btn.export'))]
+      }),
+      React.createElement(FieldRow, {
+        title: t('field.importConfig'),
+        hint: t('field.importConfig.hint'),
+        msg: msgOf('importCfg'),
+        tone: toneOf('importCfg'),
+        nowrap: true,
+        control: [
+          React.createElement('button', {
+            key: 'imp', className: 'ocgu-btn', 'data-kind': 'outline', title: t('field.importConfig'),
+            onClick: function () { if (fileRef.current) fileRef.current.click(); }
+          }, t('btn.import')),
+          React.createElement('input', {
+            key: 'file', ref: fileRef, type: 'file', accept: '.json,application/json',
+            style: { display: 'none' },
+            onChange: function (e) { var f = e.target.files && e.target.files[0]; importFile(f); e.target.value = ''; }
+          })
+        ]
+      }),
+      // 导出前的告知弹窗（必须点确认才下载；文案明确「不含 API Key，请自行备份」）
+      exportOpen ? React.createElement('div', {
+        className: 'ocgu-modal-mask', role: 'dialog', 'aria-modal': 'true', 'aria-label': t('dlg.export.title')
+      },
+        React.createElement('div', { className: 'ocgu-modal' },
+          React.createElement('div', { className: 'ocgu-modal-title' }, t('dlg.export.title')),
+          React.createElement('div', { className: 'ocgu-modal-body' }, t('dlg.export.body')),
+          React.createElement('div', { className: 'ocgu-modal-actions' },
+            React.createElement('button', {
+              key: 'cancel', className: 'ocgu-btn', 'data-kind': 'outline',
+              onClick: function () { setExportOpen(false); }
+            }, t('dlg.cancel')),
+            React.createElement('button', {
+              key: 'ok', className: 'ocgu-btn', 'data-kind': 'primary',
+              onClick: doExport
+            }, t('dlg.export.confirm'))
+          )
+        )
+      ) : null
       ) : null);
   }
 

@@ -116,13 +116,14 @@ return z.object({
   ringInner: z.string().default("rolling").volatile(),
   // 浮窗锚定（「最近锚线」模型）：拖动松手时只记「锚线 + 偏移」，窗口或输入框
   // 尺寸变化时按锚线重算像素位置，而不是记住绝对坐标。
-  // 默认 = 窗口左上角（贴左边 11px、距顶 50px）—— 「重置位置」按钮回到这里。
+  // 默认 = 窗口左下角（贴左边 7px、距底 9.2px）—— 「重置位置」按钮回到这里。
   // 水平锚线：card-left | card-right | view-left | view-right
   // 垂直锚线：card-top | card-bottom | view-top | view-bottom
+  // 默认位置 = 窗口左下角（贴左边 7px、距底 9.2px）；「重置位置」与「恢复默认设置」都回到这里
   widgetAnchorX: z.string().default("view-left").volatile(),
-  widgetOffsetX: z.number().default(11).volatile(),
-  widgetAnchorY: z.string().default("view-top").volatile(),
-  widgetOffsetY: z.number().default(50).volatile(),
+  widgetOffsetX: z.number().default(7).volatile(),
+  widgetAnchorY: z.string().default("view-bottom").volatile(),
+  widgetOffsetY: z.number().default(-9.2).volatile(),
   // 手动刷新请求计数：客户端递增以触发宿主立即重新拉取
   refreshRequest: z.number().default(0).volatile(),
   // 「更新中」信号：宿主每轮真正开始拉取前自增。宿主是拉取完成后才写 lastUpdated 的，
