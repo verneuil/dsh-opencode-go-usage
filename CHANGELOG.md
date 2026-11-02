@@ -1,3 +1,23 @@
+## 3.3.1
+
+### 修复
+- 修复设置页操作后可能看不到绿色成功提示的问题；
+- 宿主包 @deepseek-ai/schemastery 改为非可选 peer 依赖，并由插件自身位置再解析一次，保证隔离环境里也能拿到真库。
+
+### 改进
+- 提高隔离 / 沙箱环境下的加载成功率：拿不到宿主包或版本不兼容时自动降级为内联 Standard Schema，插件照常加载；
+- 启动路径整体加保护：激活阶段任何异常只记录日志，不再连带整棵插件树启动失败。
+
+---
+
+### Fixes
+- Fixed the green success hint sometimes not showing after an action in the settings page;
+- The host package @deepseek-ai/schemastery is a non-optional peer dependency again and is also resolved relative to the plugin itself, so isolated environments still get the real library.
+
+### Improvements
+- Better loading odds in isolated / sandboxed environments: when the host package is missing or incompatible the plugin falls back to an inline Standard Schema and still loads;
+- The activation path is guarded: an exception during activation is only logged instead of failing the whole plugin tree.
+
 ## 3.3.0
 
 ### 新功能

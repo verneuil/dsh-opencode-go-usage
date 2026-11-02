@@ -92,10 +92,10 @@ In DSH, open the **plugin manager → “Install plugin” dialog → paste one 
 | -------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
 | **Straight from GitHub** (recommended) | `github:verneuil/dsh-opencode-go-usage`                                                                      |
 | **From npm**                           | `dsh plugin --profile web add @verneuil/dsh-opencode-go-usage`                                               |
-| **Pin a version**                      | `github:verneuil/dsh-opencode-go-usage#v3.3.0` (replace with any published tag)                              |
-| **Release tarball**                    | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v3.3.0/dsh-opencode-go-usage-3.3.0.tgz` |
+| **Pin a version**                      | `github:verneuil/dsh-opencode-go-usage#v3.3.1` (replace with any published tag)                              |
+| **Release tarball**                    | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v3.3.1/dsh-opencode-go-usage-3.3.1.tgz` |
 | **Release URL (always latest)**        | `https://github.com/verneuil/dsh-opencode-go-usage/releases/latest/download/dsh-opencode-go-usage.tgz`       |
-| **Offline tgz**                        | `file:D:/your/path/dsh-opencode-go-usage-3.3.0.tgz`                                                          |
+| **Offline tgz**                        | `file:D:/your/path/dsh-opencode-go-usage-3.3.1.tgz`                                                          |
 
 The equivalent command line (`dsh plugin` automatically adds dependencies that declare `dsh.bundle` to the profile's bundles — no hand-written patch needed):
 
@@ -120,7 +120,7 @@ Follow the on-screen prompt to reload afterwards (replacing an installed JavaScr
 
 The settings page has three tabs: **Usage data** (default) / **Floating pill** / **General settings**.
 
-Next to the page title sit the **GitHub icon and the current version** (e.g. `v3.3.0`); clicking the icon opens this repository.
+Next to the page title sit the **GitHub icon and the current version** (e.g. `v3.3.1`); clicking the icon opens this repository.
 
 **Usage data**
 
@@ -210,7 +210,7 @@ The host half performs the fetching and parsing (neither key ever leaves the hos
 | --------------- | ------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
 | Bundle manifest | `package.json`     | `dsh.bundle.patch` + `dsh.client` (platform web, immediately) + `icon` + `locale/*.json` display metadata                                       |
 | Loader patch    | `cordis.patch.yml` | Inserts one row, `id: opencode-go-usage` (this row id is also the namespace of the settings form)                                               |
-| Host half       | `index.js`         | `export const Config` (schemastery) + `apply(ctx, config)`: fetching, parsing, writing back snapshots, auto-refresh                             |
+| Host half       | `index.js`         | `export const Config` (schemastery when available, falling back to an inline Standard Schema) + `apply(ctx, config)`: fetching, parsing, writing back snapshots, auto-refresh                             |
 | Client half     | `client.js`        | A `window.__ModuleLoader__` lazy factory; only `require('react')`; registers into `shell.overlay` (pill) and `settings.section` (settings page) |
 
 ## Configuration
@@ -259,7 +259,7 @@ The settings page covers the common options; the fields below can also be edited
 - **Release assets carry build provenance**: every `.tgz` is built and signed by GitHub Actions, so the Release page shows **Verified**; verify it yourself with `gh attestation verify <file> --repo verneuil/dsh-opencode-go-usage`.
 - **Keys never leave your machine except to the official endpoints**: the API key is held by DSH settings storage and is only sent as a request header; it is never written into URLs, logs or the usage snapshot, and never projected to the client (the client only sees "configured?" and a masked form).
 - **Only four fixed hosts are contacted at runtime**: `api.deepseek.com` (balance), `opencode.ai` (usage and the official model table), plus `open.er-api.com` and `api.frankfurter.app` (exchange rates, only when the currency mode is "auto").
-- **No telemetry**: no usage data is collected and nothing is sent to a service of ours; there are no runtime npm dependencies (only the peer dependency provided by DSH).
+- **No telemetry**: no usage data is collected and nothing is reported to a server of our own; the only third-party package involved is the host peer dependency `@deepseek-ai/schemastery`, which declares the settings schema and its volatile semantics and is installed with the profile so the settings UI behaves identically everywhere.
 - **Credential hardening**: every request that carries a key disables redirects (`redirect: "error"`) so credentials cannot be forwarded to another host.
 - **Reporting**: please use [GitHub Issues](https://github.com/verneuil/dsh-opencode-go-usage/issues); **never paste a key into an issue**.
 

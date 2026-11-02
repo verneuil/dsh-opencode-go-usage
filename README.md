@@ -91,10 +91,10 @@
 | ---------------------------- | ------------------------------------------------------------------------------------------------------------ |
 | **GitHub 直装**（推荐）      | `github:verneuil/dsh-opencode-go-usage`                                                                      |
 | **npm 安装**                 | `dsh plugin --profile web add @verneuil/dsh-opencode-go-usage`                                               |
-| **固定某个版本**             | `github:verneuil/dsh-opencode-go-usage#v3.3.0`（换成任意已发布 tag）                                         |
-| **Release 包**               | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v3.3.0/dsh-opencode-go-usage-3.3.0.tgz` |
+| **固定某个版本**             | `github:verneuil/dsh-opencode-go-usage#v3.3.1`（换成任意已发布 tag）                                         |
+| **Release 包**               | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v3.3.1/dsh-opencode-go-usage-3.3.1.tgz` |
 | **Release 直链（始终最新）** | `https://github.com/verneuil/dsh-opencode-go-usage/releases/latest/download/dsh-opencode-go-usage.tgz`       |
-| **离线 tgz**                 | `file:D:/你的路径/dsh-opencode-go-usage-3.3.0.tgz`                                                           |
+| **离线 tgz**                 | `file:D:/你的路径/dsh-opencode-go-usage-3.3.1.tgz`                                                           |
 
 命令行等价写法（`dsh plugin` 会把声明了 `dsh.bundle` 的依赖自动加进 profile 的 bundles，无需手写 patch）：
 
@@ -119,7 +119,7 @@ dsh plugin --profile web add github:verneuil/dsh-opencode-go-usage
 
 设置页分三个标签：**用量数据**（默认）/ **浮窗管理** / **通用设置**。
 
-页面顶部标题右侧是 **GitHub 图标 + 当前版本号**（如 `v3.3.0`），点击图标打开本插件仓库。
+页面顶部标题右侧是 **GitHub 图标 + 当前版本号**（如 `v3.3.1`），点击图标打开本插件仓库。
 
 **用量数据**
 
@@ -209,7 +209,7 @@ GET https://api.frankfurter.app/latest?from=USD&to=CNY      # USD/CNY 汇率（�
 | ------------ | ------------------ | ------------------------------------------------------------------------------------------------------------------------ |
 | Bundle 清单  | `package.json`     | `dsh.bundle.patch` + `dsh.client`（platform web、immediately）+ `icon` + `locale/*.json` 显示元数据                      |
 | Loader patch | `cordis.patch.yml` | 插入一行 `id: opencode-go-usage`（本行 id 同时是设置表单的 ns）                                                          |
-| 宿主半侧     | `index.js`         | `export const Config`（schemastery）+ `apply(ctx, config)`；拉取、解析、写回快照、自动刷新                               |
+| 宿主半侧     | `index.js`         | `export const Config`（优先 schemastery，拿不到时降级为内联 Standard Schema）+ `apply(ctx, config)`；拉取、解析、写回快照、自动刷新                               |
 | 客户端半侧   | `client.js`        | `window.__ModuleLoader__` 惰性工厂；只 `require('react')`，注册进 `shell.overlay`（浮窗）与 `settings.section`（设置页） |
 
 ## 配置项
@@ -258,7 +258,7 @@ GET https://api.frankfurter.app/latest?from=USD&to=CNY      # USD/CNY 汇率（�
 - **Release 附件带构建来源证明**：每个 `.tgz` 都由 GitHub Actions 构建并签名，Release 页面显示 **Verified**；可用 `gh attestation verify <文件> --repo verneuil/dsh-opencode-go-usage` 自行校验。
 - **密钥只在本机流转**：API Key 由 DSH 的设置存储保管，插件只在请求头里把它发给官方端点；不写入 URL、日志、用量快照，也不会下发到前端（前端只拿到“是否已配置”与掩码形式）。
 - **运行期只访问 4 个固定域名**：`api.deepseek.com`（账户余额）、`opencode.ai`（用量与官方模型表）、`open.er-api.com` 与 `api.frankfurter.app`（汇率，仅在选择「自动」币种时）。
-- **无遥测**：不收集任何使用数据，也不向任何自建服务回传；运行期 npm 依赖为空（只用 DSH 提供的 peer 依赖）。
+- **无遥测**：不收集任何使用数据，也不向任何自建服务回传；运行期没有第三方依赖，只有一个 **peer 依赖**：宿主包 `@deepseek-ai/schemastery`（声明配置 schema 与 volatile 语义）。它由 profile 一起安装，保证任何环境下设置页行为一致。
 - **凭据防护**：所有携带密钥的请求都禁用了重定向（`redirect: "error"`），避免凭据被转发到其它主机。
 - **反馈问题**：请走 [GitHub Issues](https://github.com/verneuil/dsh-opencode-go-usage/issues)；**切勿在 issue 里粘贴任何密钥**。
 

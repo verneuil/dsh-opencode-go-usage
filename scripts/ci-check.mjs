@@ -78,7 +78,8 @@ check('files[] covers every shipped entry', () => {
 })
 check('no runtime dependency on host packages', () => {
   const deps = Object.keys(pkg.dependencies ?? {})
-  return deps.length === 0 && Object.keys(pkg.peerDependencies ?? {}).length > 0
+  const peers = Object.keys(pkg.peerDependencies ?? {});
+  return deps.length === 0 && peers.length === 1 && peers[0] === '@deepseek-ai/schemastery'
 })
 check('host packages are never regular dependencies', () => Object.keys(pkg.dependencies ?? {}).every((n) => !n.startsWith('@deepseek-ai/')))
 
@@ -96,7 +97,7 @@ check('exports Config', () => /export\s+const\s+Config\b/.test(host))
 check('declares inject', () => /export\s+const\s+inject\b/.test(host))
 check('no static import of host packages (sandbox L5 regression guard)', () => !/^import\s[^;]*from\s+['"]@deepseek-ai\//m.test(host))
 check('schemastery resolved lazily in two stages', () => host.includes('createRequire') && host.includes('await import("@deepseek-ai/schemastery")'))
-check('degraded Config path exists', () => /Config\s*=\s*zReal\s*\?/.test(host))
+check('Config degrades to an inline Standard Schema', () => host.includes('looseConfig') && host.includes('"~standard"') && host.includes('realConfig || looseConfig'))
 
 console.log('# client half contract')
 const client = read('client.js')
@@ -120,6 +121,7 @@ check('client resolves the mapping with a uniqueness fallback', () => read('clie
 check('client renders the live preview block', () => read('client.js').includes('ocgu-rmap') && read('client.js').includes('ringMapPreview'))
 check('minimal pill consumes the mapping', () => read('client.js').includes('NEST_RADII'))
 check('Config declares the pill scale', () => read('index.js').includes('widgetScale: z.number().default(1)'))
+check('apply is wrapped so a boot error cannot fail the tree', () => host.includes('function applyImpl(') && /export function apply\(ctx, config\)/.test(host))
 check('client exposes the eight slider stops', () => read('client.js').includes('var SCALE_STEPS = [0.8, 0.9, 1, 1.15, 1.3, 1.5, 1.75, 2]') && read('client.js').includes('ocgu-scale-input'))
 check('pill root applies the scale transform', () => read('client.js').includes("transform: 'scale(' + pillScale + ')'"))
 

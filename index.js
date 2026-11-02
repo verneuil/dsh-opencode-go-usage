@@ -13,6 +13,14 @@ async function resolveSchemaFactory() {
     if (factory != null && typeof factory.object === "function") return factory;
   } catch (e) { /* 落到 ESM 动态 import */ }
   try {
+    // 第二段：从插件自身位置解析（profile 把 peer 装在本包旁边时走这条）
+    const { createRequire: cr2 } = await import("node:module");
+    const selfAnchor = new URL(import.meta.url);
+    const req2 = cr2(selfAnchor);
+    const factory2 = req2("@deepseek-ai/schemastery");
+    if (factory2 != null && typeof factory2.object === "function") return factory2;
+  } catch (e) { /* 落到 ESM 动态 import */ }
+  try {
     const resolved = await import("@deepseek-ai/schemastery");
     const factory = (resolved && (resolved.default || resolved.Schema)) || null;
     return factory != null && typeof factory.object === "function" ? factory : null;
@@ -46,6 +54,9 @@ export const inject = ["settings", "timer"]
 // 本插件自带 settings.section 页面，因此禁用了自动生成的表单页（见 apply 内
 // settings.configure({ auto: false })）——否则会出现两个重复的配置界面。
 
+// 所有 schema 一律放进函数里构造：即便宿主包被解析到不兼容版本，也只会在函数里抛，
+// 由调用处捕获并降级，绝不会让整个模块求值失败（模块求值失败会让整棵插件树加载失败）。
+function buildConfigSchema() {
 const UsageWindow = z.object({
   // 官方接口每个窗口返回的 status（正常为 "ok"）
   status: z.string().default(""),
@@ -70,7 +81,7 @@ const BalanceInfo = z.object({
   toppedUpBalance: z.string().default(""),
 })
 
-export const Config = zReal ? z.object({
+return z.object({
   // ── 用户可改 ──
   // 两把 Key 都是可选覆盖：留空则自动使用 DSH 凭据库
   // （OpenCode Go → OPENCODE_GO_API_KEY；DeepSeek → DEEPSEEK_API_KEY）
@@ -149,7 +160,33 @@ export const Config = zReal ? z.object({
   fxRateDate: z.string().default("").volatile(),
   fxSource: z.string().default("").volatile(),
   fxError: z.string().default("").volatile(),
-}): undefined
+})
+}
+
+// 兜底：内联 Standard Schema（零宿主依赖）。宿主只要求 Config 满足 ~standard 校验器，
+// 因此即便拿不到 @deepseek-ai/schemastery，插件也能正常加载（字段读取全走 vget 兜底）。
+const looseConfig = {
+  "~standard": {
+    version: 1,
+    vendor: "opencode-go-usage",
+    validate: function (value) {
+      return { value: value && typeof value === "object" && !Array.isArray(value) ? value : {} };
+    }
+  }
+};
+
+let realConfig = null;
+if (zReal) {
+  try {
+    const built = buildConfigSchema();
+    const std = built && built["~standard"];
+    if (std && typeof std.validate === "function") realConfig = built;
+    else console.warn("[opencode-go-usage] Config schema 缺少 ~standard，已降级为宽松校验");
+  } catch (e) {
+    console.warn("[opencode-go-usage] 构造 Config schema 失败，已降级为宽松校验：" + ((e && e.message) || e));
+  }
+}
+export const Config = realConfig || looseConfig;
 
 const OCG_ENDPOINT = "https://opencode.ai/zen/go/v1/usage"
 const DS_ENDPOINT = "https://api.deepseek.com/user/balance"
@@ -341,12 +378,11 @@ function outsideTransaction(ctx, run) {
   return run()
 }
 
-export function apply(ctx, config) {
+function applyImpl(ctx, config) {
   // ── 启动能力自检（护栏）─────────────────────────────────────────────────────
   // 宿主 API 契约变更时给出可读警告并安全跳过，而不是抛 TypeError 让整条目静默不激活。
   // 校验项 = 本插件实际使用的宿主契约。
   const missing = []
-  if (config === undefined || config === null) missing.push("apply(ctx, config) 第二参数 config")
   if (!ctx.settings || typeof ctx.settings.configure !== "function" || typeof ctx.settings.update !== "function") missing.push("ctx.settings.configure()/update()")
   if (typeof ctx.effect !== "function") missing.push("ctx.effect()")
   if (typeof ctx.on !== "function") missing.push("ctx.on()")
@@ -695,4 +731,18 @@ export function apply(ctx, config) {
       retryDisposers.length = 0
     }
   })
+}
+
+// 启动期安全包装：任何异常都只记日志、不让条目激活失败，更不让整棵插件树加载失败
+// （dsh.so 的 L5.2_WEB_BOOT_READY 就报在「plugin tree failed to load」这一步）。
+export function apply(ctx, config) {
+  const cfg = config && typeof config === "object" ? config : {};
+  try {
+    applyImpl(ctx, cfg);
+  } catch (e) {
+    const msg = "[opencode-go-usage] 启动失败（已跳过激活，不影响宿主）：" + ((e && e.stack) || e);
+    const logger = typeof ctx.logger === "function" ? ctx.logger("opencode-go-usage") : null;
+    if (logger && typeof logger.error === "function") logger.error(msg);
+    else console.error(msg);
+  }
 }
