@@ -161,15 +161,19 @@ Because the plugin ships its own settings page, the host side calls the official
 
 ## Screenshots
 
-> All six are **rendered illustrations** of the interface, built from the plugin's real stylesheet and the host theme tokens. The two settings images show the “Usage data” tab (quota reference model, amount currency and the one-line plan quota); the states image includes the latest hover popover (account-balance row + quota-left row + three progress bars, at the fixed 232 px width with right-aligned amounts). The sixth shows the full settings page opened from the sidebar entry.
+> All ten are **rendered illustrations** built from the plugin's real stylesheet and the host theme tokens (not machine screenshots). The three settings groups cover every tab: **Usage data** (quota reference model, amount currency, plan quota and the usage card), **Floating pill** (master switch, size slider, balance and popover data, minimal mode, ring data mapping with its live preview, position reset) and **General settings** (both keys, sidebar entry, restore defaults, export / import configuration). The states image includes the latest hover popover, and the last one shows the full settings page opened from the sidebar entry.
 
-| Pill · light                                                                                  | Pill · dark                                       |
-| --------------------------------------------------------------------------------------------- | ------------------------------------------------- |
-| ![Pill · light](screenshots/float-light.png)                                                  | ![Pill · dark](screenshots/float-dark.png)        |
-| **Settings · light**                                                                          | **Settings · dark**                               |
-| ![Settings · light](screenshots/settings-light.png)                                           | ![Settings · dark](screenshots/settings-dark.png) |
-| **Sidebar entry · full settings page** (what the sidebar row opens when the entry is enabled) |                                                   |
-| ![Sidebar entry](screenshots/sidebar-light.png)                                               |                                                   |
+| Pill · light | Pill · dark |
+| --- | --- |
+| ![Pill · light](screenshots/float-light.png) | ![Pill · dark](screenshots/float-dark.png) |
+| **Settings · Usage data (light)** | **Settings · Usage data (dark)** |
+| ![Settings · Usage data · light](screenshots/settings-light.png) | ![Settings · Usage data · dark](screenshots/settings-dark.png) |
+| **Settings · Floating pill (light)** | **Settings · Floating pill (dark)** |
+| ![Settings · Floating pill · light](screenshots/settings-widget-light.png) | ![Settings · Floating pill · dark](screenshots/settings-widget-dark.png) |
+| **Settings · General settings (light)** | **Settings · General settings (dark)** |
+| ![Settings · General settings · light](screenshots/settings-general-light.png) | ![Settings · General settings · dark](screenshots/settings-general-dark.png) |
+| **Sidebar entry · full settings page** (what the sidebar row opens when the entry is enabled) |  |
+| ![Sidebar entry](screenshots/sidebar-light.png) |  |
 
 **States and colour grades** (refreshing / success / failure / three grade colours / minimal mode / most compact form / narrowed after hiding the balance)
 

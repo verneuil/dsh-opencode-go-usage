@@ -1,8 +1,12 @@
 [
   "screenshots/float-light.png",
   "screenshots/float-dark.png",
-  "screenshots/states-light.png",
   "screenshots/settings-light.png",
   "screenshots/settings-dark.png",
+  "screenshots/settings-widget-light.png",
+  "screenshots/settings-widget-dark.png",
+  "screenshots/settings-general-light.png",
+  "screenshots/settings-general-dark.png",
+  "screenshots/states-light.png",
   "screenshots/sidebar-light.png"
 ]
