@@ -92,10 +92,10 @@ In DSH, open the **plugin manager → “Install plugin” dialog → paste one 
 | -------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
 | **Straight from GitHub** (recommended) | `github:verneuil/dsh-opencode-go-usage`                                                                      |
 | **From npm**                           | `dsh plugin --profile web add @verneuil/dsh-opencode-go-usage`                                               |
-| **Pin a version**                      | `github:verneuil/dsh-opencode-go-usage#v3.4.0` (replace with any published tag)                              |
-| **Release tarball**                    | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v3.4.0/dsh-opencode-go-usage-3.4.0.tgz` |
+| **Pin a version**                      | `github:verneuil/dsh-opencode-go-usage#v3.4.1` (replace with any published tag)                              |
+| **Release tarball**                    | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v3.4.1/dsh-opencode-go-usage-3.4.1.tgz` |
 | **Release URL (always latest)**        | `https://github.com/verneuil/dsh-opencode-go-usage/releases/latest/download/dsh-opencode-go-usage.tgz`       |
-| **Offline tgz**                        | `file:D:/your/path/dsh-opencode-go-usage-3.4.0.tgz`                                                          |
+| **Offline tgz**                        | `file:D:/your/path/dsh-opencode-go-usage-3.4.1.tgz`                                                          |
 
 The equivalent command line (`dsh plugin` automatically adds dependencies that declare `dsh.bundle` to the profile's bundles — no hand-written patch needed):
 
@@ -120,7 +120,7 @@ Follow the on-screen prompt to reload afterwards (replacing an installed JavaScr
 
 The settings page has three tabs: **Usage data** (default) / **Floating pill** / **General settings**.
 
-Next to the page title sit the **GitHub icon and the current version** (e.g. `v3.4.0`); clicking the icon opens this repository.
+Next to the page title sit the **GitHub icon and the current version** (e.g. `v3.4.1`); clicking the icon opens this repository.
 
 **Usage data**
 
