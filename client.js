@@ -225,10 +225,11 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
     '.ocgu-field-titlerow{display:flex;align-items:center;gap:8px;min-width:0}' +
     '.ocgu-field-title{flex:0 1 auto;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;font-weight:500;line-height:1.5;color:var(--dsw-alias-label-primary)}' +
     '.ocgu-field-right{display:flex;align-items:center;gap:10px;flex:none;margin-left:auto}' +
-    // 二选一分段控件（用量进度口径：已使用 / 剩余）
-    '.ocgu-seg{display:inline-flex;align-items:center;gap:2px;padding:2px;border-radius:9px;background:var(--dsw-alias-interactive-bg-hover)}' +
-    '.ocgu-seg-item{border:0;background:transparent;color:var(--dsw-alias-label-secondary);font:inherit;font-size:12.5px;line-height:1;padding:5px 10px;border-radius:7px;cursor:pointer;transition:background-color .18s ease,color .18s ease}' +
-    '.ocgu-seg-item[data-on="1"]{background:var(--dsw-alias-bg-base);color:var(--dsw-alias-label-primary);font-weight:500}' +
+    // 分段控件（二选一 / 多选一）：所有实例共用一块「滑动滑块」——由 <Seg> 组件量出选中项后写 transform/width
+    '.ocgu-seg{position:relative;display:inline-flex;align-items:center;gap:2px;padding:2px;border-radius:9px;background:var(--dsw-alias-interactive-bg-hover)}' +
+    '.ocgu-seg-ind{position:absolute;top:2px;left:0;width:0;height:calc(100% - 4px);border-radius:7px;background:var(--dsw-alias-bg-base);box-shadow:0 1px 2px rgba(0,0,0,.10);opacity:0;z-index:0;pointer-events:none;will-change:transform,width;transition:transform .24s cubic-bezier(.22,.61,.36,1),width .24s cubic-bezier(.22,.61,.36,1),opacity .12s linear}' +
+    '.ocgu-seg-item{position:relative;z-index:1;border:0;background:transparent;color:var(--dsw-alias-label-secondary);font:inherit;font-size:12.5px;line-height:1;padding:5px 10px;border-radius:7px;cursor:pointer;transition:color .18s ease}' +
+    '.ocgu-seg-item[data-on="1"]{color:var(--dsw-alias-label-primary);font-weight:500}' +
     '.ocgu-field-control{display:flex;align-items:center;flex-wrap:wrap;gap:8px}' +
     // 块布局（两把 Key 用）：标题/描述独占一行，控件行**通栏** —— 输入框左到头、右到按钮（自己撑满）
     '.ocgu-field[data-layout="block"] .ocgu-field-main{flex:1 1 100%}' +
@@ -254,18 +255,14 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
     // 标签：更宽、高度压到与「恢复默认设置」按钮等高（按钮 28px = 24px 标签 + 上下各 2px 容器内边距）
     '.ocgu-tabs .ocgu-seg-item{height:24px;padding:0 22px;font-size:13px;line-height:1;border-radius:7px}' +
     '.ocgu-tabs .ocgu-msg{margin-left:auto}' +
-    // ── 标签切换动效 ──
-    // ① 分段控件里的「滑块」：绝对定位的白色药丸，切换时用 transform/宽度过渡滑到目标位置
-    '.ocgu-tabs .ocgu-seg{position:relative}' +
-    '.ocgu-tabs .ocgu-tab-ind{position:absolute;top:2px;left:0;width:0;height:calc(100% - 4px);border-radius:7px;background:var(--dsw-alias-bg-base);box-shadow:0 1px 2px rgba(0,0,0,.10);z-index:0;transition:transform .24s cubic-bezier(.22,.61,.36,1),width .24s cubic-bezier(.22,.61,.36,1);will-change:transform,width}' +
-    '.ocgu-tabs .ocgu-seg-item{position:relative;z-index:1;transition:color .18s ease}' +
-    // 选中态不再自己画底色（由滑块承担），文字只做颜色/字重变化
-    '.ocgu-tabs .ocgu-seg-item[data-on="1"]{background:transparent;color:var(--dsw-alias-label-primary);font-weight:600}' +
+    // ── 切换动效 ──
+    // ① 标签文字略加粗（底色由通用 .ocgu-seg-ind 滑块承担）
+    '.ocgu-tabs .ocgu-seg-item[data-on="1"]{font-weight:600}' +
     // ② 面板内容入场：淡入 + 轻微上移（仅切换时挂载，因此每次切换都会播一次）
     '.ocgu-tabpane{animation:ocgu-tab-in .22s cubic-bezier(.22,.61,.36,1) both}' +
     '@keyframes ocgu-tab-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}' +
     // ③ 尊重系统「减少动态效果」
-    '@media (prefers-reduced-motion: reduce){.ocgu-tabs .ocgu-tab-ind{transition:none}.ocgu-tabpane{animation:none}}' +    // 侧栏入口开关：位于三个标签与「恢复默认设置」之间，靠左紧凑排布
+    '@media (prefers-reduced-motion: reduce){.ocgu-seg-ind{transition:none}.ocgu-tabpane{animation:none}}' +    // 侧栏入口开关：位于三个标签与「恢复默认设置」之间，靠左紧凑排布
     '.ocgu-tabs-toggle{display:inline-flex;align-items:center;gap:8px;margin-left:4px}' +
     '.ocgu-tabs-label{font-size:12.5px;line-height:1;color:var(--dsw-alias-label-secondary);white-space:nowrap}' +
     // 侧栏入口打开后的整页面板：居中单列、与设置页同宽
@@ -1130,8 +1127,6 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
   // ---------- 极简模式三环映射（外 / 中 / 内 各显示哪个窗口） ----------
   // 三个值必须互不相同；非法或冲突的配置一律回退默认（外 M / 中 W / 内 R），保证渲染永远拿到合法三元组。
   var RING_ROLES = ['outer', 'middle', 'inner'];
-  // 设置页三个标签的顺序（滑块定位用）
-  var TAB_KEYS = ['usage', 'widget', 'general'];
   var RING_FIELDS = { outer: 'ringOuter', middle: 'ringMiddle', inner: 'ringInner' };
   var RING_DEFAULT = { outer: 'monthly', middle: 'weekly', inner: 'rolling' };
   function windowByKey(key) {
@@ -1779,7 +1774,55 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
         React.createElement('div', { className: 'ocgu-row-fill ocgu-fill', 'data-level': winHas ? d.level : 'empty', style: { width: (winHas ? d.value : 0) + '%', '--ocgu-pct': Math.max(1, winHas ? d.value : 1) } })));
   }
 
-  function SettingsPage(props) {
+  
+// ── 通用分段控件 <Seg> ──────────────────────────────────────────────
+// 所有 .ocgu-seg 共用：内部渲染一块绝对定位的滑块 .ocgu-seg-ind，
+// 用 getBoundingClientRect 量选中项的位置/宽度后写 transform/width（CSS 负责过渡）；
+// value 变化、尺寸变化、字体加载完成时都会重新测量。
+var Seg = function (props) {
+  var segRef = React.useRef(null);
+  var indRef = React.useRef(null);
+  var place = function () {
+    var seg = segRef.current, ind = indRef.current;
+    if (!seg || !ind) return;
+    var active = seg.querySelector('[data-on="1"]') || seg.querySelector('[aria-checked="true"]');
+    if (!active) { ind.style.opacity = '0'; return; }
+    var sr = seg.getBoundingClientRect(), br = active.getBoundingClientRect();
+    if (!br.width) { ind.style.opacity = '0'; return; }
+    ind.style.width = br.width + 'px';
+    ind.style.transform = 'translateX(' + (br.left - sr.left) + 'px)';
+    ind.style.opacity = '1';
+  };
+  React.useLayoutEffect(function () { place(); });
+  React.useEffect(function () {
+    place();
+    var seg = segRef.current;
+    var ro = null;
+    if (seg && typeof ResizeObserver === 'function') {
+      ro = new ResizeObserver(function () { place(); });
+      ro.observe(seg);
+      Array.prototype.forEach.call(seg.querySelectorAll('button'), function (b) { ro.observe(b); });
+    }
+    window.addEventListener('resize', place);
+    try { if (document.fonts && document.fonts.ready) document.fonts.ready.then(place).catch(function () {}); } catch (e) { /* 老内核没有 fonts API */ }
+    return function () {
+      window.removeEventListener('resize', place);
+      if (ro) ro.disconnect();
+    };
+  }, [props.value]);
+  return React.createElement('span', {
+    className: 'ocgu-seg' + (props.className ? ' ' + props.className : ''),
+    role: props.role || 'radiogroup',
+    'aria-label': props.label,
+    title: props.title,
+    'data-disabled': props.disabled ? '1' : undefined,
+    ref: segRef
+  },
+    React.createElement('span', { key: 'ind', className: 'ocgu-seg-ind', 'aria-hidden': 'true', ref: indRef }),
+    props.children);
+};
+
+function SettingsPage(props) {
     var remote = props.remote;
     var t = props.t || tZh;
     var viewState = React.useState(null);
@@ -2227,26 +2270,6 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
     // ── 标签页与控件助手 ──
     var tabState = React.useState('usage');
     var tab = tabState[0], setTab = tabState[1];
-    // 标签滑块：量「当前标签按钮」的位置与宽度，写到指示块上（切换时由 CSS transition 滑动）
-    var tabSegRef = React.useRef(null);
-    var tabIndRef = React.useRef(null);
-    var syncTabIndicator = function () {
-      var seg = tabSegRef.current, ind = tabIndRef.current;
-      if (!seg || !ind) return;
-      var btns = seg.querySelectorAll('[role="tab"]');
-      var idx = TAB_KEYS.indexOf(tab);
-      var btn = btns[idx < 0 ? 0 : idx];
-      if (!btn) return;
-      var sr = seg.getBoundingClientRect(), br = btn.getBoundingClientRect();
-      ind.style.width = br.width + 'px';
-      ind.style.transform = 'translateX(' + (br.left - sr.left) + 'px)';
-    };
-    React.useLayoutEffect(function () { syncTabIndicator(); });
-    React.useEffect(function () {
-      var onResize = function () { syncTabIndicator(); };
-      window.addEventListener('resize', onResize);
-      return function () { window.removeEventListener('resize', onResize); };
-    }, [tab]);
     var tabButton = function (id, key) {
       return React.createElement('button', {
         key: id, type: 'button', className: 'ocgu-seg-item', role: 'tab',
@@ -2327,9 +2350,9 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
       });
       return React.createElement('div', { key: role, className: 'ocgu-rmap-segrow' },
         React.createElement('span', { className: 'ocgu-rmap-seglabel' }, t('ring.' + role)),
-        React.createElement('span', {
-          className: 'ocgu-seg', role: 'radiogroup',
-          'aria-label': t('ring.' + role), title: t('ring.' + role)
+        React.createElement(Seg, {
+          key: 'seg', label: t('ring.' + role), title: t('ring.' + role),
+          value: cur[role], disabled: off
         }, buttons));
     };
     // 实时预览：按当前映射画三环，数据与口径跟浮窗一致
@@ -2465,10 +2488,9 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
           : null),
       // 标签栏：紧跟标题，不再有说明文字与右上角常驻控件（两者已移入「通用」标签）
       React.createElement('div', { className: 'ocgu-tabs' },
-        React.createElement('div', {
-          className: 'ocgu-seg', role: 'tablist', 'aria-label': t('aria.tabs'), ref: tabSegRef
+        React.createElement(Seg, {
+          key: 'tabs', role: 'tablist', label: t('aria.tabs'), value: tab
         },
-          React.createElement('span', { key: 'ind', ref: tabIndRef, className: 'ocgu-tab-ind', 'aria-hidden': 'true' }),
           tabButton('usage', 'tab.usage'),
           tabButton('widget', 'tab.widget'),
           tabButton('general', 'tab.general'))),
@@ -2502,9 +2524,9 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
         tone: toneOf('currency'),
         nowrap: true,
         control: [
-          React.createElement('span', {
-            key: 'seg', className: 'ocgu-seg', role: 'radiogroup',
-            'aria-label': t('field.currency'), title: t('cur.autoHint')
+          React.createElement(Seg, {
+            key: 'seg', label: t('field.currency'), title: t('cur.autoHint'),
+            value: String(value.currencyMode || 'auto')
           }, curButton('auto', 'cur.auto'), curButton('cny', 'cur.cny'), curButton('usd', 'cur.usd'))
         ]
       }),
@@ -2522,8 +2544,8 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
             title: msgOf('mode') || '', style: { marginLeft: 'auto' }
           }, msgOf('mode')),
           // 进度口径二选一（已使用 / 剩余）：贴卡片右上角
-          React.createElement('span', {
-            className: 'ocgu-seg', role: 'radiogroup', 'aria-label': t('aria.mode')
+          React.createElement(Seg, {
+            key: 'mode', label: t('aria.mode'), value: mode
           },
             React.createElement('button', {
               type: 'button', className: 'ocgu-seg-item', role: 'radio',
@@ -2634,9 +2656,9 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
           nowrap: true,
           disabled: !value.widgetVisible || value.showBalance === false,
           control: [
-            React.createElement('span', {
-              key: 'seg', className: 'ocgu-seg', role: 'radiogroup',
-              'aria-label': t('field.pillBalanceSrc')
+            React.createElement(Seg, {
+              key: 'seg', label: t('field.pillBalanceSrc'),
+              value: String(value.pillBalanceSource || 'deepseek')
             }, pillSrcButton('deepseek', 'pill.srcDeepseek'), pillSrcButton('quota', 'pill.srcQuota'))
           ]
         }),
