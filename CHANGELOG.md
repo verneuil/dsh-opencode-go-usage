@@ -1,12 +1,12 @@
 ## 3.4.1
 
 ### 改进
-- 改进部分设置菜单空间的动效。
+- 改进部分设置菜单控件的动效。
 
 ---
 
 ### Improvements
-- Improved the animation in parts of the settings menu.
+- Improved the animation of several settings-menu controls.
 
 ## 3.4.0
 
