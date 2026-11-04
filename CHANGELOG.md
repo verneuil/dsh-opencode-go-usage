@@ -1,12 +1,12 @@
 ## 3.4.1
 
 ### 改进
-- 设置页的分段控件全部加上滑动动效：选中滑块平滑滑到目标位置（设置页三个标签、用量进度口径、金额计价币种、浮窗左侧余额数据、三环显示数据），切换标签时面板内容顺带淡入上移；系统开启「减少动态效果」时自动禁用。
+- 改进部分设置菜单空间的动效。
 
 ---
 
 ### Improvements
-- Every segmented control in the settings page now slides its selected pill into place (the three tabs, the progress mode, the amount currency, the pill-balance source and the ring mapping), and switching tabs also fades the panel in with a slight rise; both are disabled automatically when the system asks for reduced motion.
+- Improved the animation in parts of the settings menu.
 
 ## 3.4.0
 
