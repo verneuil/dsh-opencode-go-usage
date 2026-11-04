@@ -155,7 +155,8 @@ Next to the page title sit the **GitHub icon and the current version** (e.g. `v3
 **Shared behaviour**
 
 - **Per-row feedback**: each action's message appears in the row it belongs to — red on failure, green on success. Messages live in a slot on the title row, so **showing and hiding them does not shift the layout**, and they disappear after 3 seconds.
-- **Hints wrap first**: when a title or hint competes with the control on the right, the hint wraps onto more lines while the control stays on the same row, right-aligned; long titles wrap too instead of being truncated.
+- **Hints wrap first**: when a title or hint competes with the control on the right, the hint wraps onto more lines while the control stays on the same row, right-aligned; long titles wrap too instead of being truncated;
+- **Animated tab switching**: the selected pill slides to the active tab and the panel fades in with a slight rise (0.22 s); disabled automatically when the system asks for reduced motion.
 
 Because the plugin ships its own settings page, the host side calls the official `settings.configure({ auto: false })` to switch off the auto-generated form, avoiding two duplicate configuration UIs.
 
