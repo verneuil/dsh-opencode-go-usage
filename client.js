@@ -21,6 +21,10 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
     '<path d="M8 2.4a5.6 5.6 0 1 1-3.96 1.64" fill="none" stroke="#000" stroke-width="1.7" stroke-linecap="round"/>' +
     '<circle cx="8" cy="8" r="1.8" fill="#000"/></svg>');
 
+  // 0.2.2+：设置导航新增官方 settings.section.icon 槽位；注册成功后宿主自己渲染图标，
+  // 我们只标记 DOM（data-ocgu-icon）让 CSS 关掉旧的 ::before 画法。旧宿主不声明该槽位 → 保持 false。
+  var navIconViaSlot = false;
+
   var CSS =
     // 胶囊高度 26px → 30px（行高 16 → 18、上下内边距 4 → 5）：环盒 16 → 20、视觉环 18 → 24，
     // 两位数百分比在环心不拥挤；长宽恒定，任何状态下都不变。
@@ -158,10 +162,14 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
     '.ocgu-scale-tick[data-on="1"]{color:var(--dsw-alias-label-primary)}' +
     '.ocgu-scale-tick::before{content:"";position:absolute;left:50%;top:-5px;width:1px;height:3px;background:currentColor;opacity:.5;transform:translateX(-50%)}' +
     '.ocgu-scale-val{flex:none;min-width:44px;text-align:right;font-size:12px;line-height:16px;font-variant-numeric:tabular-nums;color:var(--dsw-alias-label-secondary)}' +
-    // 设置导航图标：官方 settings.section 契约只投影 id/order/label，第三方分区一律戴默认齿轮；
-    // 这里照官方同款做法（dshmarket 与 Claude Style 均如此）：给自己的导航行打标记 →
-    // 隐藏行内默认齿轮（它是 <svg>）→ 用 CSS mask 画自己的标记（背景取 currentColor，随主题着色）。
-    '[data-ocgu-nav] > svg{display:none}' +
+    // 设置导航图标（两代宿主，同一字形）：
+    // · 0.2.1 及更早：官方 settings.section 契约只投影 id/order/label，第三方分区一律戴默认齿轮，
+    //   且齿轮是行内直接子 <svg> → 隐藏它，用 ::before + mask 画自己的「缺口环 + 中心点」。
+    // · 0.2.2 起：宿主新增 settings.section.icon 槽位，默认图标被包进 <span class="…navIcon">；
+    //   注册官方图标后宿主用我们的 svg 替换默认齿轮 → 此时只留宿主那份，不能再画 ::before（否则双图标）。
+    '[data-ocgu-nav] > svg{display:none}' + // 旧宿主：默认齿轮是直接子 svg
+    '[data-ocgu-nav]:not([data-ocgu-icon]) > span:first-child > svg{display:none}' + // 新宿主但图标槽位不可用：兜底隐藏包裹层里的默认齿轮
+    '[data-ocgu-nav][data-ocgu-icon]::before{display:none}' + // 已注册官方图标：关掉旧的 mask 画法
     '[data-ocgu-nav]::before{content:"";flex:none;width:16px;height:16px;background-color:currentColor;-webkit-mask-image:url("' + NAV_MASK + '");mask-image:url("' + NAV_MASK + '");-webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;-webkit-mask-position:center;mask-position:center;-webkit-mask-size:16px 16px;mask-size:16px 16px}' +
     // OCG 三组迷你圆环：环盒 20px（视觉环 24px，上下各溢出 2px，落在 5px 内边距里）、环心数字 9.5px ——
     // 两位数百分比在环心也不拥挤；环外不再单列 R/W/M 标签（省掉三个字母位，浮窗更短）。
@@ -2960,6 +2968,12 @@ function SettingsPage(props) {
               var txt = (el.textContent || '').trim();
               if (titles.indexOf(txt) < 0) continue;
               if (el.getAttribute('data-ocgu-nav') !== '1') el.setAttribute('data-ocgu-nav', '1');
+              // 0.2.2+ 已注册官方图标：标记出来，CSS 据此只保留宿主渲染的那份图标
+              if (navIconViaSlot) {
+                if (el.getAttribute('data-ocgu-icon') !== '1') el.setAttribute('data-ocgu-icon', '1');
+              } else if (el.hasAttribute('data-ocgu-icon')) {
+                el.removeAttribute('data-ocgu-icon');
+              }
             }
           } catch (e) { /* DOM 结构变化时忽略：图标缺失不影响功能 */ }
         };
@@ -3052,6 +3066,19 @@ function SettingsPage(props) {
           meta('settings.section', 'opencode-go-usage', 31, 'settings.title'),
           function (p) { return React.createElement(SettingsPage, Object.assign({}, p, { remote: remoteOf() || remote, t: guardT(p.t || currentT()), sidebarApi: sidebarApi })); }
         );
+      });
+      // 设置导航图标：0.2.2 起官方提供 settings.section.icon（id 必须等于 settings.section 的 id）。
+      // 旧宿主不声明该槽位 → inject 不回调，navIconViaSlot 保持 false，自动退回 CSS mask 方案。
+      slots.inject('settings.section.icon', function () {
+        navIconViaSlot = true;
+        var off = slots.register(
+          meta('settings.section.icon', 'opencode-go-usage', 31, 'settings.title'),
+          function (owner) { return React.createElement(SidebarLogo, { size: (owner && owner.size) || 16 }); }
+        );
+        return function () {
+          navIconViaSlot = false;
+          if (typeof off === 'function') off();
+        };
       });
       return true;
     };

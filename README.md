@@ -108,6 +108,19 @@ dsh plugin --profile web add github:verneuil/dsh-opencode-go-usage
 - **升级 = 卸载后重装**：插件管理页不提供版本选择器与升级按钮。卸载会移除依赖记录，重装时才会重新解析，因此**这是拿到新版的方式**；直接覆盖安装同一 spec 不会刷新到新提交。
 - 每个版本的改动见 [CHANGELOG.md](CHANGELOG.md)（中英双语）。
 
+## 兼容性
+
+- **宿主版本门禁**：本插件在 `package.json` 声明 `engines.dsh: ">=0.1.7"`。宿主用 `semver.satisfies(..., { includePrerelease: true })` 判定，因此 0.1.7 起的 rc / alpha 版本都会匹配，不需要为每个新宿主版本改插件。
+- **已实测**：`dsh 0.2.1-rc.3`、`dsh 0.2.1-rc.5`（隔离 profile 冷启动 + 浏览器冒烟全部通过）。
+- **被宿主拒绝加载时**（宿主把范围收窄、或清单判定不一致）：在该 profile 的 `compatibility.json` 里加一条精确豁免即可，**不需要改插件**：
+
+  ```json
+  { "@verneuil/dsh-opencode-go-usage@3.4.1": ["0.2.1-rc.5"] }
+  ```
+
+  文件位于 `~/.dsh/profiles/<profile>/compatibility.json`（桌面版为 `%DSH_HOME%\profiles\<profile>\compatibility.json`）。
+- 升级 DSH 后若浮窗 / 设置页异常，先看启动日志里有没有 `plugin tree failed to load`，再对照 [CHANGELOG.md](CHANGELOG.md)。
+
 ## 使用
 
 - **点击浮窗** = 立即刷新余额 + 用量 + 模型清单 + 汇率（也可以等自动刷新）。

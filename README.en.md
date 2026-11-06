@@ -109,6 +109,19 @@ Follow the on-screen prompt to reload afterwards (replacing an installed JavaScr
 - **Upgrading = uninstall then reinstall**: the plugin manager offers no version picker and no upgrade button. Uninstalling removes the dependency record and reinstalling resolves it afresh, so **that is how you get a new version**; installing the same spec over the top will not pick up a new commit.
 - Every version's changes are listed in [CHANGELOG.md](CHANGELOG.md) (Chinese and English).
 
+## Compatibility
+
+- **Host version gate**: the package declares `engines.dsh: ">=0.1.7"`. DSH evaluates it with `semver.satisfies(..., { includePrerelease: true })`, so every rc / alpha from 0.1.7 on matches — no plugin change is needed for each new host version.
+- **Tested**: `dsh 0.2.1-rc.3` and `dsh 0.2.1-rc.5` (isolated profile cold boot plus a headless-browser smoke, both green).
+- **If the host refuses to load the plugin** (narrowed range or a mismatched ledger): grant an exact exemption in the profile's `compatibility.json` instead of changing the plugin:
+
+  ```json
+  { "@verneuil/dsh-opencode-go-usage@3.4.1": ["0.2.1-rc.5"] }
+  ```
+
+  The file lives at `~/.dsh/profiles/<profile>/compatibility.json` (desktop: `%DSH_HOME%\profiles\<profile>\compatibility.json`).
+- After a DSH upgrade, if the pill or settings page misbehaves, check the boot log for `plugin tree failed to load` first, then compare against [CHANGELOG.md](CHANGELOG.md).
+
 ## Usage
 
 - **Click the pill** = refresh the balance, the usage, the model list and the exchange rate immediately (or just wait for the automatic refresh).

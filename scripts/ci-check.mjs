@@ -64,6 +64,20 @@ check('type is module', () => pkg.type === 'module')
 check('main is index.js', () => pkg.main === 'index.js')
 check('exports has "."', () => Boolean(pkg.exports?.['.']))
 check('engines.dsh declared', () => typeof pkg.engines?.dsh === 'string' && pkg.engines.dsh.length > 0)
+check('engines.dsh is a broad prerelease-safe range (>=x.y.z)', () => /^>=\d+\.\d+\.\d+$/.test(String(pkg.engines?.dsh || '').trim()))
+check('engines.dsh covers the hosts we have tested', () => {
+  const m = /^>=(\d+)\.(\d+)\.(\d+)$/.exec(String(pkg.engines?.dsh || '').trim())
+  if (!m) return false
+  const floor = [Number(m[1]), Number(m[2]), Number(m[3])]
+  // 升级 DSH 并实测后，把新版本加进这里（同时更新 LOCAL_DEV_NOTES/11 的兼容矩阵）
+  const tested = ['0.2.1-rc.3', '0.2.1-rc.5']
+  return tested.every((v) => {
+    const base = v.split('-')[0].split('.').map(Number)
+    return base[0] > floor[0] || (base[0] === floor[0] && (base[1] > floor[1] || (base[1] === floor[1] && base[2] >= floor[2])))
+  })
+})
+check('no @deepseek-ai/dsh* peer pins (prerelease-range trap)', () => Object.keys(pkg.peerDependencies ?? {}).every((name) => name !== '@deepseek-ai/dsh' && !name.startsWith('@deepseek-ai/dsh-')))
+check('README documents the compatibility policy', () => read('README.md').includes('## 兼容性') && read('README.en.md').includes('## Compatibility'))
 check('dsh.manifestVersion === 1', () => pkg.dsh?.manifestVersion === 1)
 check('dsh.bundle.patch points at an existing file', () => {
   const declared = pkg.dsh?.bundle?.patch
@@ -109,10 +123,13 @@ for (const [label, needle] of [
   ['main panel seat', "'main'"],
   ['locale registration', 'locale.register'],
   ['settings nav icon marker', 'data-ocgu-nav'],
+  ['sidebar logo glyph', 'function SidebarLogo'],
   ['popover refresh state', 'refreshState'],
 ]) {
   check(`client contains ${label}`, () => client.includes(needle))
 }
+check('client registers the 0.2.2+ settings.section.icon slot', () => client.includes("slots.inject('settings.section.icon'"))
+check('client gates the legacy nav-icon CSS on host capability', () => client.includes("data-ocgu-icon") && client.includes("[data-ocgu-nav][data-ocgu-icon]::before{display:none}"))
 
 console.log('# ring mapping')
 check('Config declares the three ring fields', () => ['ringOuter', 'ringMiddle', 'ringInner'].every((k) => read('index.js').includes('  ' + k + ': z.string()')))
