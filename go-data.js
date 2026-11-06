@@ -3,16 +3,16 @@
  *
  * 生成：node _tools/fetch-go-models.cjs
  * 来源：https://opencode.ai/v2/docs/console/go
- *       USD/CNY 汇率：open.er-api.com @ 31 Oct 2026
- * 快照日期：2026-10-31
+ *       USD/CNY 汇率：open.er-api.com @ 06 Nov 2026
+ * 快照日期：2026-11-06
  *
  * 运行时行为：插件每次刷新会尝试抓取最新数据；抓不到时回退到这份快照，并在界面上明确报错。
  * go 为该模型的 **Go 档月度配额（美元）**；null 表示无限制（免费模型）。
  */
 export const GO_DATA_SNAPSHOT = {
-  snapshotDate: "2026-10-31",
+  snapshotDate: "2026-11-06",
   source: "https://opencode.ai/v2/docs/console/go",
-  fx: { usdCny: 6.669566, date: "31 Oct 2026", source: "open.er-api.com" },
+  fx: { usdCny: 6.682525, date: "06 Nov 2026", source: "open.er-api.com" },
   plans: { go: { label: 'Go', price: 10 } },
   models: [
   { id: "beam-free", name: "Beam Free", go: null },
@@ -27,6 +27,7 @@ export const GO_DATA_SNAPSHOT = {
   { id: "gpt-6-luna", name: "GPT 6 Luna", go: 15 },
   { id: "grok-4.7", name: "Grok 4.7", go: 15 },
   { id: "hy3", name: "Hy3", go: 60 },
+  { id: "hy4", name: "Hy4", go: 60 },
   { id: "hy4-preview", name: "Hy4 preview", go: 30 },
   { id: "iceman-contributor-free", name: "Iceman Contributor Free", go: null },
   { id: "kimi-k2.7-code", name: "Kimi K2.7 Code", go: 60 },
