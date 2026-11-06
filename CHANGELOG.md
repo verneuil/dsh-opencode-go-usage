@@ -1,3 +1,19 @@
+## 3.4.2
+
+### 修复
+- 修复设置菜单里「OCG 余量查询」导航图标重复显示的问题：适配 DeepSeek Harness 0.2.2 的导航图标改动，改用官方图标槽位注册；旧版本宿主保持原有兼容写法不变。
+
+### 改进
+- 更新内置兜底数据：模型表 30 → 31 个（新增 Hy4，Go 档月配额 $60）；快照更新到 2026-11-06；汇率快照更新到 06 Nov 2026（1 USD = 6.682525 CNY）。
+
+---
+
+### Fixes
+- Fixed the duplicated navigation icon for “OCG Usage” in the settings menu: adapted to the settings-nav icon change in DeepSeek Harness 0.2.2 by registering the icon through the official slot; the previous compatibility approach is kept for older hosts.
+
+### Improvements
+- Refreshed the bundled fallback data: the model table grew from 30 to 31 entries (adds Hy4, with a $60 monthly Go quota); snapshot updated to 2026-11-06; the exchange-rate snapshot is updated to 06 Nov 2026 (1 USD = 6.682525 CNY).
+
 ## 3.4.1
 
 ### 改进

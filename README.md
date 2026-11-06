@@ -91,10 +91,10 @@
 | ---------------------------- | ------------------------------------------------------------------------------------------------------------ |
 | **GitHub 直装**（推荐）      | `github:verneuil/dsh-opencode-go-usage`                                                                      |
 | **npm 安装**                 | `dsh plugin --profile web add @verneuil/dsh-opencode-go-usage`                                               |
-| **固定某个版本**             | `github:verneuil/dsh-opencode-go-usage#v3.4.1`（换成任意已发布 tag）                                         |
-| **Release 包**               | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v3.4.1/dsh-opencode-go-usage-3.4.1.tgz` |
+| **固定某个版本**             | `github:verneuil/dsh-opencode-go-usage#v3.4.2`（换成任意已发布 tag）                                         |
+| **Release 包**               | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v3.4.2/dsh-opencode-go-usage-3.4.2.tgz` |
 | **Release 直链（始终最新）** | `https://github.com/verneuil/dsh-opencode-go-usage/releases/latest/download/dsh-opencode-go-usage.tgz`       |
-| **离线 tgz**                 | `file:D:/你的路径/dsh-opencode-go-usage-3.4.1.tgz`                                                           |
+| **离线 tgz**                 | `file:D:/你的路径/dsh-opencode-go-usage-3.4.2.tgz`                                                           |
 
 命令行等价写法（`dsh plugin` 会把声明了 `dsh.bundle` 的依赖自动加进 profile 的 bundles，无需手写 patch）：
 
@@ -115,7 +115,7 @@ dsh plugin --profile web add github:verneuil/dsh-opencode-go-usage
 - **被宿主拒绝加载时**（宿主把范围收窄、或清单判定不一致）：在该 profile 的 `compatibility.json` 里加一条精确豁免即可，**不需要改插件**：
 
   ```json
-  { "@verneuil/dsh-opencode-go-usage@3.4.1": ["0.2.1-rc.5"] }
+  { "@verneuil/dsh-opencode-go-usage@3.4.2": ["0.2.1-rc.5"] }
   ```
 
   文件位于 `~/.dsh/profiles/<profile>/compatibility.json`（桌面版为 `%DSH_HOME%\profiles\<profile>\compatibility.json`）。
@@ -132,7 +132,7 @@ dsh plugin --profile web add github:verneuil/dsh-opencode-go-usage
 
 设置页分三个标签：**用量数据**（默认）/ **浮窗管理** / **通用设置**。
 
-页面顶部标题右侧是 **GitHub 图标 + 当前版本号**（如 `v3.4.1`），点击图标打开本插件仓库。
+页面顶部标题右侧是 **GitHub 图标 + 当前版本号**（如 `v3.4.2`），点击图标打开本插件仓库。
 
 **用量数据**
 
