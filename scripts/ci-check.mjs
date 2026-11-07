@@ -37,7 +37,7 @@ const exists = (file) => fs.existsSync(path.join(root, file))
 console.log('# files')
 for (const file of [
   'index.js', 'client.js', 'go-fetch.js', 'go-data.js', 'cordis.patch.yml',
-  'package.json', 'README.md', 'README.en.md', 'CHANGELOG.md', 'LICENSE', 'icon.svg',
+  'package.json', 'README.md', 'README.zh.md', 'CHANGELOG.md', 'LICENSE', 'icon.svg',
   'locale/zh.json', 'locale/en.json', 'screenshots.json',
 ]) {
   check(`exists ${file}`, () => exists(file))
@@ -77,7 +77,7 @@ check('engines.dsh covers the hosts we have tested', () => {
   })
 })
 check('no @deepseek-ai/dsh* peer pins (prerelease-range trap)', () => Object.keys(pkg.peerDependencies ?? {}).every((name) => name !== '@deepseek-ai/dsh' && !name.startsWith('@deepseek-ai/dsh-')))
-check('README documents the compatibility policy', () => read('README.md').includes('## 兼容性') && read('README.en.md').includes('## Compatibility'))
+check('README documents the compatibility policy', () => read('README.md').includes('## Compatibility') && read('README.zh.md').includes('## 兼容性'))
 check('dsh.manifestVersion === 1', () => pkg.dsh?.manifestVersion === 1)
 check('dsh.bundle.patch points at an existing file', () => {
   const declared = pkg.dsh?.bundle?.patch
@@ -87,7 +87,7 @@ check('dsh.bundle.patch points at an existing file', () => {
 check('dsh.client.platform === "web"', () => pkg.dsh?.client?.platform === 'web')
 check('files[] covers every shipped entry', () => {
   const files = Array.isArray(pkg.files) ? pkg.files : []
-  return ['index.js', 'client.js', 'go-fetch.js', 'go-data.js', 'cordis.patch.yml', 'locale', 'icon.svg', 'README.md', 'README.en.md', 'CHANGELOG.md', 'LICENSE']
+  return ['index.js', 'client.js', 'go-fetch.js', 'go-data.js', 'cordis.patch.yml', 'locale', 'icon.svg', 'README.md', 'README.zh.md', 'CHANGELOG.md', 'LICENSE']
     .every((entry) => files.includes(entry))
 })
 check('no runtime dependency on host packages', () => {
@@ -168,7 +168,7 @@ check('every model has id and name', () => data.models.every((m) => typeof m.id 
 check('quota values are null or positive numbers', () => data.models.every((m) => m.go === null || (typeof m.go === 'number' && m.go > 0)))
 
 console.log('# docs stay pinned to the shipped version')
-for (const file of ['README.md', 'README.en.md']) {
+for (const file of ['README.md', 'README.zh.md']) {
   check(`${file} pins the current tag (v${pkg.version})`, () => read(file).includes(`v${pkg.version}`))
 }
 
