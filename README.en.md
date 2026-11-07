@@ -13,6 +13,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![version](https://img.shields.io/github/v/tag/verneuil/dsh-opencode-go-usage?label=version&color=4b8bf5)](https://github.com/verneuil/dsh-opencode-go-usage/releases/latest)
 [![npm](https://img.shields.io/npm/v/@verneuil/dsh-opencode-go-usage?label=npm&color=cb3837)](https://www.npmjs.com/package/@verneuil/dsh-opencode-go-usage)
+[![downloads](https://img.shields.io/npm/dm/@verneuil/dsh-opencode-go-usage?label=downloads&color=cb3837)](https://www.npmjs.com/package/@verneuil/dsh-opencode-go-usage)
 
 
 [![Listed on dsh-plugin.org](https://dsh-plugin.org/badges/listed.svg)](https://dsh-plugin.org/plugins/verneuil/dsh-opencode-go-usage)
