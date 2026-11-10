@@ -3,16 +3,16 @@
  *
  * 生成：node _tools/fetch-go-models.cjs
  * 来源：https://opencode.ai/v2/docs/console/go
- *       USD/CNY 汇率：open.er-api.com @ 06 Nov 2026
- * 快照日期：2026-11-06
+ *       USD/CNY 汇率：open.er-api.com @ 10 Nov 2026
+ * 快照日期：2026-11-10
  *
  * 运行时行为：插件每次刷新会尝试抓取最新数据；抓不到时回退到这份快照，并在界面上明确报错。
  * go 为该模型的 **Go 档月度配额（美元）**；null 表示无限制（免费模型）。
  */
 export const GO_DATA_SNAPSHOT = {
-  snapshotDate: "2026-11-06",
+  snapshotDate: "2026-11-10",
   source: "https://opencode.ai/v2/docs/console/go",
-  fx: { usdCny: 6.682525, date: "06 Nov 2026", source: "open.er-api.com" },
+  fx: { usdCny: 6.686583, date: "10 Nov 2026", source: "open.er-api.com" },
   plans: { go: { label: 'Go', price: 10 } },
   models: [
   { id: "beam-free", name: "Beam Free", go: null },
@@ -33,6 +33,7 @@ export const GO_DATA_SNAPSHOT = {
   { id: "kimi-k2.7-code", name: "Kimi K2.7 Code", go: 60 },
   { id: "kimi-k3", name: "Kimi K3", go: 15 },
   { id: "kimi-k3.1-pro", name: "Kimi K3.1 Pro", go: 15 },
+  { id: "longcat-2.5-free", name: "LongCat 2.5 Free", go: null },
   { id: "longcat-2.0", name: "LongCat-2.0", go: 60 },
   { id: "mimo-v2.5", name: "MiMo-V2.5", go: 60 },
   { id: "mimo-v2.5-pro", name: "MiMo-V2.5-Pro", go: 15 },

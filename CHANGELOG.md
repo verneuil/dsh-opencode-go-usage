@@ -1,3 +1,13 @@
+## 3.4.3
+
+### 改进
+- 更新内置兜底数据：模型表 31 → 32 个（新增 LongCat 2.5 Free，免费模型）；快照更新到 2026-11-10；汇率快照更新到 10 Nov 2026（1 USD = 6.686583 CNY）。
+
+---
+
+### Improvements
+- Refreshed the bundled fallback data: the model table grew from 31 to 32 entries (adds LongCat 2.5 Free, a free model); snapshot updated to 2026-11-10; the exchange-rate snapshot is updated to 10 Nov 2026 (1 USD = 6.686583 CNY).
+
 ## 3.4.2
 
 ### 修复
