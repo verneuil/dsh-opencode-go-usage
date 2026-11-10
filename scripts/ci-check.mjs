@@ -172,6 +172,29 @@ for (const file of ['README.md', 'README.zh.md']) {
   check(`${file} pins the current tag (v${pkg.version})`, () => read(file).includes(`v${pkg.version}`))
 }
 
+// 对外文本里绝不能出现本机信息（盘符路径 / 用户名 / 本地工作区目录）：仓库是公开的，
+// 这类内容属于隐私泄漏。通用占位（如 file:D:/your/path/xxx.tgz）不受影响。
+console.log('# public texts (no local paths or usernames)')
+const LOCAL_NOISE = [
+  /[A-Za-z]:\\/,        // 盘符绝对路径：C:\Users\… / D:\Others\…
+  /\bUsers\\/i,         // …\Users\…
+  /AppData/i,
+  /中转站/,
+  /dsh-runtimes/i,
+  /DeepSeek-Harness/,   // 本机旧 DSH_HOME 目录名（区分大小写，避免误伤 keywords 里的 deepseek-harness）
+  /\blvshu\b/i,
+]
+check('no local machine paths or usernames in public texts', () => {
+  for (const file of ['README.md', 'README.zh.md', 'CHANGELOG.md', 'SECURITY.md', 'package.json', 'index.js', 'client.js', 'go-fetch.js', 'go-data.js', 'cordis.patch.yml']) {
+    const text = read(file)
+    for (const re of LOCAL_NOISE) {
+      const hit = re.exec(text)
+      if (hit) throw new Error(`${file} → ${re} @ ${JSON.stringify(text.slice(Math.max(0, hit.index - 24), hit.index + 24))}`)
+    }
+  }
+  return true
+})
+
 console.log('# screenshots referenced by the manifest exist')
 check('screenshots.json lists existing files', () => {
   const list = JSON.parse(read('screenshots.json'))
