@@ -158,11 +158,14 @@ check('progress colours read the ring / bar CSS variables', () => {
     // 配色变量必须挂在组件根元素的 inline style 上（:root 上存 var(--dsw-…) 会解析不到，跟随宿主失效）
     src.includes('colorVarStyle(value)')
 })
-check('client ships the native-colour picker and the three-state preview', () => {
+check('client ships the native-colour picker and the four-state preview', () => {
   const src = read('client.js')
   return src.includes('function ColorControl') && src.includes("type: 'color'") &&
     src.includes('function hex6Of') && src.includes('function normalizeColor') &&
-    src.includes('ocgu-cprev') && src.includes('color.preview.normal')
+    src.includes('ocgu-cprev') && src.includes('color.preview.normal') &&
+    src.includes('ocgu-cprev-pace') && src.includes("color.preview.pace") &&
+    // 预览不再显示金额：旧的金额 / 分隔线类必须彻底清掉
+    !src.includes('ocgu-cprev-bal') && !src.includes('ocgu-cprev-sep')
 })
 check('the colour picker applies live without a save button', () => {
   const src = read('client.js')
@@ -182,6 +185,79 @@ check('colour settings are exportable and key-free', () => {
   const keys = (read('client.js').match(/var EXPORT_KEYS = \[([\s\S]*?)\];/) || [])[1] || ''
   return ['colorUnified', 'colorFollowHost', 'colorAll', 'colorAllWarn', 'colorAllDanger', 'colorBarDanger']
     .every((k) => keys.includes("'" + k + "'")) && !/apiKey|deepseekApiKey/i.test(keys)
+})
+
+console.log('# subscription pace (3.6.0)')
+check('pace line derives from the monthly reset date (no extra endpoint)', () => {
+  const src = read('client.js')
+  return src.includes('function paceOf') && src.includes("windowOf(usage, 'monthly')") &&
+    src.includes('setMonth(startD.getMonth() - 1)') && src.includes('rawF = used / frac')
+})
+check('pace chart ships the 100% limit, today marker and both segments', () => {
+  const src = read('client.js')
+  return src.includes('ocgu-pace-limit') && src.includes('ocgu-pace-today') &&
+    src.includes("'data-kind': 'actual'") && src.includes("'data-kind': 'forecast'") &&
+    src.includes('ocgu-pace-xaxis') && src.includes('ocgu-pace-vaxis') &&
+    src.includes("'50%'") && src.includes("t('pace.title')")
+})
+check('pace chart sits under the bars in the usage card and the hover tip', () => {
+  const src = read('client.js')
+  const uses = src.match(/React\.createElement\(PaceChart, \{/g) || []
+  return uses.length >= 2 && src.includes('compact: true')
+})
+check('pace strings are bilingual', () => {
+  const src = read('client.js')
+  const count = (re) => (src.match(re) || []).length
+  return count(/'pace\.title':/g) === 2 && count(/'pace\.aria':/g) === 2 && count(/'pace\.renews':/g) === 2
+})
+check('forecast hover tooltip is settings-only and bilingual', () => {
+  const src = read('client.js')
+  const count = (re) => (src.match(re) || []).length
+  return src.includes('var interactive = !compact') &&
+    src.includes('ocgu-pace-tip-h') && src.includes('ocgu-pace-hoverdot') &&
+    count(/'pace\.tipForecast':/g) === 2 && count(/'pace\.tipDaily':/g) === 2
+})
+check('pace actual segment follows the normal-tier bar colour', () => {
+  const src = read('client.js')
+  return src.includes('.ocgu-pace-line[data-kind="actual"]{stroke:var(--ocgu-c-bar,') &&
+    src.includes('.ocgu-pace-line[data-kind="forecast"]{stroke:var(--ocgu-c-bar,') &&
+    src.includes('.ocgu-pace-area[data-kind="actual"]{fill:color-mix(in srgb,var(--ocgu-c-bar,') &&
+    src.includes('.ocgu-pace-dot{') && src.includes('background:var(--ocgu-c-bar,')
+})
+check('forecast segment is dashed and capped once rate limited', () => {
+  const src = read('client.js')
+  return src.includes('stroke-linecap:butt') && src.includes('fcDash') &&
+    src.includes('strokeDasharray: fcDash') && src.includes('used >= 99.5')
+})
+check('overshoot stops at the 100% line and labels the exhaust date', () => {
+  const src = read('client.js')
+  return src.includes('rawF > 100.4') && src.includes('xEnd = 100 / rawF') &&
+    src.includes('var fcLabelText = pace.overshoot') && src.includes('pace.labelDate') &&
+    src.includes('pace.ariaOver')
+})
+check('pace labels get dedicated rows: date above, percent to the right', () => {
+  const src = read('client.js')
+  return src.includes('ocgu-pace-body') && src.includes('ocgu-pace-toprow') &&
+    src.includes('ocgu-pace-topdate') && src.includes('ocgu-pace-side') &&
+    src.includes('ocgu-pace-sideval') && src.includes("'data-side'") &&
+    // 右侧列宽按标签实测宽度动态计算，不再固定让出 38px
+    src.includes('setSideW') && src.includes('getBoundingClientRect().width) + 14')
+})
+check('popover chart is its own module with a shared divider', () => {
+  const src = read('client.js')
+  return src.includes("key: 'paceSep'") && src.includes('ocgu-tip-sep') &&
+    src.includes('.ocgu-pace[data-compact="1"]{gap:10px;margin-top:0;padding-top:0;border-top:0')
+})
+check('popover forecast chart is toggleable', () => {
+  const src = read('client.js')
+  const idx = read('index.js')
+  const count = (re) => (src.match(re) || []).length
+  return idx.includes('tipShowPace: z.boolean()') &&
+    src.includes('toggleTipPace') && src.includes('tipShowPace && tipPace') &&
+    src.includes('tipShowPace: !(value.tipShowPace !== false)') &&
+    count(/'tip\.chkPace':/g) === 2 &&
+    (src.match(/var EXPORT_KEYS = \[([\s\S]*?)\];/) || [])[1].includes("'tipShowPace'") &&
+    (src.match(/var IMPORT_TYPES = \{([\s\S]*?)\};/) || [])[1].includes('tipShowPace')
 })
 
 console.log('# locale bundles')

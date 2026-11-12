@@ -1,4 +1,4 @@
-<div align="center">
+﻿<div align="center">
 
 <img src="assets/icon.png" width="96" height="96" alt="OCG Usage icon" />
 
@@ -46,12 +46,19 @@
 - **Three rings show each window's usage**:
 
   - OpenCode Go's three windows are drawn as ring progress indicators, and **clicking the pill refreshes them**;
-  - the number in each ring's centre is a percentage (**Used** by default, switchable to **Left** in settings): > 20% left green / ≤ 20% amber / ≤ 5% red.
+  - the number in each ring's centre is a percentage (**Used** by default, switchable to **Left** in settings): > 20% left normal / ≤ 20% warning / ≤ 5% danger (all three tiers are customisable on the “Colour settings” tab).
 
 - **Hover popover**:
 
   - hovering the pill opens a panel with three separate usage bars showing the percentage and the reset time;
-  - it can also show both balances at once (**DeepSeek account balance** and **OpenCode Go quota left** — either can be switched off on the “Floating pill” tab).
+  - it can also show both balances at once (**DeepSeek account balance** and **OpenCode Go quota left** — either can be switched off on the “Floating pill” tab), plus **this cycle's projected usage chart** (also switchable on that tab).
+
+- **Projected usage chart**:
+
+  - one chart sits under the three bars on the Usage data tab, and another inside the hover popover: it extrapolates **this cycle's used percentage ÷ elapsed fraction** at a constant rate to predict where usage will land by the renewal date;
+  - the Y axis is fixed at 0–100% with **dashed 50% / 100% lines**; the real segment is solid and the projection **dashed** (same colour, following the Normal tier); when usage is on pace to exceed 100% the line stops at the 100% line and the chart labels the **exhaustion date** above it;
+  - the settings-page chart supports **per-day hover** (projected usage and daily average); the compact popover chart deliberately has no hover so popovers never stack;
+  - the renewal date comes straight from the OpenCode Go API's `monthly.resetsAt` (the same date the official console shows as “Renews …”), so nothing has to be typed in.
 
 - **OCG quota conversion**:
 
@@ -93,8 +100,8 @@ In DSH, open the **plugin manager → “Install plugin” dialog → paste one 
 | -------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
 | **Straight from GitHub** (recommended) | `github:verneuil/dsh-opencode-go-usage`                                                                      |
 | **From npm**                           | `dsh plugin --profile web add @verneuil/dsh-opencode-go-usage`                                               |
-| **Pin a version**                      | `github:verneuil/dsh-opencode-go-usage#v3.5.0` (replace with any published tag)                              |
-| **Release tarball**                    | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v3.5.0/dsh-opencode-go-usage-3.5.0.tgz` |
+| **Pin a version**                      | `github:verneuil/dsh-opencode-go-usage#v3.6.0` (replace with any published tag)                              |
+| **Release tarball**                    | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v3.6.0/dsh-opencode-go-usage-3.5.0.tgz` |
 | **Release URL (always latest)**        | `https://github.com/verneuil/dsh-opencode-go-usage/releases/latest/download/dsh-opencode-go-usage.tgz`       |
 | **Offline tgz**                        | `file:D:/your/path/dsh-opencode-go-usage-3.5.0.tgz`                                                          |
 
@@ -134,7 +141,7 @@ Follow the on-screen prompt to reload afterwards (replacing an installed JavaScr
 
 The settings page has four tabs: **Usage data** (default) / **Floating pill** / **Colour settings** / **General settings**.
 
-Next to the page title sit the **GitHub icon and the current version** (e.g. `v3.5.0`); clicking the icon opens this repository.
+Next to the page title sit the **GitHub icon and the current version** (e.g. `v3.6.0`); clicking the icon opens this repository.
 
 **Usage data**
 
@@ -142,6 +149,7 @@ Next to the page title sit the **GitHub icon and the current version** (e.g. `v3
 - **Amount display currency**: a three-way choice — `Auto` / `¥ CNY` / `＄ USD`; the note beneath shows the **current rate, when it was fetched** and the refresh result.
 - **Plan quota**: `Model: X (total: Z, used: Y, left: W)`; the amounts come from the **reference model's Go-tier monthly quota × this month's used percentage**.
 - **Usage details**: a progress bar, the percentage (basis is selectable), reset countdown and API status for each of the three windows.
+- **Projected usage chart**: inside the usage card, under the three bars — the **projected usage chart** (solid real segment / dashed projection, dashed 50% and 100% lines, renewal date; hovering the projected segment shows per-day estimates and the daily average).
 - **Progress basis** (top-right of the usage card): **Used** / **Left** — right next to it sits the **OpenCode icon**, which opens the [OpenCode account page](https://opencode.ai/console). The pill and the settings rows follow the same basis; defaults to **Used**.
 - Two rows below the card:
   - **manual refresh + last-updated time** (after a successful refresh it shows “Updated (time)” and **falls back to “Last updated: …” after 3 seconds**);
@@ -154,17 +162,17 @@ Next to the page title sit the **GitHub icon and the current version** (e.g. `v3
 - **Pill size**: a slider with eight stops where only the “Default 100%” stop carries a label — two stops to the left (−10%, −20%) and five to the right (+15%, +30%, +50%, +75%, +100%), i.e. 80% – 200%; the balance, the rings and the hover popover scale together and anchor-based positioning keeps working.
 - **Show a balance on the pill's left** (switch): shows one balance line on the pill's left; turning it off also collapses the row below.
 - **Pill left-side balance data** (two-way): `DS balance` / `OCG quota left` — which data that left line uses.
-- **Hover popover balance data** (checkbox dropdown): `DS balance` / `OCG quota left` — show one, both, or **neither** (the popover then keeps only the three progress bars); **clicking outside the dropdown closes it**.
+- **Hover popover data control** (checkbox dropdown): `DS balance` / `OCG quota left` / `Projected usage` — tick any combination, or **none at all** (the popover then keeps only the three progress bars); **clicking outside the dropdown closes it**. Turning the chart off leaves no divider behind.
 - **Minimal mode** (switch): nested rings (outer / middle / inner) with the rounded balance shown beside them.
 - **Ring data mapping** (only available in minimal mode): choose which of “5 hours / Weekly / Monthly” each of the outer / middle / inner rings shows, with a live preview on the right (the three segmented controls are labelled Outer / Middle / Inner).
 - **Reset the pill position**: back to the default position (top-left of the window).
 
 **Colour settings**
 
-- **Unified colour** (switch, on by default): one set of three tiers — **normal / warning / danger** — paints both the **ring progress** (the pill's rings, nesting included) and the **bar progress** (the hover popover plus the three bars on the Usage data tab); turn it off to get separate **Ring progress colour** / **Bar progress colour** rows, each with its own three tiers.
+- **Unified colour** (switch, on by default): one set of three tiers — **normal / warning / danger** — paints both the **ring progress** (the pill's rings, nesting included) and the **bar progress** (the hover popover, the three bars on the Usage data tab, **and the real segment of the projected usage chart**); turn it off to get separate **Ring progress colour** / **Bar progress & chart colour** rows, each with its own three tiers.
 - **Picking a colour**: each row shows three dots labelled **Normal / Warning / Danger**; clicking a dot opens the system colour picker (eyedropper plus RGB / HSL / HEX inputs). Changes apply live and are saved when the picker closes — no save button. Defaults are the theme green / amber / red.
 - **Colour actions**: **Restore default colours** resets all three tiers × both places to the theme defaults; **Follow host colours** switches the normal tier to the host accent (warning / danger keep their defaults) and tracks the theme live — picking a normal colour by hand stops following automatically.
-- **Colour preview**: shows **minimal mode / regular pill / bar progress** with their horizontal centre lines aligned, updating live; each of the three previews shows **all three tiers at once** (demo data maps 5 hours = danger, weekly = warning, monthly = normal) and the numbers follow the **Used / Left** basis (used 96 / 88 / 42 ↔ left 4 / 12 / 58). The Ring data mapping preview uses the same colours as the real pill and popover.
+- **Colour preview**: shows **minimal mode / regular pill / bar progress / projected usage chart** with their horizontal centre lines aligned, updating live and without any amounts; each of the four previews shows **all three tiers at once** (demo data maps 5 hours = danger, weekly = warning, monthly = normal) and the numbers follow the **Used / Left** basis (used 96 / 88 / 42 ↔ left 4 / 12 / 58). The Ring data mapping preview and the real chart use the same colours as the pill and popover.
 
 **General settings**
 
@@ -183,7 +191,7 @@ Because the plugin ships its own settings page, the host side calls the official
 
 ## Screenshots
 
-> All twelve are **rendered illustrations** built from the plugin's real stylesheet and the host theme tokens (not machine screenshots). The four settings groups cover every tab: **Usage data** (quota reference model, amount currency, plan quota and the usage card), **Floating pill** (master switch, size slider, balance and popover data, minimal mode, ring data mapping with its live preview, position reset), **Colour settings** (unified colour, normal / warning / danger dots, restore defaults and follow-host, three-state colour preview) and **General settings** (both keys, sidebar entry, restore defaults, export / import configuration). The states image includes the latest hover popover, and the last one shows the full settings page opened from the sidebar entry.
+> All twelve are **rendered illustrations** built from the plugin's real stylesheet and the host theme tokens (not machine screenshots). The four settings groups cover every tab: **Usage data** (quota reference model, amount currency, plan quota, the usage card and the **projected usage chart**), **Floating pill** (master switch, size slider, balance and **popover data control**, minimal mode, ring data mapping with its live preview, position reset), **Colour settings** (unified colour, normal / warning / danger dots, restore defaults and follow-host, **four-state colour preview**) and **General settings** (both keys, sidebar entry, restore defaults, export / import configuration). The states image includes the latest hover popover (projected usage chart included), and the last one shows the full settings page opened from the sidebar entry.
 
 | Pill · light | Pill · dark |
 | --- | --- |
@@ -255,13 +263,13 @@ The settings page covers the common options; the fields below can also be edited
 | `widgetScale`                                                   | Pill scale: `1` default (initial value) / `0.9` −10% / `0.8` −20% / `1.15` +15% / `1.3` +30% / `1.5` +50% / `1.75` +75% / `2` +100% |
 | `showBalance`                                                   | Whether the pill shows a balance line on its left (default off)                                                                                                   |
 | `pillBalanceSource`                                             | Data for that left line: `deepseek` DS balance (default) / `quota` OCG quota left                                                                                 |
-| `tipShowBalance`, `tipShowQuota`                                | Whether each popover balance row is shown (both default on; both off leaves only the bars)                                                                        |
+| `tipShowBalance`, `tipShowQuota`, `tipShowPace`                  | Whether each popover module is shown — balance, quota, projected usage chart (all default on; turning all off leaves only the three bars)                        |
 | `sidebarEntry`                                                  | Whether the sidebar shows a row for this plugin (off by default; same as the "Sidebar entry" switch)                                                              |
 | `ringOuter` / `ringMiddle` / `ringInner`                        | Which window each of the outer / middle / inner rings shows in minimal mode: `rolling` (5 hours), `weekly`, `monthly` (defaults `monthly` / `weekly` / `rolling`) |
 | `colorUnified`                                                  | Unified colour: one three-tier set paints both ring and bar progress (on by default); turn it off for two independent sets                                       |
 | `colorFollowHost`                                               | Follow host colours: the normal tier uses the host accent (`--dsw-alias-brand-primary`) while warning / danger keep their defaults; picking a normal colour turns it off (off by default) |
 | `colorAll` / `colorAllWarn` / `colorAllDanger`                  | Custom colours for the unified set (CSS values: `#RRGGBB`, `rgb()`, `hsl()`; empty = theme green / amber / red) |
-| `colorRing*` / `colorBar*` (with `…Warn` / `…Danger` suffixes)   | When `colorUnified` is off: the three tiers for ring / bar progress (no suffix = normal, `Warn` = warning, `Danger` = danger) |
+| `colorRing*` / `colorBar*` (with `…Warn` / `…Danger` suffixes)   | When `colorUnified` is off: the three tiers for ring / bar progress (no suffix = normal, `Warn` = warning, `Danger` = danger); the bar normal colour also paints the projected chart's real segment |
 | `quotaRefModel`                                                 | Reference model id (default `deepseek-v4.1-flash`; options come from the official model table)                                                                    |
 | `currencyMode`                                                  | Amount currency: `auto` (default) / `cny` / `usd`                                                                                                                 |
 | `percentMode`                                                   | Usage progress basis: `used` (default) or `left`                                                                                                                  |

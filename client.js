@@ -84,6 +84,8 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
     '.ocgu-dd{position:relative;display:inline-block;min-width:158px}' +
     '.ocgu-dd>summary{list-style:none;cursor:pointer;box-sizing:border-box;height:26px;line-height:24px;padding:0 24px 0 8px;border:.5px solid var(--dsw-alias-border-l3);border-radius:var(--dsw-radius-sm,8px);background:var(--dsw-alias-bg-base);color:var(--dsw-alias-label-primary);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
     '.ocgu-dd>summary::-webkit-details-marker{display:none}' +
+    // 摘要可能有多段（DS余额 + OCG配额剩余 + 用量预估走势）：限宽省略，避免把右侧控件撑太宽
+    '.ocgu-dd>summary{max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
     '.ocgu-dd>summary::after{content:"";position:absolute;right:9px;top:10px;width:6px;height:6px;border-right:1.5px solid var(--dsw-alias-label-tertiary);border-bottom:1.5px solid var(--dsw-alias-label-tertiary);transform:rotate(45deg)}' +
     '.ocgu-dd[open]>summary{border-color:var(--dsw-alias-state-business-primary)}' +
     '.ocgu-dd-panel{position:absolute;right:0;top:calc(100% + 4px);z-index:30;min-width:100%;padding:4px;border:.5px solid var(--dsw-alias-border-l2);border-radius:10px;background:var(--dsw-alias-bg-base);box-shadow:0 8px 24px rgba(0,0,0,.16)}' +
@@ -211,9 +213,19 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
     '.ocgu-cprev-inline{display:flex;align-items:center;gap:7px;height:30px}' +
     '.ocgu-cprev-cap{font-size:11px;color:var(--dsw-alias-label-tertiary)}' +
     '.ocgu-cprev-card{display:flex;align-items:center;gap:7px;height:30px;padding:0 10px;border-radius:999px;background:var(--dsw-alias-bg-layer-2);border:1px solid var(--dsw-alias-border-l1)}' +
-    '.ocgu-cprev-bal{font-size:11px;font-weight:600;color:var(--dsw-alias-label-primary);font-variant-numeric:tabular-nums}' +
-    '.ocgu-cprev-sep{width:1px;height:14px;background:var(--dsw-alias-border-l1)}' +
-    '.ocgu-cprev-bars{display:flex;flex-direction:column;gap:6px;width:168px}' +
+    // 条状进度条缩短到 120px：这一行还要放得下走势图预览（四图并排不拥挤）
+    '.ocgu-cprev-bars{display:flex;flex-direction:column;gap:6px;width:120px}' +
+    // 走势图预览：实际段跟随条状正常色、预计段固定橙，与真实图表同源
+    '.ocgu-cprev-pace{position:relative;width:124px;height:54px}' +
+    '.ocgu-cprev-pace>svg{position:absolute;left:0;right:0;top:0;bottom:0;width:100%;height:100%;display:block;overflow:visible}' +
+    '.ocgu-cprev-pace-line{fill:none;stroke-width:1.6;vector-effect:non-scaling-stroke}' +
+    '.ocgu-cprev-pace-line[data-kind="actual"]{stroke:var(--ocgu-c-bar,var(--dsw-alias-state-success-primary))}' +
+    '.ocgu-cprev-pace-line[data-kind="forecast"]{stroke:var(--ocgu-c-bar,var(--dsw-alias-state-success-primary))}' +
+    '.ocgu-cprev-pace-area[data-kind="actual"]{fill:color-mix(in srgb,var(--ocgu-c-bar,var(--dsw-alias-state-success-primary)) 12%,transparent)}' +
+    '.ocgu-cprev-pace-area[data-kind="forecast"]{fill:color-mix(in srgb,var(--ocgu-c-bar,var(--dsw-alias-state-success-primary)) 12%,transparent)}' +
+    '.ocgu-cprev-pace-limit{position:absolute;left:0;right:0;top:0;border-top:1px dashed color-mix(in srgb,var(--dsw-alias-label-tertiary) 55%,transparent)}' +
+    '.ocgu-cprev-pace-dot{position:absolute;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;background:var(--ocgu-c-bar,var(--dsw-alias-state-success-primary));box-shadow:0 0 0 2px var(--dsw-alias-bg-layer-2)}' +
+    '.ocgu-cprev-pace-dot[data-kind="forecast"]{background:var(--ocgu-c-bar,var(--dsw-alias-state-success-primary))}' +
     '.ocgu-cprev-track{height:8px;border-radius:999px;background:color-mix(in srgb,var(--dsw-alias-label-tertiary) 22%,transparent);overflow:hidden}' +
     '.ocgu-cprev-fill{height:100%;border-radius:999px;background:var(--ocgu-c-bar,var(--dsw-alias-state-success-primary))}' +
     '.ocgu-cprev-ring{fill:none;stroke:var(--ocgu-c-ring,var(--dsw-alias-state-success-primary));stroke-linecap:round}' +
@@ -226,6 +238,73 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
     '.ocgu-cprev-ring[data-level="danger"]{stroke:var(--ocgu-c-ring-danger,var(--dsw-alias-state-error-primary))}' +
     '.ocgu-cprev-num[data-level="warn"]{fill:var(--ocgu-c-ring-warn,var(--dsw-alias-state-warn-primary))}' +
     '.ocgu-cprev-num[data-level="danger"]{fill:var(--ocgu-c-ring-danger,var(--dsw-alias-state-error-primary))}' +
+    // ---------- 本期订阅预计用量走势（3.6.0）----------
+    // 结构：标题 / 绘图区（SVG 折线 + 100% 虚线 + 今天竖线 + 两个圆点）/ 日期轴；
+    // 左侧留 30px 给 0% / 100% 刻度，横轴全部用百分比定位，设置页与悬停浮层共用同一套样式。
+    '.ocgu-pace{display:flex;flex-direction:column;gap:8px;margin-top:14px;padding-top:12px;border-top:1px solid var(--dsw-alias-border-l1)}' +
+    // 浮层里的走势图是独立模块：与上方进度条用统一的 .ocgu-tip-sep 分隔，自身不再画顶边
+    '.ocgu-pace[data-compact="1"]{gap:10px;margin-top:0;padding-top:0;border-top:0}' +
+    '.ocgu-pace-head{display:flex;align-items:baseline;gap:0;flex-wrap:wrap}' +
+    '.ocgu-pace-title{font-size:12px;line-height:16px;color:var(--dsw-alias-label-secondary)}' +
+    '.ocgu-pace-renews{font-size:11px;line-height:16px;margin-left:4px;color:var(--dsw-alias-label-tertiary);white-space:nowrap}' +
+    // 浮层里与上方两行余额完全同字号/同颜色/同字重（12px / label-primary / 400）
+    '.ocgu-pace[data-compact="1"] .ocgu-pace-title{font-size:12px;line-height:16px;font-weight:400;color:var(--dsw-alias-label-primary)}' +
+    '.ocgu-pace[data-compact="1"] .ocgu-pace-renews{font-size:12px;line-height:16px;font-weight:400}' +
+    '.ocgu-pace-plot{position:relative;margin-left:30px}' +
+    '.ocgu-pace[data-compact="1"] .ocgu-pace-plot{margin-left:24px}' +
+    // 裁剪到绘图区内：折线/面积的半宽描边不会越过外框，边框永远压在走势图之上
+    '.ocgu-pace-svg{position:absolute;left:0;right:0;top:0;bottom:0;width:100%;height:100%;display:block;overflow:hidden}' +
+    '.ocgu-pace-line{fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}' +
+    // 实际段跟随用户配色（正常档 = 条状进度色），预计段固定橙色（暂不开放自定义，与官方一致）
+    // 两段同色（= 条状进度 / 走势图配色），预计段用虚线区分；
+    // pathLength=100 让虚线密度按百分比走，不会随容器宽度忽长忽短。
+    '.ocgu-pace-line[data-kind="actual"]{stroke:var(--ocgu-c-bar,var(--dsw-alias-state-success-primary))}' +
+    '.ocgu-pace-line[data-kind="forecast"]{stroke:var(--ocgu-c-bar,var(--dsw-alias-state-success-primary))}' +
+    // 虚线端头改平头：圆头会把 1.6px 的线加长 1.6px，gap 小于 stroke 宽度时虚线会糊成实线
+    '.ocgu-pace-line[data-kind="forecast"]{stroke-linecap:butt}' +
+    '.ocgu-pace-area[data-kind="actual"]{fill:color-mix(in srgb,var(--ocgu-c-bar,var(--dsw-alias-state-success-primary)) 12%,transparent)}' +
+    '.ocgu-pace-area[data-kind="forecast"]{fill:color-mix(in srgb,var(--ocgu-c-bar,var(--dsw-alias-state-success-primary)) 12%,transparent)}' +
+    '.ocgu-pace-limit{position:absolute;left:0;right:0;border-top:1px dashed color-mix(in srgb,var(--dsw-alias-label-tertiary) 55%,transparent);z-index:2}' +
+    // 横坐标实线：把斜线起点与浅色面积「兜住」，否则小图里视觉上会显得整张图是歪的
+    // 横坐标实线：把斜线起点与浅色面积「兜住」，否则小图里视觉上会显得整张图是歪的。
+    // 注意不要用 border-l2（只有 ~9% 黑，白底几乎看不见）；用 tertiary 文字色混 55%，
+    // 深浅主题下都是清晰但不过分抢眼的一条基准线。
+    '.ocgu-pace-xaxis{position:absolute;left:0;right:0;height:0;border-top:1px solid color-mix(in srgb,var(--dsw-alias-label-tertiary) 55%,transparent);z-index:2}' +
+    // 左右两条竖实线：与底边同色，把图表区域闭合起来
+    '.ocgu-pace-vaxis{position:absolute;top:0;bottom:0;width:0;border-left:1px solid color-mix(in srgb,var(--dsw-alias-label-tertiary) 55%,transparent);z-index:2}' +
+    '.ocgu-pace-today{position:absolute;top:0;bottom:0;border-left:1px dashed color-mix(in srgb,var(--dsw-alias-label-tertiary) 45%,transparent)}' +
+    '.ocgu-pace-tick{position:absolute;left:-30px;width:26px;text-align:right;font-size:9px;line-height:10px;color:var(--dsw-alias-label-tertiary);transform:translateY(-50%);font-variant-numeric:tabular-nums}' +
+    '.ocgu-pace[data-compact="1"] .ocgu-pace-tick{left:-24px;width:21px}' +
+    '.ocgu-pace-dot{position:absolute;width:7px;height:7px;margin:-3.5px 0 0 -3.5px;border-radius:50%;background:var(--ocgu-c-bar,var(--dsw-alias-state-success-primary));box-shadow:0 0 0 2px var(--dsw-alias-bg-layer-2)}' +
+    '.ocgu-pace-fc{position:absolute;right:0;font-size:11px;line-height:12px;font-weight:600;color:var(--ocgu-c-bar,var(--dsw-alias-state-success-primary));transform:translateY(-100%);font-variant-numeric:tabular-nums;white-space:nowrap}' +
+    // 超额时标签从「百分比」变成「耗尽日期」，字号略小
+    '.ocgu-pace-fc[data-kind="date"]{font-size:10px;font-weight:500}' +
+    '.ocgu-pace[data-compact="1"] .ocgu-pace-fc{font-size:10px}' +
+    '.ocgu-pace-axis{position:relative;height:13px;margin-left:30px;font-size:9.5px;line-height:13px;color:var(--dsw-alias-label-tertiary);font-variant-numeric:tabular-nums}' +
+    '.ocgu-pace[data-compact="1"] .ocgu-pace-axis{margin-left:24px;font-size:9px}' +
+    '.ocgu-pace-date{position:absolute;top:0;white-space:nowrap}' +
+    // 预留区：正常时百分比放在图表右侧一列，超额时耗尽日期放在图表上方一行，避免压住图线或跑出外框
+    '.ocgu-pace-body{display:flex;align-items:flex-start}' +
+    '.ocgu-pace-body>.ocgu-pace-plot{flex:1;min-width:0}' +
+    '.ocgu-pace-side{position:relative;flex:none;width:38px;align-self:flex-start}' +
+    '.ocgu-pace-sideval{position:absolute;left:auto;right:6px;font-size:11px;line-height:12px;font-weight:600;color:var(--ocgu-c-bar,var(--dsw-alias-state-success-primary));font-variant-numeric:tabular-nums;white-space:nowrap;text-align:right;transform:translateY(-50%)}' +
+    // 紧凑版（悬停浮层）：同样的预留行/列，只是字号与间距缩小
+    '.ocgu-pace[data-compact="1"] .ocgu-pace-sideval{font-size:10px;line-height:11px}' +
+    '.ocgu-pace[data-compact="1"] .ocgu-pace-toprow{height:13px;margin:0 0 1px 24px}' +
+    '.ocgu-pace[data-compact="1"] .ocgu-pace-topdate{font-size:9.5px;line-height:13px}' +
+    '.ocgu-pace[data-side="1"] .ocgu-pace-axis{margin-right:38px}' +
+    '.ocgu-pace-toprow{position:relative;height:15px;margin:0 0 2px 30px}' +
+    '.ocgu-pace-topdate{position:absolute;top:0;font-size:10.5px;line-height:15px;font-weight:600;color:var(--ocgu-c-bar,var(--dsw-alias-state-success-primary));white-space:nowrap;transform:translateX(-100%)}' +
+    // 悬停：竖向参考线 + 折线上的黄点 + 按天预估浮窗（只挂在设置页版本上，浮窗里的紧凑版不启用）
+    '.ocgu-pace-plot[data-interactive="1"]{cursor:crosshair}' +
+    '.ocgu-pace-hoverline{position:absolute;top:0;bottom:0;border-left:1px dashed color-mix(in srgb,var(--dsw-alias-label-tertiary) 55%,transparent);pointer-events:none}' +
+    '.ocgu-pace-hoverdot{position:absolute;width:7px;height:7px;margin:-3.5px 0 0 -3.5px;border-radius:50%;background:var(--ocgu-c-bar,var(--dsw-alias-state-success-primary));box-shadow:0 0 0 2px var(--dsw-alias-bg-layer-2);pointer-events:none}' +
+    '.ocgu-pace-tip{position:absolute;z-index:3;display:flex;flex-direction:column;gap:6px;min-width:172px;padding:9px 11px;border-radius:12px;background:var(--dsw-alias-bg-layer-2);border:1px solid var(--dsw-alias-border-l2);box-shadow:0 6px 20px rgba(0,0,0,.16);pointer-events:none;white-space:nowrap}' +
+    '.ocgu-pace-tip-h{font-size:11px;line-height:15px;color:var(--dsw-alias-label-secondary)}' +
+    '.ocgu-pace-tip-row{display:flex;align-items:center;gap:8px;font-size:11.5px;line-height:16px;color:var(--dsw-alias-label-primary)}' +
+    '.ocgu-pace-tip-ico{width:3px;height:11px;border-radius:2px;background:var(--ocgu-c-bar,var(--dsw-alias-state-success-primary));flex:none}' +
+    '.ocgu-pace-tip-lb{flex:1}' +
+    '.ocgu-pace-tip-val{font-weight:600;font-variant-numeric:tabular-nums}' +
     // ---------- 设置页：用量行 ----------
     '.ocgu-row{display:flex;flex-direction:column;gap:6px}' +
     '.ocgu-row-top{display:flex;align-items:baseline;gap:10px}' +
@@ -895,16 +974,17 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
       'field.colorUnified.hint': '开启时用一个颜色同时覆盖环状与条状进度；关闭后可分别设置',
       'field.colorAll': '自定义颜色',
       'field.colorRing': '环状进度颜色',
-      'field.colorBar': '条状进度颜色',
+      'field.colorBar': '条状进度与走势图颜色',
       'field.colorReset': '恢复默认配色',
       'field.colorReset.hint': '把三个位置的颜色全部恢复为默认绿',
       'btn.colorReset': '恢复默认',
       'field.colorPreview': '配色预览',
-      'field.colorPreview.hint': '下面三种形态随上面的选择即时变化',
+      'field.colorPreview.hint': '下面四种形态随上面的选择即时变化',
       'color.rowHint': '自定义色只替换正常档；越过阈值仍按橙 / 红提示',
       'color.preview.normal': '非极简浮窗',
       'color.preview.minimal': '极简模式',
       'color.preview.bar': '条状进度',
+      'color.preview.pace': '预计用量走势',
       'color.defaultValue': '默认绿',
       'color.useDefault': '用默认绿',
       'color.invalid': '颜色格式无效：支持 #RGB / #RRGGBB / rgb() / hsl()',
@@ -932,15 +1012,16 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
       'msg.colorFollowOff': '已取消跟随宿主主题色',
       'pill.srcDeepseek': 'DS余额',
       'pill.srcQuota': 'OCG配额剩余',
-      'field.tipBalanceSrc': '鼠标悬停浮层余额数据',
-      'field.tipBalanceSrc.hint': '两个都不勾选时，浮层只显示三条进度条',
+      'field.tipBalanceSrc': '鼠标悬停浮层数据控制',
+      'field.tipBalanceSrc.hint': '全都不勾选时，浮层只显示三条进度条',
       'tip.chkDeepseek': 'DS余额',
       'tip.chkQuota': 'OCG配额剩余',
+      'tip.chkPace': '预计用量走势',
       'tip.ddNone': '都不显示',
       'msg.pillSrcDeepseek': '浮窗左侧已显示 DS 余额',
       'msg.pillSrcQuota': '浮窗左侧已显示 OCG 配额剩余',
-      'msg.tipData': '浮层余额数据：{list}',
-      'msg.tipDataNone': '浮层余额数据：无（只显示进度条）',
+      'msg.tipData': '浮层数据：{list}',
+      'msg.tipDataNone': '浮层数据：无（只显示进度条）',
       'field.minimal': '极简模式',
       'field.pos': '重置浮窗位置',
       'msg.minimalOn': '已开启极简模式',
@@ -954,8 +1035,15 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
       'settings.refreshing': '刷新中…',
       'settings.updated': '已更新（{time}）',
       'settings.failed': '刷新失败：{err}',
-      'settings.cardHint': '百分比为「剩余」：剩余 ≤20% 转橙、≤5% 转红。',
-      'settings.cardHintUsed': '百分比为「已使用」：进度条 ≥80% 转橙、≥95% 转红。',
+      'settings.cardHint': '百分比为「剩余」：进度条 ≤20% 转警告色、≤5% 转危险色。',
+      'settings.cardHintUsed': '百分比为「已使用」：进度条 ≥80% 转警告色、≥95% 转危险色。',
+      'pace.title': '预计用量走势',
+      'pace.renews': '（续费日期 {date}）',
+      'pace.aria': '预计用量走势：已用 {used}%，按当前速度预计 {pct}%',
+      'pace.ariaOver': '预计用量走势：已用 {used}%，预计 {date} 用满',
+      'pace.tagForecast': '预计',
+      'pace.tipForecast': '预计用量',
+      'pace.tipDaily': '日均增长',
       'mode.used': '已使用',
       'mode.left': '剩余',
       'aria.mode': '用量进度口径',
@@ -1119,16 +1207,17 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
       'field.colorUnified.hint': 'One colour overrides both ring and bar progress; turn it off to set them separately',
       'field.colorAll': 'Custom colour',
       'field.colorRing': 'Ring progress colour',
-      'field.colorBar': 'Bar progress colour',
+      'field.colorBar': 'Bar progress & forecast chart colour',
       'field.colorReset': 'Restore default colours',
       'field.colorReset.hint': 'Reset all three positions back to the default green',
       'btn.colorReset': 'Restore',
       'field.colorPreview': 'Colour preview',
-      'field.colorPreview.hint': 'The three states below update live with your choice',
+      'field.colorPreview.hint': 'The four states below update live with your choice',
       'color.rowHint': 'Custom colours only replace the normal tier; thresholds still turn amber / red',
       'color.preview.normal': 'Regular pill',
       'color.preview.minimal': 'Minimal mode',
       'color.preview.bar': 'Bar progress',
+      'color.preview.pace': 'Usage forecast',
       'color.defaultValue': 'Default green',
       'color.useDefault': 'Use default green',
       'color.invalid': 'Invalid colour: use #RGB / #RRGGBB / rgb() / hsl()',
@@ -1156,15 +1245,16 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
       'msg.colorFollowOff': 'Stopped following the host accent',
       'pill.srcDeepseek': 'DS balance',
       'pill.srcQuota': 'OCG quota left',
-      'field.tipBalanceSrc': 'Hover popover balance data',
-      'field.tipBalanceSrc.hint': 'With neither box ticked the popover shows only the three progress bars',
+      'field.tipBalanceSrc': 'Hover popover data control',
+      'field.tipBalanceSrc.hint': 'With nothing ticked the popover shows only the three progress bars',
       'tip.chkDeepseek': 'DS balance',
       'tip.chkQuota': 'OCG quota',
+      'tip.chkPace': 'Usage forecast',
       'tip.ddNone': 'None',
       'msg.pillSrcDeepseek': 'Pill left now shows the DS balance',
       'msg.pillSrcQuota': 'Pill left now shows the OCG quota left',
-      'msg.tipData': 'Popover balance data: {list}',
-      'msg.tipDataNone': 'Popover balance data: none (progress bars only)',
+      'msg.tipData': 'Popover data: {list}',
+      'msg.tipDataNone': 'Popover data: none (progress bars only)',
       'field.minimal': 'Minimal mode',
       'field.pos': 'Reset the pill position',
       'msg.minimalOn': 'Minimal mode on',
@@ -1178,8 +1268,15 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
       'settings.refreshing': 'Refreshing…',
       'settings.updated': 'Updated ({time})',
       'settings.failed': 'Refresh failed: {err}',
-      'settings.cardHint': 'Percentages are “left”: amber at ≤20%, red at ≤5%.',
-      'settings.cardHintUsed': 'Percentages are “used”: amber at ≥80%, red at ≥95%.',
+      'settings.cardHint': 'Percentages are “left”: the bar turns warning colour at ≤20% and danger colour at ≤5%.',
+      'settings.cardHintUsed': 'Percentages are “used”: the bar turns warning colour at ≥80% and danger colour at ≥95%.',
+      'pace.title': 'Usage forecast',
+      'pace.renews': '(Renews {date})',
+      'pace.aria': 'Usage forecast: {used}% used, on pace for {pct}%',
+      'pace.ariaOver': 'Usage forecast: {used}% used, projected to hit 100% on {date}',
+      'pace.tagForecast': 'Forecast',
+      'pace.tipForecast': 'Forecast',
+      'pace.tipDaily': 'Daily average',
       'mode.used': 'Used',
       'mode.left': 'Left',
       'aria.mode': 'Usage progress basis',
@@ -1244,6 +1341,58 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
       percent: isFinite(w.percent) ? Math.min(100, Math.max(0, w.percent)) : 0,
       resetsAt: typeof w.resetsAt === 'string' ? w.resetsAt : ''
     };
+  }
+  // ---------- 本期订阅预计用量走势（3.6.0）----------
+  // 官方控制台「Go usage · Renews … · On pace for N%」的取数逻辑：续费日 = monthly.resetsAt
+  // （实测该字段就是控制台显示的续费瞬间），本期起始 = 续费日往前推一个月；
+  // 按「(0,0) → (今天, 当前已用%)」直线外推到续费日即得预计用量，不需要历史每日数据。
+  function paceOf(usage) {
+    var m = windowOf(usage, 'monthly');
+    var end = Date.parse(m.resetsAt || '');
+    if (!isFinite(end)) return null;
+    var endD = new Date(end);
+    var startD = new Date(end);
+    var day = startD.getDate();
+    startD.setDate(1);
+    startD.setMonth(startD.getMonth() - 1);
+    // 月末回退：3/31 往前一个月没有 2/31，取该月最后一天
+    var dim = new Date(startD.getFullYear(), startD.getMonth() + 1, 0).getDate();
+    startD.setDate(Math.min(day, dim));
+    var start = startD.getTime();
+    var span = end - start;
+    if (!(span > 0)) return null;
+    var now = Math.min(Math.max(Date.now(), start), end);
+    var frac = (now - start) / span;
+    var used = clampNum(Number(m.percent), 0, 100);
+    // 本期刚开端时分母极小，外推会放大成离谱数字：<1% 进度不显示预计段
+    if (frac < 0.01) {
+      return { start: startD, end: endD, now: now, frac: frac, used: used, forecast: null, overshoot: false, xEnd: 1, labelDate: null };
+    }
+    var rawF = used / frac; // 未取整的预计百分比（用于判断是否会在续费日前用满）
+    var overshoot = false, xEnd = 1, labelDate = null;
+    if (used >= 99.5) {
+      // 已经被限流（用满）：直接视为今天耗尽
+      overshoot = true;
+      xEnd = frac;
+      labelDate = new Date(now);
+    } else if (rawF > 100.4) {
+      // 按当前速度会在续费日前用满：延长线打到 100% 虚线即止，端点标「耗尽日期」
+      overshoot = true;
+      xEnd = 100 / rawF;
+      labelDate = new Date(start + span * xEnd);
+    }
+    return {
+      start: startD, end: endD, now: now, frac: frac, used: used,
+      forecast: overshoot ? 100 : Math.round(rawF),
+      rawForecast: rawF, overshoot: overshoot, xEnd: xEnd, labelDate: labelDate
+    };
+  }
+  // 横轴日期：中文「10月25日」，英文「Oct 25」（与官方控制台一致，不写年份）
+  var MONTHS_EN = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  function fmtMonthDay(d, t) {
+    if (!d) return '';
+    if (isZhLocale(t)) return (d.getMonth() + 1) + '月' + d.getDate() + '日';
+    return MONTHS_EN[d.getMonth()] + ' ' + d.getDate();
   }
   function floatWarn(value) {
     return value.keyStatus === 'missing' || value.balanceKeyStatus === 'missing'
@@ -1935,11 +2084,13 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
             React.createElement('span', { className: 'ocgu-tip-cd' }, fmtCountdown(tw.resetsAt, t) || t('cd.unknown'))));
       });
       var tipQuota = quotaTipLines(value, t);
+      var tipPace = paceOf(usage);
       var tipBalText = curBalanceText(value, t);
       var tipErrs = fetchErrors(value, t);
-      // 悬停浮层里两段余额各自可关：都不选则只留进度条（分隔线也一起去掉）
+      // 悬停浮层里各段都可关：全不勾选则只留进度条（分隔线也一起去掉）
       var tipShowBal = value.tipShowBalance !== false;
       var tipShowQuota = value.tipShowQuota !== false;
+      var tipShowPace = value.tipShowPace !== false;
       children.push(React.createElement('div', {
         key: 'tip', className: 'ocgu-tip', 'data-pos': tipUp ? 'up' : 'down', 'data-align': tipRight ? 'right' : 'left',
         // 与浮窗同相位（loading/ok/error）：刷新时浮层边框与浮窗同步闪烁；鼠标进入浮层续命
@@ -1962,6 +2113,9 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
         // 仅显示余额时，余额自己那条分隔线已经够了（否则两条会叠在一起）。
         tipShowQuota ? React.createElement('div', { className: 'ocgu-tip-sep' }) : null,
         tipRows,
+        // 走势图是独立板块：先统一分割线，再放图表（关闭走势图时分割线也不渲染）
+        tipShowPace && tipPace ? React.createElement('div', { key: 'paceSep', className: 'ocgu-tip-sep' }) : null,
+        tipShowPace && tipPace ? React.createElement(PaceChart, { key: 'pace', pace: tipPace, t: t, compact: true }) : null,
         // 抓取失败点名报错：浮层最底部（明确是 OCG 用量 / 余额 / 汇率 / 模型表哪一项）
         tipErrs.length ? React.createElement('div', {
           className: 'ocgu-errline', role: 'status', 'aria-live': 'polite'
@@ -2051,6 +2205,172 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
           className: 'ocgu-field-control',
           style: props.nowrap ? { flexWrap: 'nowrap' } : undefined
         }, props.control)));
+  }
+
+  // ---------- 本期订阅预计用量走势图（3.6.0）----------
+  // 纯 SVG 折线 + 绝对定位的日期/百分比标签：横轴按百分比定位，容器多宽都能自适应；
+  // 纵轴按「100% 至少占满」取整（预计 >100% 时自动放大留白），100% 画虚线。
+  // 设置页版本支持悬停：鼠标滑过预计段时按「天」显示预估浮窗（浮窗里的紧凑版不启用，避免浮层套浮层）。
+  var WD_ZH = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+  var WD_EN = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  function fmtTipDate(d, t) {
+    if (isZhLocale(t)) return fmtMonthDay(d, t) + ' ' + WD_ZH[d.getDay()];
+    return WD_EN[d.getDay()] + ', ' + fmtMonthDay(d, t);
+  }
+  function PaceChart(props) {
+    var hoverState = React.useState(null);
+    var hover = hoverState[0], setHover = hoverState[1];
+    var plotRef = React.useRef(null);
+    // 右侧百分比列的宽度按标签实测宽度动态给（文字宽 + 14px 间距），不再固定让出 38px
+    var paceRef = React.useRef(null);
+    var sideWState = React.useState(0);
+    var sideW = sideWState[0], setSideW = sideWState[1];
+    var pace = props.pace;
+    var t = props.t || tZh;
+    var compact = !!props.compact;
+    if (!pace || pace.forecast === null) return null;
+    var H = compact ? 58 : 84;
+    // 纵轴固定 0~100：超额的延长线打到 100% 虚线就停止，不再自动放大纵轴
+    var maxY = 100;
+    var yOf = function (pct) { return Math.round((H - (Math.min(pct, maxY) / maxY) * H) * 10) / 10; };
+    var xT = Math.max(0, Math.min(100, pace.frac * 100));
+    var xTs = Number(xT.toFixed(2));
+    // 预计段终点：正常情况 = 最右侧（续费日）；超额情况 = 与 100% 虚线的交点
+    var xE = Math.max(xTs, Number((pace.xEnd * 100).toFixed(2)));
+    var yU = yOf(pace.used), yF = yOf(pace.forecast), y100 = yOf(100);
+    // 预计段虚线：按路径长度的 4.5% / 4.5% 现算 dash，容器多宽、图多小都保持同样的虚线比例；
+    // gap 必须大于 stroke-width(1.6)，否则圆头/平头都会糊成实线。
+    var fcLen = Math.sqrt(Math.pow(xE - xTs, 2) + Math.pow(yF - yU, 2));
+    var fcLit = Math.max(1.8, Number((fcLen * 0.045).toFixed(2)));
+    var fcDash = fcLit + ' ' + fcLit;
+    var aria = pace.overshoot
+      ? t('pace.ariaOver', { used: Math.round(pace.used), date: fmtMonthDay(pace.labelDate, t) })
+      : t('pace.aria', { used: Math.round(pace.used), pct: pace.forecast });
+    // 日均增长（%/天）：官方浮窗的「Daily average」，按已用百分比 / 已过天数算
+    var elapsedDays = Math.max(0.05, (pace.now - pace.start.getTime()) / 86400000);
+    var dayRate = pace.used / elapsedDays;
+    var interactive = !compact && props.interactive !== false;
+    var onMove = function (e) {
+      if (!interactive || !plotRef.current) return;
+      var r = plotRef.current.getBoundingClientRect();
+      if (!r.width) return;
+      var fx = Math.max(0, Math.min(1, (e.clientX - r.left) / r.width));
+      // 实际段（今天及以前）不弹浮窗；超额时 100% 之后没有延长线，也不弹
+      if (fx <= pace.frac + 0.004 || fx > pace.xEnd - 0.004) { if (hover) setHover(null); return; }
+      var raw = pace.start.getTime() + fx * (pace.end.getTime() - pace.start.getTime());
+      var d = new Date(raw);
+      d.setHours(12, 0, 0, 0); // 按天吸附，避免鼠标轻微移动就重算
+      var dayKey = d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+      if (hover && hover.dayKey === dayKey) return;
+      var days = (d.getTime() - pace.start.getTime()) / 86400000;
+      var total = Math.round(dayRate * days * 10) / 10;
+      if (total < pace.used) total = pace.used;
+      if (total > 100) total = 100;
+      var fxSnap = (d.getTime() - pace.start.getTime()) / (pace.end.getTime() - pace.start.getTime());
+      setHover({ dayKey: dayKey, date: d, xPct: Math.max(pace.frac * 100, Math.min(pace.xEnd * 100, fxSnap * 100)), total: total });
+    };
+    var onLeave = function () { if (hover) setHover(null); };
+    // 右侧百分比列：宽度按标签实测宽度 + 14px 间距动态给，避免固定让出一大截空白
+    React.useLayoutEffect(function () {
+      var el = paceRef.current;
+      if (!el) return;
+      var v = el.querySelector('.ocgu-pace-sideval');
+      if (!v) return;
+      var w = Math.ceil(v.getBoundingClientRect().width) + 14;
+      if (w !== sideW) setSideW(w);
+    });
+    // 悬停浮窗位置：默认贴在折线点上方，贴顶时翻到点下方；水平夹在两端留边
+    var tipStyle = null, tipHy = 0, tipLeft = 0;
+    if (hover) {
+      var hy = yOf(hover.total);
+      var hx = hover.xPct;
+      tipLeft = Math.max(14, Math.min(86, hx));
+      tipHy = Math.max(2, hy - 78);
+      if (hy - 78 < 2) tipHy = hy + 14;
+      tipStyle = { left: tipLeft + '%', top: tipHy + 'px', transform: 'translateX(-50%)' };
+    }
+    var svg = React.createElement('svg', {
+      className: 'ocgu-pace-svg', viewBox: '0 0 100 ' + H, preserveAspectRatio: 'none',
+      'aria-hidden': 'true', focusable: 'false'
+    },
+      React.createElement('polygon', {
+        className: 'ocgu-pace-area', 'data-kind': 'actual',
+        points: '0,' + H + ' ' + xTs + ',' + yU + ' ' + xTs + ',' + H
+      }),
+      React.createElement('polygon', {
+        className: 'ocgu-pace-area', 'data-kind': 'forecast',
+        points: xTs + ',' + H + ' ' + xTs + ',' + yU + ' ' + xE + ',' + yF + ' ' + xE + ',' + H
+      }),
+      React.createElement('polyline', {
+        className: 'ocgu-pace-line', 'data-kind': 'actual', points: '0,' + H + ' ' + xTs + ',' + yU
+      }),
+      React.createElement('polyline', {
+        className: 'ocgu-pace-line', 'data-kind': 'forecast', style: { strokeDasharray: fcDash },
+        points: xTs + ',' + yU + ' ' + xE + ',' + yF
+      }));
+    // 端点标签：
+    // · 设置页（非紧凑）：预计 <100% 时把百分比放进图表右侧预留列；超额时把耗尽日期放进图表上方预留行。
+    // · 悬停浮层（紧凑）：宽度不够，沿用图内贴着端点的排法。
+    var fcLabelText = pace.overshoot ? fmtMonthDay(pace.labelDate, t) : pace.forecast + '%';
+    var topRow = null, sideCol = null;
+    if (pace.overshoot) {
+      // 超额：耗尽日期放在图表上方预留行
+      topRow = React.createElement('div', { className: 'ocgu-pace-toprow' },
+        React.createElement('span', { className: 'ocgu-pace-topdate', style: { left: xE + '%' } }, fcLabelText));
+    } else {
+      // 正常：百分比放在图表右侧预留列（宽度按文字实测，避免多让空白）
+      sideCol = React.createElement('div', {
+        className: 'ocgu-pace-side', style: { height: H + 'px', width: (sideW || 30) + 'px' }
+      },
+        React.createElement('span', { className: 'ocgu-pace-sideval', style: { top: Math.max(7, yF) + 'px' } }, fcLabelText));
+    }
+    return React.createElement('div', {
+      ref: paceRef,
+      className: 'ocgu-pace', 'data-compact': compact ? '1' : '0',
+      'data-side': !pace.overshoot ? '1' : '0',
+      role: 'img', 'aria-label': aria
+    },
+      React.createElement('div', { className: 'ocgu-pace-head' },
+        React.createElement('span', { className: 'ocgu-pace-title' }, t('pace.title')),
+        React.createElement('span', { className: 'ocgu-pace-renews' }, t('pace.renews', { date: fmtMonthDay(pace.end, t) }))),
+      topRow,
+      React.createElement('div', { className: 'ocgu-pace-body' },
+        React.createElement('div', {
+          ref: plotRef, className: 'ocgu-pace-plot', 'data-interactive': interactive ? '1' : '0',
+          style: { height: H + 'px' }, onMouseMove: interactive ? onMove : undefined, onMouseLeave: interactive ? onLeave : undefined
+        },
+          svg,
+          React.createElement('span', { className: 'ocgu-pace-limit', style: { top: y100 + 'px' } }),
+          React.createElement('span', { className: 'ocgu-pace-limit', style: { top: yOf(50) + 'px' } }),
+          React.createElement('span', { className: 'ocgu-pace-xaxis', style: { top: H + 'px' } }),
+          React.createElement('span', { className: 'ocgu-pace-vaxis', style: { left: 0 } }),
+          React.createElement('span', { className: 'ocgu-pace-vaxis', style: { right: 0 } }),
+          React.createElement('span', { className: 'ocgu-pace-tick', style: { top: y100 + 'px' } }, '100%'),
+          React.createElement('span', { className: 'ocgu-pace-tick', style: { top: yOf(50) + 'px' } }, '50%'),
+          React.createElement('span', { className: 'ocgu-pace-tick', style: { top: H + 'px' } }, '0%'),
+          React.createElement('span', { className: 'ocgu-pace-today', style: { left: xTs + '%' } }),
+          React.createElement('span', { className: 'ocgu-pace-dot', 'data-kind': 'actual', style: { left: xTs + '%', top: yU + 'px' } }),
+          React.createElement('span', { className: 'ocgu-pace-dot', 'data-kind': 'forecast', style: { left: xE + '%', top: yF + 'px' } }),
+          // 悬停：竖向参考线 + 折线上的圆点 + 按天预估浮窗
+          hover ? React.createElement('span', { className: 'ocgu-pace-hoverline', style: { left: hover.xPct + '%' } }) : null,
+          hover ? React.createElement('span', { className: 'ocgu-pace-hoverdot', style: { left: hover.xPct + '%', top: yOf(hover.total) + 'px' } }) : null,
+          hover ? React.createElement('div', { className: 'ocgu-pace-tip', style: tipStyle, role: 'status', 'aria-live': 'polite' },
+            React.createElement('div', { className: 'ocgu-pace-tip-h' }, fmtTipDate(hover.date, t) + ' · ' + t('pace.tagForecast')),
+            React.createElement('div', { className: 'ocgu-pace-tip-row' },
+              React.createElement('span', { className: 'ocgu-pace-tip-ico' }),
+              React.createElement('span', { className: 'ocgu-pace-tip-lb' }, t('pace.tipForecast')),
+              React.createElement('span', { className: 'ocgu-pace-tip-val' }, hover.total.toFixed(1) + '%')),
+            React.createElement('div', { className: 'ocgu-pace-tip-row' },
+              React.createElement('span', { className: 'ocgu-pace-tip-lb' }, t('pace.tipDaily')),
+              React.createElement('span', { className: 'ocgu-pace-tip-val' }, '+' + dayRate.toFixed(1) + '%'))) : null),
+        sideCol),
+      React.createElement('div', {
+        className: 'ocgu-pace-axis',
+        style: sideCol ? { marginRight: (sideW || 30) + 'px' } : undefined
+      },
+        // 横轴只保留期初 / 期末两个日期（今天已有竖虚线标记，不再重复占位）
+        React.createElement('span', { className: 'ocgu-pace-date', style: { left: 0 } }, fmtMonthDay(pace.start, t)),
+        React.createElement('span', { className: 'ocgu-pace-date', style: { right: 0 } }, fmtMonthDay(pace.end, t))));
   }
 
   function UsageRow(props) {
@@ -2233,7 +2553,7 @@ function SettingsPage(props) {
     };
 
     // ---------- 配色（3.5.0）----------
-    // 三档颜色（正常 / 警告 / 危险）× 统一或分离两处 + 恢复默认 / 跟随宿主 + 三态实时预览
+    // 三档颜色（正常 / 警告 / 危险）× 统一或分离两处 + 恢复默认 / 跟随宿主 + 四态实时预览
     var toggleColorUnified = function () {
       updateNs(remote, viewRef.current, { colorUnified: !(value.colorUnified !== false) }, function (err, nv) {
         if (err || !nv) { say('colorUnified', t('msg.saveFailed', { err: err || t('msg.unknownErr') }), 'error'); return; }
@@ -2286,15 +2606,12 @@ function SettingsPage(props) {
         })]
       });
     };
-    // 三态实时预览：非极简三环 / 极简嵌套三环 / 条状进度（只用演示数据，不读真实用量）
-    // 三态实时预览：三种形态都**同时显示正常 / 警告 / 危险三档**，方便一眼核对配色。
+    // 四态实时预览：极简三环 / 非极简三环 / 条状进度 / 预计用量走势（只用演示数据，不读真实用量）。
+    // 四种形态都**同时显示正常 / 警告 / 危险三档**，方便一眼核对配色；预览里不显示金额（只示意颜色）。
     // 演示数据映射：5 小时 = 危险、本周 = 警告、本月 = 正常；数值跟随当前「已使用 / 剩余」口径
-    // （已使用 96 / 88 / 42，剩余 4 / 12 / 58），货币符号跟随「金额显示计价币种」设置。
+    // （已使用 96 / 88 / 42，剩余 4 / 12 / 58）。
     var colorPreview = function () {
       var pmode = modeOf(value);
-      var curMode = String(value.currencyMode || 'auto');
-      var cny = curMode === 'cny' || (curMode === 'auto' && isZhLocale(t));
-      var sym = cny ? '¥' : '$';
       var DEMO_USED = { rolling: 96, weekly: 88, monthly: 42 };
       var DEMO_LEVEL = { rolling: 'danger', weekly: 'warn', monthly: 'normal' };
       var pctOf = function (key) {
@@ -2344,13 +2661,37 @@ function SettingsPage(props) {
             style: { width: pctOf(w.key) + '%' }
           }));
       });
-      // 顺序：极简模式 → 非极简浮窗 → 条状进度；三个图各自包在等高 figure 里，水平中线严格对齐
+      // 走势图预览：固定演示几何（已用 48%、今天在 58%、预计 83%），只示意两段颜色
+      var cprevPace = function () {
+        var PH = 54, pxT = 58, pyU = 28.1, pyF = 9.2;
+        return React.createElement('div', { className: 'ocgu-cprev-pace' },
+          React.createElement('svg', {
+            viewBox: '0 0 100 ' + PH, preserveAspectRatio: 'none', 'aria-hidden': 'true', focusable: 'false'
+          },
+            React.createElement('polygon', {
+              className: 'ocgu-cprev-pace-area', 'data-kind': 'actual', points: '0,' + PH + ' ' + pxT + ',' + pyU + ' ' + pxT + ',' + PH
+            }),
+            React.createElement('polygon', {
+              className: 'ocgu-cprev-pace-area', 'data-kind': 'forecast', points: pxT + ',' + PH + ' ' + pxT + ',' + pyU + ' 100,' + pyF + ' 100,' + PH
+            }),
+            React.createElement('polyline', {
+              className: 'ocgu-cprev-pace-line', 'data-kind': 'actual', points: '0,' + PH + ' ' + pxT + ',' + pyU
+            }),
+            React.createElement('polyline', {
+              className: 'ocgu-cprev-pace-line', 'data-kind': 'forecast', style: { strokeDasharray: '2.07 2.07' },
+              points: pxT + ',' + pyU + ' 100,' + pyF
+            })),
+          React.createElement('span', { className: 'ocgu-cprev-pace-limit' }),
+          React.createElement('span', { className: 'ocgu-cprev-pace-dot', style: { left: pxT + '%', top: pyU + 'px' } }),
+          React.createElement('span', { className: 'ocgu-cprev-pace-dot', 'data-kind': 'forecast', style: { left: '100%', top: pyF + 'px' } }));
+      };
+      // 顺序：极简模式 → 非极简浮窗 → 条状进度 → 预计用量走势；四个图各自包在等高 figure 里，水平中线严格对齐。
+      // 预览不再显示金额（极简 / 非极简只留环），因此这里也不做人民币 / 美元换算。
       return React.createElement('div', { className: 'ocgu-cprev' },
         React.createElement('div', { key: 'minimal', className: 'ocgu-cprev-item' },
           React.createElement('div', { className: 'ocgu-cprev-figure' },
-            // 极简模式在真实浮窗里没有外框：余额 + 三环嵌套直接浮在胶囊里，这里同样不加卡片底 / 边框
+            // 极简模式在真实浮窗里没有外框：只有三环嵌套直接浮在胶囊里，这里同样不加卡片底 / 边框
             React.createElement('div', { className: 'ocgu-cprev-inline' },
-              React.createElement('span', { className: 'ocgu-cprev-bal' }, sym + '86'),
               React.createElement('svg', {
                 width: '30', height: '30', viewBox: '0 0 26 26', 'aria-hidden': 'true', focusable: 'false'
               }, nestKids))),
@@ -2358,8 +2699,6 @@ function SettingsPage(props) {
         React.createElement('div', { key: 'normal', className: 'ocgu-cprev-item' },
           React.createElement('div', { className: 'ocgu-cprev-figure' },
             React.createElement('div', { className: 'ocgu-cprev-card' },
-              React.createElement('span', { className: 'ocgu-cprev-bal' }, sym + '86.40'),
-              React.createElement('span', { className: 'ocgu-cprev-sep' }),
               miniRing('monthly'), miniRing('weekly'), miniRing('rolling'))),
           React.createElement('span', { className: 'ocgu-cprev-cap' }, t('color.preview.normal'))),
         React.createElement('div', { key: 'bar', className: 'ocgu-cprev-item' },
@@ -2367,7 +2706,10 @@ function SettingsPage(props) {
             React.createElement('div', {
               className: 'ocgu-cprev-card', style: { height: 'auto', padding: '8px 10px', borderRadius: '12px' }
             }, React.createElement('div', { className: 'ocgu-cprev-bars' }, bars))),
-          React.createElement('span', { className: 'ocgu-cprev-cap' }, t('color.preview.bar'))));
+          React.createElement('span', { className: 'ocgu-cprev-cap' }, t('color.preview.bar'))),
+        React.createElement('div', { key: 'pace', className: 'ocgu-cprev-item' },
+          React.createElement('div', { className: 'ocgu-cprev-figure' }, cprevPace()),
+          React.createElement('span', { className: 'ocgu-cprev-cap' }, t('color.preview.pace'))));
     };
 
     var refresh = function () {
@@ -2497,26 +2839,29 @@ function SettingsPage(props) {
         say('pillSrc', v === 'quota' ? t('msg.pillSrcQuota') : t('msg.pillSrcDeepseek'));
       });
     };
-    // 悬停浮层两段余额的显隐（都不选 = 只留进度条）
+    // 悬停浮层各段的显隐（全不勾选 = 只留进度条）
     var tipDataMsg = function (v) {
       var list = [];
       if (v.tipShowBalance !== false) list.push(t('tip.chkDeepseek'));
       if (v.tipShowQuota !== false) list.push(t('tip.chkQuota'));
+      if (v.tipShowPace !== false) list.push(t('tip.chkPace'));
       return list.length ? t('msg.tipData', { list: list.join(isZhLocale(t) ? '、' : ', ') }) : t('msg.tipDataNone');
     };
-    var toggleTipBalance = function () {
-      updateNs(remote, viewRef.current, { tipShowBalance: !(value.tipShowBalance !== false) }, function (err, nv) {
+    var saveTipData = function (patch) {
+      updateNs(remote, viewRef.current, patch, function (err, nv) {
         if (err || !nv) { say('tipData', t('msg.saveFailed', { err: err || t('msg.unknownErr') }), 'error'); return; }
         apply(nv);
         say('tipData', tipDataMsg(nsValue(nv)));
       });
     };
+    var toggleTipBalance = function () {
+      saveTipData({ tipShowBalance: !(value.tipShowBalance !== false) });
+    };
     var toggleTipQuota = function () {
-      updateNs(remote, viewRef.current, { tipShowQuota: !(value.tipShowQuota !== false) }, function (err, nv) {
-        if (err || !nv) { say('tipData', t('msg.saveFailed', { err: err || t('msg.unknownErr') }), 'error'); return; }
-        apply(nv);
-        say('tipData', tipDataMsg(nsValue(nv)));
-      });
+      saveTipData({ tipShowQuota: !(value.tipShowQuota !== false) });
+    };
+    var toggleTipPace = function () {
+      saveTipData({ tipShowPace: !(value.tipShowPace !== false) });
     };
 
     var resetPos = function () {
@@ -2544,6 +2889,7 @@ function SettingsPage(props) {
         pillBalanceSource: 'deepseek',
         tipShowBalance: true,
         tipShowQuota: true,
+        tipShowPace: true,
         widgetAnchorX: DEFAULT_ANCHORS.widgetAnchorX,
         widgetOffsetX: DEFAULT_ANCHORS.widgetOffsetX,
         widgetAnchorY: DEFAULT_ANCHORS.widgetAnchorY,
@@ -2567,7 +2913,7 @@ function SettingsPage(props) {
     // 只导出「界面设置」白名单，API Key（apiKey / deepseekApiKey）永远不导出，即便用户手动填过覆盖值。
     var EXPORT_KEYS = [
       'refreshMinutes', 'widgetVisible', 'widgetScale', 'sidebarEntry',
-      'showBalance', 'pillBalanceSource', 'tipShowBalance', 'tipShowQuota',
+      'showBalance', 'pillBalanceSource', 'tipShowBalance', 'tipShowQuota', 'tipShowPace',
       'percentMode', 'quotaRefModel', 'currencyMode', 'minimalMode',
       'ringOuter', 'ringMiddle', 'ringInner',
       'colorUnified', 'colorFollowHost',
@@ -2613,7 +2959,7 @@ function SettingsPage(props) {
     };
     var IMPORT_TYPES = {
       refreshMinutes: 'number', widgetVisible: 'boolean', widgetScale: 'number', sidebarEntry: 'boolean',
-      showBalance: 'boolean', pillBalanceSource: 'string', tipShowBalance: 'boolean', tipShowQuota: 'boolean',
+      showBalance: 'boolean', pillBalanceSource: 'string', tipShowBalance: 'boolean', tipShowQuota: 'boolean', tipShowPace: 'boolean',
       percentMode: 'string', quotaRefModel: 'string', currencyMode: 'string', minimalMode: 'boolean',
       ringOuter: 'string', ringMiddle: 'string', ringInner: 'string',
       colorUnified: 'boolean', colorFollowHost: 'boolean',
@@ -2711,6 +3057,7 @@ function SettingsPage(props) {
     // 样式表在 CSS 常量里（.ocgu-btn / .ocgu-input / .ocgu-msg / .ocgu-card / .ocgu-badge …），
     // 这里只留必须按状态现算的内联项；hover / active / focus 交给 CSS（内联样式写不了伪类）。
     var refreshMsg = msgOf('refresh');
+    var usagePace = paceOf(usage);
     var winList = WINDOWS.map(function (w) {
       return React.createElement(UsageRow, {
         key: w.key, label: t('float.groupTitle', { win: winName(w, t), mini: w.mini }), win: windowOf(usage, w.key), mode: mode, t: t
@@ -2756,6 +3103,7 @@ function SettingsPage(props) {
     var tipDataNames = [];
     if (value.tipShowBalance !== false) tipDataNames.push(t('pill.srcDeepseek'));
     if (value.tipShowQuota !== false) tipDataNames.push(t('pill.srcQuota'));
+    if (value.tipShowPace !== false) tipDataNames.push(t('tip.chkPace'));
     var tipDataSummary = tipDataNames.length ? tipDataNames.join(' + ') : t('tip.ddNone');
     // 浮窗左侧余额数据来源的二选一按钮（同一套小号分段样式）
     var pillSrcButton = function (v, key) {
@@ -3018,6 +3366,8 @@ function SettingsPage(props) {
         winList,
         React.createElement('div', { className: 'ocgu-hint', style: { marginTop: '6px' } },
           t(mode === 'used' ? 'settings.cardHintUsed' : 'settings.cardHint')),
+        // 三根进度条下方：本期订阅预计用量走势（续费日 + 当前已用外推，与官方控制台一致）
+        usagePace ? React.createElement(PaceChart, { key: 'pace', pace: usagePace, t: t }) : null,
         value.usageError ? React.createElement('div', { className: 'ocgu-err' }, value.usageError) : null),
       // 进度条下方第一行：手动刷新 + 更新时间（时间→提示的替换规则不变：3 秒后回落到「上次更新」）
       React.createElement('div', {
@@ -3115,7 +3465,7 @@ function SettingsPage(props) {
             }, pillSrcButton('deepseek', 'pill.srcDeepseek'), pillSrcButton('quota', 'pill.srcQuota'))
           ]
         }),
-        // ③ 鼠标悬停浮层的余额数据：下拉多选（两个都不勾则只留进度条），避免横向占位
+        // ③ 鼠标悬停浮层数据控制：下拉多选（全不勾则只留进度条），避免横向占位
         React.createElement(FieldRow, {
           title: t('field.tipBalanceSrc'),
           hint: t('field.tipBalanceSrc.hint'),
@@ -3142,7 +3492,15 @@ function SettingsPage(props) {
                     type: 'checkbox', checked: value.tipShowQuota !== false,
                     onChange: toggleTipQuota, 'aria-label': t('pill.srcQuota')
                   }),
-                  t('pill.srcQuota'))))
+                  t('pill.srcQuota')),
+                React.createElement('label', {
+                  className: 'ocgu-dd-item', title: t('tip.chkPace')
+                },
+                  React.createElement('input', {
+                    type: 'checkbox', checked: value.tipShowPace !== false,
+                    onChange: toggleTipPace, 'aria-label': t('tip.chkPace')
+                  }),
+                  t('tip.chkPace'))))
           ]
         }),
         React.createElement(FieldRow, {
@@ -3184,7 +3542,7 @@ function SettingsPage(props) {
           }, isDefaultPos ? t('btn.atDefault') : t('btn.resetPos'))]
         })) : null,
 
-      // ── 标签三：配色（统一配色 / 三档色点 / 恢复默认 · 跟随宿主 / 三态实时预览）──
+      // ── 标签三：配色（统一配色 / 三档色点 / 恢复默认 · 跟随宿主 / 四态实时预览）──
       tab === 'color' ? React.createElement('div', { key: 'color', className: 'ocgu-tabpane' },
         React.createElement(FieldRow, {
           key: 'colorUnified',
@@ -3588,3 +3946,4 @@ function SettingsPage(props) {
   module.exports = { name: 'opencode-go-usage', inject: ['slots', 'locale', 'remote', 'remote.settings'], apply: apply };
   return module.exports;
 }});
+

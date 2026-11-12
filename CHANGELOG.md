@@ -1,3 +1,39 @@
+## 3.6.0
+
+### 新功能
+- 「用量数据」页与悬停浮层新增**预计用量走势**图（参考官方控制台）：按「本期已用百分比 ÷ 已过时间比例」匀速外推，用量偏少的时候，显示最后一天预计用到的百分比，用量偏多的时候则显示预估耗尽额度的日期；
+- 走势图已知限制：目前取不到每日实际用量，所以实际用量段是一条直线，仅作参考；
+- 设置页的走势图支持**鼠标悬停在预计段按天查看**预估用量与日均增长；悬停浮层里的紧凑版不启用悬停（避免浮层套浮层）；
+- 续费日取自 OpenCode Go 接口的 `monthly.resetsAt`（即官方控制台「Renews …」那天），**无需手动填写**。
+- 「浮窗管理 → 鼠标悬停浮层数据控制」新增第三项**预计用量走势**，可单独开关。
+
+### 改进
+- 配色设置页「条状进度颜色」更名为**「条状进度与走势图颜色」**：正常档颜色同时作用于条状进度与走势图；
+- 配色预览新增走势图预览，并去掉预览中的金额显示；
+- 横轴只保留期初与续费日两个日期（今天仍以竖向虚线标记），避免日期拥挤。
+
+### 兼容性
+- 不改变任何既有默认值；新增字段 `tipShowPace` 默认开启，未改动设置的用户升级后即可在浮层看到走势图；
+- 与官方差异：走势图纵轴封顶 100%；预计用量超过 100% 时按“耗尽日期”展示，不出现无效的百分比。
+
+---
+
+### Features
+- New **projected usage chart** on the Usage data tab and in the hover popover (modelled on the official console): it extrapolates **used percentage ÷ elapsed fraction** at a constant rate — when usage is low it shows the percentage expected by the last day, and when usage is high it shows the estimated date the quota will run out;
+- Known limitation: daily actual usage is not available yet, so the real-usage segment is a straight line and is for reference only;
+- The settings-page chart supports **per-day hover on the projected segment** to view the estimated usage and daily average; the compact popover chart has no hover (so popovers never stack);
+- The renewal date comes from the OpenCode Go API's `monthly.resetsAt` (the console's “Renews …” date) — **nothing to type in**.
+- **Hover popover data control** gained a third option, **Projected usage**, switchable on its own.
+
+### Improvements
+- The colour-settings row “Bar progress colour” is renamed **“Bar progress & chart colour”**: the normal tier now paints both the bar progress and the chart;
+- The colour preview gained a chart preview and no longer shows amounts;
+- The X axis keeps only the cycle start and renewal dates (today is still marked by a dashed vertical line) so the dates never crowd.
+
+### Compatibility
+- No existing default changed; the new `tipShowPace` field defaults to on, so users who changed nothing see the chart in the popover after upgrading;
+- Difference from the official console: the chart's Y axis is capped at 100%; when the projection exceeds 100% it shows the “exhaustion date” instead of an impossible percentage.
+
 ## 3.5.0
 
 ### 新功能

@@ -101,6 +101,7 @@ return z.object({
   // 鼠标悬停浮层里两段余额各自是否显示（都不选则浮层只留进度条）
   tipShowBalance: z.boolean().default(true).volatile(),
   tipShowQuota: z.boolean().default(true).volatile(),
+  tipShowPace: z.boolean().default(true).volatile(),
   // 用量进度口径：used = 显示已使用（默认），left = 显示剩余
   percentMode: z.string().default("used").volatile(),
   // 配额参考模型（模型 ID）：用「月度已用百分比 × 该模型的 Go 档月度配额」折算金额
