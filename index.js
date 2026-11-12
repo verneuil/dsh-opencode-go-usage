@@ -114,6 +114,23 @@ return z.object({
   ringOuter: z.string().default("monthly").volatile(),
   ringMiddle: z.string().default("weekly").volatile(),
   ringInner: z.string().default("rolling").volatile(),
+  // 配色（3.5.0）：每一处进度条都有「正常 / 警告 / 危险」三档颜色。
+  // 统一配色开（默认）= 一整套三档颜色同时覆盖「环状进度」（浮窗三环，含极简嵌套）与
+  // 「条状进度」（悬停浮层 + 设置页「用量数据」的三根条）；关闭后两处各自独立、各有三档。
+  // 空字符串 = 该档的主题默认色（正常 = 主题成功绿；警告 = 橙；危险 = 红）。
+  // colorFollowHost = 正常档改用宿主强调色（--dsw-alias-brand-primary，随宿主主题实时变化），
+  // 警告 / 危险保持不变；用户一旦手动给正常档选色，客户端会自动取消跟随。
+  colorUnified: z.boolean().default(true).volatile(),
+  colorFollowHost: z.boolean().default(false).volatile(),
+  colorAll: z.string().default("").volatile(),
+  colorAllWarn: z.string().default("").volatile(),
+  colorAllDanger: z.string().default("").volatile(),
+  colorRing: z.string().default("").volatile(),
+  colorRingWarn: z.string().default("").volatile(),
+  colorRingDanger: z.string().default("").volatile(),
+  colorBar: z.string().default("").volatile(),
+  colorBarWarn: z.string().default("").volatile(),
+  colorBarDanger: z.string().default("").volatile(),
   // 浮窗锚定（「最近锚线」模型）：拖动松手时只记「锚线 + 偏移」，窗口或输入框
   // 尺寸变化时按锚线重算像素位置，而不是记住绝对坐标。
   // 默认 = 窗口左下角（贴左边 7px、距底 9.2px）—— 「重置位置」按钮回到这里。

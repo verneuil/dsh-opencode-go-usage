@@ -114,9 +114,9 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
     // 窗口名与倒计时在同一行 100% 宽里左右对齐，于是与进度条两端严格齐平。
     '.ocgu-tip-line{position:relative;display:flex;align-items:center;width:100%;height:18px}' +
     '.ocgu-tip-track{position:relative;flex:none;width:100%;height:12px;border-radius:999px;background:color-mix(in srgb,var(--dsw-alias-label-tertiary) 22%,transparent);overflow:hidden}' +
-    '.ocgu-tip-fill{position:absolute;left:0;top:0;bottom:0;overflow:hidden;border-radius:999px;background:var(--dsw-alias-state-success-primary);transition:width .45s cubic-bezier(.22,.9,.28,1)}' +
-    '.ocgu-tip-fill[data-level="warn"]{background:var(--dsw-alias-state-warn-primary)}' +
-    '.ocgu-tip-fill[data-level="danger"]{background:var(--dsw-alias-state-error-primary)}' +
+    '.ocgu-tip-fill{position:absolute;left:0;top:0;bottom:0;overflow:hidden;border-radius:999px;background:var(--ocgu-c-bar,var(--dsw-alias-state-success-primary));transition:width .45s cubic-bezier(.22,.9,.28,1)}' +
+    '.ocgu-tip-fill[data-level="warn"]{background:var(--ocgu-c-bar-warn,var(--dsw-alias-state-warn-primary))}' +
+    '.ocgu-tip-fill[data-level="danger"]{background:var(--ocgu-c-bar-danger,var(--dsw-alias-state-error-primary))}' +
     '.ocgu-tip-fill[data-level="empty"]{background:var(--dsw-alias-label-tertiary)}' +
     // 流动高光：一点点动效（系统开了「减少动态效果」时自动关闭）
     // 光带宽度按「整条轨道」算（--ocgu-pct 是本条百分比），故三条扫过的距离与速度一致；
@@ -135,9 +135,9 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
     '.ocgu-nest{position:relative;flex:none;display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;animation:ocgu-swap .3s cubic-bezier(.22,.9,.28,1)}' +
     '.ocgu-nest svg{position:absolute;inset:0;width:26px;height:26px;overflow:visible}' +
     '.ocgu-nest-track{fill:none;stroke-width:2.6;stroke:color-mix(in srgb,var(--dsw-alias-label-tertiary) 26%,transparent)}' +
-    '.ocgu-nest-arc{fill:none;stroke-width:2.6;stroke-linecap:round;stroke:var(--dsw-alias-state-success-primary);transition:stroke-dashoffset .35s cubic-bezier(.22,.9,.28,1),stroke .2s ease}' +
-    '.ocgu-nest-arc[data-level="warn"]{stroke:var(--dsw-alias-state-warn-primary)}' +
-    '.ocgu-nest-arc[data-level="danger"]{stroke:var(--dsw-alias-state-error-primary)}' +
+    '.ocgu-nest-arc{fill:none;stroke-width:2.6;stroke-linecap:round;stroke:var(--ocgu-c-ring,var(--dsw-alias-state-success-primary));transition:stroke-dashoffset .35s cubic-bezier(.22,.9,.28,1),stroke .2s ease}' +
+    '.ocgu-nest-arc[data-level="warn"]{stroke:var(--ocgu-c-ring-warn,var(--dsw-alias-state-warn-primary))}' +
+    '.ocgu-nest-arc[data-level="danger"]{stroke:var(--ocgu-c-ring-danger,var(--dsw-alias-state-error-primary))}' +
     '.ocgu-nest-arc[data-level="empty"]{stroke:var(--dsw-alias-label-tertiary)}' +
     '.ocgu-rmap-wrap{display:flex;align-items:center;gap:28px;flex-wrap:wrap}' +
     '.ocgu-rmap-segs{display:flex;flex-direction:column;gap:10px}' +
@@ -185,14 +185,47 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
     '.ocgu-mini-ring-val{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:8.5px;line-height:1;font-weight:600;font-variant-numeric:tabular-nums;letter-spacing:-.3px;white-space:nowrap;color:var(--ocgu-ring);animation:ocgu-num .28s ease}' +
     // 用量分级配色（红绿灯，一色两用）：剩余 >20% 绿、<=20% 琥珀、<=5% 红。
     // 剩余弧 = 该色满不透明；底盘（已消耗部分）= 同色 32% 透明。
-    '.ocgu-mini-ring[data-level="ok"]{--ocgu-ring:var(--dsw-alias-state-success-primary)}' +
-    '.ocgu-mini-ring[data-level="warn"]{--ocgu-ring:var(--dsw-alias-state-warn-primary)}' +
-    '.ocgu-mini-ring[data-level="danger"]{--ocgu-ring:var(--dsw-alias-state-error-primary)}' +
+    '.ocgu-mini-ring[data-level="ok"]{--ocgu-ring:var(--ocgu-c-ring,var(--dsw-alias-state-success-primary))}' +
+    '.ocgu-mini-ring[data-level="warn"]{--ocgu-ring:var(--ocgu-c-ring-warn,var(--dsw-alias-state-warn-primary))}' +
+    '.ocgu-mini-ring[data-level="danger"]{--ocgu-ring:var(--ocgu-c-ring-danger,var(--dsw-alias-state-error-primary))}' +
     '.ocgu-mini-ring[data-level="empty"]{--ocgu-ring:color-mix(in srgb,var(--dsw-alias-label-secondary) 78%,transparent)}' +
     // 设置页的横向进度条继续用 .ocgu-fill（同一套分级配色）
-    '.ocgu-fill[data-level="ok"]{background:var(--dsw-alias-state-success-primary)}' +
-    '.ocgu-fill[data-level="warn"]{background:var(--dsw-alias-state-warn-primary)}' +
-    '.ocgu-fill[data-level="danger"]{background:var(--dsw-alias-state-error-primary)}' +
+    '.ocgu-fill[data-level="ok"]{background:var(--ocgu-c-bar,var(--dsw-alias-state-success-primary))}' +
+    '.ocgu-fill[data-level="warn"]{background:var(--ocgu-c-bar-warn,var(--dsw-alias-state-warn-primary))}' +
+    '.ocgu-fill[data-level="danger"]{background:var(--ocgu-c-bar-danger,var(--dsw-alias-state-error-primary))}' +
+    // ---------- 配色（3.5.0）----------
+    // 选择器：一排圆点（正常 / 警告 / 危险），点圆点直接打开浏览器原生取色面板，改色即时生效；
+    // 预览区三种形态共用同一组 CSS 变量（--ocgu-c-ring* / --ocgu-c-bar*），改色即时可见。
+    '.ocgu-color-dots{display:flex;align-items:flex-start;gap:18px}' +
+    '.ocgu-color-dotitem{display:flex;flex-direction:column;align-items:center;gap:6px}' +
+    '.ocgu-color-chip{box-sizing:border-box;position:relative;display:inline-flex;width:24px;height:24px;flex:none;border-radius:50%;corner-shape:round;border:1px solid var(--dsw-alias-border-l2);cursor:pointer;overflow:hidden}' +
+    '.ocgu-color-chip:focus-within{outline:var(--dsw-focus-ring-width,2px) solid var(--dsw-focus-ring-color,var(--dsw-alias-state-business-primary));outline-offset:2px}' +
+    // 原生取色器铺满整个圆点且完全透明：点圆点就等于点它，弹出浏览器自带的取色面板
+    '.ocgu-color-native{position:absolute;inset:0;width:100%;height:100%;padding:0;border:0;opacity:0;cursor:pointer}' +
+    '.ocgu-color-cap{font-size:11px;line-height:14px;color:var(--dsw-alias-label-tertiary);white-space:nowrap}' +
+    '.ocgu-color-cap[data-on="1"]{color:var(--dsw-alias-label-secondary)}' +
+    '.ocgu-cprev{display:flex;align-items:flex-start;gap:26px;flex-wrap:wrap}' +
+    '.ocgu-cprev-item{display:flex;flex-direction:column;align-items:center;gap:7px}' +
+    // 等高容器：三种形态的图形在 64px 内垂直居中，于是三张图的水平中线严格一致
+    '.ocgu-cprev-figure{display:flex;align-items:center;justify-content:center;height:64px}' +
+    '.ocgu-cprev-inline{display:flex;align-items:center;gap:7px;height:30px}' +
+    '.ocgu-cprev-cap{font-size:11px;color:var(--dsw-alias-label-tertiary)}' +
+    '.ocgu-cprev-card{display:flex;align-items:center;gap:7px;height:30px;padding:0 10px;border-radius:999px;background:var(--dsw-alias-bg-layer-2);border:1px solid var(--dsw-alias-border-l1)}' +
+    '.ocgu-cprev-bal{font-size:11px;font-weight:600;color:var(--dsw-alias-label-primary);font-variant-numeric:tabular-nums}' +
+    '.ocgu-cprev-sep{width:1px;height:14px;background:var(--dsw-alias-border-l1)}' +
+    '.ocgu-cprev-bars{display:flex;flex-direction:column;gap:6px;width:168px}' +
+    '.ocgu-cprev-track{height:8px;border-radius:999px;background:color-mix(in srgb,var(--dsw-alias-label-tertiary) 22%,transparent);overflow:hidden}' +
+    '.ocgu-cprev-fill{height:100%;border-radius:999px;background:var(--ocgu-c-bar,var(--dsw-alias-state-success-primary))}' +
+    '.ocgu-cprev-ring{fill:none;stroke:var(--ocgu-c-ring,var(--dsw-alias-state-success-primary));stroke-linecap:round}' +
+    '.ocgu-cprev-ring-track{fill:none;stroke:color-mix(in srgb,var(--dsw-alias-label-tertiary) 26%,transparent)}' +
+    '.ocgu-cprev-num{font-size:8px;font-weight:600;fill:var(--ocgu-c-ring,var(--dsw-alias-state-success-primary))}' +
+    // 预览里三档颜色与实际一致：正常 / 警告 / 危险
+    '.ocgu-cprev-fill[data-level="warn"]{background:var(--ocgu-c-bar-warn,var(--dsw-alias-state-warn-primary))}' +
+    '.ocgu-cprev-fill[data-level="danger"]{background:var(--ocgu-c-bar-danger,var(--dsw-alias-state-error-primary))}' +
+    '.ocgu-cprev-ring[data-level="warn"]{stroke:var(--ocgu-c-ring-warn,var(--dsw-alias-state-warn-primary))}' +
+    '.ocgu-cprev-ring[data-level="danger"]{stroke:var(--ocgu-c-ring-danger,var(--dsw-alias-state-error-primary))}' +
+    '.ocgu-cprev-num[data-level="warn"]{fill:var(--ocgu-c-ring-warn,var(--dsw-alias-state-warn-primary))}' +
+    '.ocgu-cprev-num[data-level="danger"]{fill:var(--ocgu-c-ring-danger,var(--dsw-alias-state-error-primary))}' +
     // ---------- 设置页：用量行 ----------
     '.ocgu-row{display:flex;flex-direction:column;gap:6px}' +
     '.ocgu-row-top{display:flex;align-items:baseline;gap:10px}' +
@@ -202,9 +235,9 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
     // 进度槽 6 → 8px：槽底比纯 border-l1 更有「槽」感，又不抢眼
     '.ocgu-row-track{position:relative;height:8px;border-radius:999px;background:color-mix(in srgb,var(--dsw-alias-border-l1) 82%,var(--dsw-alias-bg-base));overflow:hidden}' +
     // 设置页进度条：与浮层同款（绿色填充 + 常驻光带，一直循环）
-    '.ocgu-row-fill{position:absolute;left:0;top:0;bottom:0;overflow:hidden;border-radius:999px;background:var(--dsw-alias-state-success-primary);transition:width .45s cubic-bezier(.22,.9,.28,1)}' +
-    '.ocgu-row-fill[data-level="warn"]{background:var(--dsw-alias-state-warn-primary)}' +
-    '.ocgu-row-fill[data-level="danger"]{background:var(--dsw-alias-state-error-primary)}' +
+    '.ocgu-row-fill{position:absolute;left:0;top:0;bottom:0;overflow:hidden;border-radius:999px;background:var(--ocgu-c-bar,var(--dsw-alias-state-success-primary));transition:width .45s cubic-bezier(.22,.9,.28,1)}' +
+    '.ocgu-row-fill[data-level="warn"]{background:var(--ocgu-c-bar-warn,var(--dsw-alias-state-warn-primary))}' +
+    '.ocgu-row-fill[data-level="danger"]{background:var(--ocgu-c-bar-danger,var(--dsw-alias-state-error-primary))}' +
     '.ocgu-row-fill[data-level="empty"]{background:var(--dsw-alias-label-tertiary)}' +
     '.ocgu-row-fill::after{content:"";position:absolute;top:0;bottom:0;left:0;width:calc(100% * 100 / var(--ocgu-pct,100));background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--dsw-alias-label-primary-foreground) 40%,transparent),transparent);transform:translateX(-100%);animation:ocgu-shine 2.8s ease-in-out infinite}' +
     // 倒计时在标题行、百分比左侧：不换行、随标签挤压让位
@@ -812,6 +845,7 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
       'settings.intro': 'OpenCode Go 的 5 小时 / 本周 / 本月用量。点击浮窗即刷新，拖动可移动位置。',
       'tab.usage': '用量数据',
       'tab.widget': '浮窗管理',
+      'tab.color': '配色设置',
       'tab.general': '通用设置',
       'sec.apiKey': 'API Key',
       'sec.settings': '设置',
@@ -855,6 +889,47 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
       'ring.w.rolling': '5 小时',
       'ring.w.weekly': '本周',
       'ring.w.monthly': '本月',
+      // 配色（3.5.0）
+      'sec.color': '配色',
+      'field.colorUnified': '统一配色',
+      'field.colorUnified.hint': '开启时用一个颜色同时覆盖环状与条状进度；关闭后可分别设置',
+      'field.colorAll': '自定义颜色',
+      'field.colorRing': '环状进度颜色',
+      'field.colorBar': '条状进度颜色',
+      'field.colorReset': '恢复默认配色',
+      'field.colorReset.hint': '把三个位置的颜色全部恢复为默认绿',
+      'btn.colorReset': '恢复默认',
+      'field.colorPreview': '配色预览',
+      'field.colorPreview.hint': '下面三种形态随上面的选择即时变化',
+      'color.rowHint': '自定义色只替换正常档；越过阈值仍按橙 / 红提示',
+      'color.preview.normal': '非极简浮窗',
+      'color.preview.minimal': '极简模式',
+      'color.preview.bar': '条状进度',
+      'color.defaultValue': '默认绿',
+      'color.useDefault': '用默认绿',
+      'color.invalid': '颜色格式无效：支持 #RGB / #RRGGBB / rgb() / hsl()',
+      'color.placeholder': '#22C55E 或 rgb(34,197,94) 或 hsl(142,71%,45%)',
+      'color.open': '选择颜色',
+      'color.presets': '常用颜色',
+      'color.native': '打开系统取色器',
+      'color.input': '颜色值输入',
+      'color.hint': '支持 HEX / rgb() / hsl()；点色卡或系统取色器都能选',
+      'msg.colorSet': '配色已更新',
+      'msg.colorDefault': '已恢复该位置的默认绿',
+      'msg.colorReset': '配色已全部恢复默认',
+      'msg.colorUnifiedOn': '已开启统一配色',
+      'msg.colorUnifiedOff': '已关闭统一配色（可分别设置两处颜色）',
+      'color.normal': '正常',
+      'color.warn': '警告',
+      'color.danger': '危险',
+      'field.colorDots': '进度颜色',
+      'field.colorDots.hint': '三档颜色：正常 / 警告 / 危险；点色点打开取色面板',
+      'field.colorOps': '配色操作',
+      'field.colorOps.hint': '恢复默认，或让正常档跟随宿主主题色（警告 / 危险保持默认橙红）',
+      'btn.followHost': '跟随宿主配色',
+      'btn.following': '已跟随宿主',
+      'msg.colorFollowOn': '正常档已跟随宿主主题色',
+      'msg.colorFollowOff': '已取消跟随宿主主题色',
       'pill.srcDeepseek': 'DS余额',
       'pill.srcQuota': 'OCG配额剩余',
       'field.tipBalanceSrc': '鼠标悬停浮层余额数据',
@@ -993,6 +1068,7 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
       'settings.intro': 'OpenCode Go usage for the Rolling, weekly and monthly windows. Click the pill to refresh; drag it to move.',
       'tab.usage': 'Usage data',
       'tab.widget': 'Floating pill',
+      'tab.color': 'Colour settings',
       'tab.general': 'General',
       'sec.apiKey': 'API Key',
       'sec.settings': 'Settings',
@@ -1037,6 +1113,47 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
       'ring.w.rolling': '5 hours',
       'ring.w.weekly': 'Weekly',
       'ring.w.monthly': 'Monthly',
+      // Colours (3.5.0)
+      'sec.color': 'Colours',
+      'field.colorUnified': 'Unified colour',
+      'field.colorUnified.hint': 'One colour overrides both ring and bar progress; turn it off to set them separately',
+      'field.colorAll': 'Custom colour',
+      'field.colorRing': 'Ring progress colour',
+      'field.colorBar': 'Bar progress colour',
+      'field.colorReset': 'Restore default colours',
+      'field.colorReset.hint': 'Reset all three positions back to the default green',
+      'btn.colorReset': 'Restore',
+      'field.colorPreview': 'Colour preview',
+      'field.colorPreview.hint': 'The three states below update live with your choice',
+      'color.rowHint': 'Custom colours only replace the normal tier; thresholds still turn amber / red',
+      'color.preview.normal': 'Regular pill',
+      'color.preview.minimal': 'Minimal mode',
+      'color.preview.bar': 'Bar progress',
+      'color.defaultValue': 'Default green',
+      'color.useDefault': 'Use default green',
+      'color.invalid': 'Invalid colour: use #RGB / #RRGGBB / rgb() / hsl()',
+      'color.placeholder': '#22C55E or rgb(34,197,94) or hsl(142,71%,45%)',
+      'color.open': 'Choose a colour',
+      'color.presets': 'Common colours',
+      'color.native': 'Open the system colour picker',
+      'color.input': 'Colour value',
+      'color.hint': 'HEX / rgb() / hsl() all work; pick a swatch or use the system picker',
+      'msg.colorSet': 'Colour updated',
+      'msg.colorDefault': 'This position is back to the default green',
+      'msg.colorReset': 'All colours restored to default',
+      'msg.colorUnifiedOn': 'Unified colour on',
+      'msg.colorUnifiedOff': 'Unified colour off — ring and bar can now differ',
+      'color.normal': 'Normal',
+      'color.warn': 'Warning',
+      'color.danger': 'Danger',
+      'field.colorDots': 'Progress colours',
+      'field.colorDots.hint': 'Three tiers: normal / warning / danger — click a dot to open the picker',
+      'field.colorOps': 'Colour actions',
+      'field.colorOps.hint': 'Restore defaults, or let the normal tier follow the host accent (warning / danger keep their default amber / red)',
+      'btn.followHost': 'Follow host colours',
+      'btn.following': 'Following host',
+      'msg.colorFollowOn': 'Normal tier now follows the host accent',
+      'msg.colorFollowOff': 'Stopped following the host accent',
       'pill.srcDeepseek': 'DS balance',
       'pill.srcQuota': 'OCG quota left',
       'field.tipBalanceSrc': 'Hover popover balance data',
@@ -1183,6 +1300,176 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
   // 单行胶囊：点击 = 原位刷新 + 左侧滑出状态提示，出结果后再停留 3 秒收回。
   // 自动刷新同款反馈：宿主开始拉取前先写 refreshTick，客户端据此点亮「更新中」流光，
   // 出结果后转全绿/全红并 3 秒淡出（最长 25 秒兜底收回）—— 每次更新都看得见。
+  // ---------- 配色（3.5.0）----------
+  // 三个颜色槽：all（统一配色）/ ring（环状进度）/ bar（条状进度）。
+  // 每一处进度条都有三档颜色：正常 / 警告 / 危险；空字符串 = 该档主题默认色。
+  // 统一配色开启时环 / 条共用 colorAll* 那一套；跟随宿主只影响正常档（改用宿主强调色）。
+  var COLOR_SLOTS = { all: 'colorAll', ring: 'colorRing', bar: 'colorBar' };
+  var COLOR_KIND_SUFFIX = { normal: '', warn: 'Warn', danger: 'Danger' };
+  var DEFAULT_SUCCESS = 'var(--dsw-alias-state-success-primary)';
+  var DEFAULT_WARN = 'var(--dsw-alias-state-warn-primary)';
+  var DEFAULT_DANGER = 'var(--dsw-alias-state-error-primary)';
+  var HOST_ACCENT = 'var(--dsw-alias-brand-primary)';
+
+  // 字段名 = 槽位字段 + 档位后缀（colorRing + Warn → colorRingWarn）
+  function colorField(slot, kind) {
+    return (COLOR_SLOTS[slot] || 'colorAll') + (COLOR_KIND_SUFFIX[kind] || '');
+  }
+
+  // 把用户输入的颜色规范化成可安全写进 CSS 的字符串；非法返回 ''。
+  // 支持：#RGB / #RRGGBB / #RRGGBBAA / rgb() / rgba() / hsl() / hsla()
+  function normalizeColor(raw) {
+    if (typeof raw !== 'string') return '';
+    var s = raw.trim();
+    if (!s || s.length > 64) return '';
+    var m = /^#([0-9a-f]{3})$/i.exec(s);
+    if (m) return ('#' + m[1][0] + m[1][0] + m[1][1] + m[1][1] + m[1][2] + m[1][2]).toUpperCase();
+    if (/^#([0-9a-f]{6}|[0-9a-f]{8})$/i.test(s)) return s.toUpperCase();
+    m = /^rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*(?:,\s*(0|1|0?\.\d+)\s*)?\)$/i.exec(s);
+    if (m) {
+      var rgb = [Number(m[1]), Number(m[2]), Number(m[3])];
+      for (var i = 0; i < 3; i++) if (!(rgb[i] >= 0 && rgb[i] <= 255)) return '';
+      var a = m[4] === undefined ? 1 : Number(m[4]);
+      if (!(a >= 0 && a <= 1)) return '';
+      return 'rgba(' + rgb[0] + ', ' + rgb[1] + ', ' + rgb[2] + ', ' + a + ')';
+    }
+    m = /^hsla?\(\s*(-?\d{1,3}(?:\.\d+)?)\s*,\s*(\d{1,3}(?:\.\d+)?)%\s*,\s*(\d{1,3}(?:\.\d+)?)%\s*(?:,\s*(0|1|0?\.\d+)\s*)?\)$/i.exec(s);
+    if (m) {
+      var hh = ((Number(m[1]) % 360) + 360) % 360;
+      var ss = Number(m[2]), ll = Number(m[3]);
+      if (!(ss >= 0 && ss <= 100 && ll >= 0 && ll <= 100)) return '';
+      var aa = m[4] === undefined ? 1 : Number(m[4]);
+      if (!(aa >= 0 && aa <= 1)) return '';
+      return 'hsla(' + hh + ', ' + ss + '%, ' + ll + '%, ' + aa + ')';
+    }
+    return '';
+  }
+
+  // 把任意支持的颜色折算成 #rrggbb（原生取色器只认这种格式）；无法折算返回 ''
+  function hex6Of(raw) {
+    var s = normalizeColor(raw);
+    if (!s) return '';
+    var m = /^#([0-9a-f]{6})$/i.exec(s);
+    if (m) return '#' + m[1].toLowerCase();
+    m = /^#([0-9a-f]{8})$/i.exec(s);
+    if (m) return '#' + m[1].slice(0, 6).toLowerCase();
+    m = /^rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})/i.exec(s);
+    if (!m) return '';
+    var to2 = function (n) {
+      var h = Number(n).toString(16);
+      return h.length < 2 ? '0' + h : h;
+    };
+    return '#' + to2(m[1]) + to2(m[2]) + to2(m[3]);
+  }
+
+  // 取某个槽某个档位当前配置的自定义颜色（'' = 用该档默认色）
+  // · 统一配色开启时环 / 条共用 colorAll* 那一套
+  // · 跟随宿主只影响「正常」档，且由 CSS 变量表达（不写进自定义色）
+  function colorOf(value, slot, kind) {
+    if (!value) return '';
+    kind = kind || 'normal';
+    if (kind === 'normal') {
+      if (value.colorFollowHost === true) return '';
+      if (value.colorUnified !== false) return normalizeColor(value.colorAll);
+      return normalizeColor(slot === 'ring' ? value.colorRing : value.colorBar);
+    }
+    if (value.colorUnified !== false) return normalizeColor(value[colorField('all', kind)]);
+    return normalizeColor(value[colorField(slot === 'ring' ? 'ring' : 'bar', kind)]);
+  }
+
+  // 把三档配色折算成一组 CSS 变量，写到**各组件根元素**的 inline style 上。
+  // 注意：不能写 :root —— 宿主主题令牌可能定义在 body / #root 等更内层作用域，
+  // 在 :root 上保存 var(--dsw-alias-…) 引用会解析失败（"跟随宿主不生效、仍是绿色"就是这个原因）；
+  // 写在组件根上时 var 引用在宿主令牌作用域内解析，且宿主换主题时自动跟着变。
+  function colorVarStyle(value) {
+    var follow = !!value && value.colorFollowHost === true;
+    var normalFallback = follow ? HOST_ACCENT : DEFAULT_SUCCESS;
+    return {
+      '--ocgu-c-ring': colorOf(value, 'ring', 'normal') || normalFallback,
+      '--ocgu-c-bar': colorOf(value, 'bar', 'normal') || normalFallback,
+      '--ocgu-c-ring-warn': colorOf(value, 'ring', 'warn') || DEFAULT_WARN,
+      '--ocgu-c-ring-danger': colorOf(value, 'ring', 'danger') || DEFAULT_DANGER,
+      '--ocgu-c-bar-warn': colorOf(value, 'bar', 'warn') || DEFAULT_WARN,
+      '--ocgu-c-bar-danger': colorOf(value, 'bar', 'danger') || DEFAULT_DANGER
+    };
+  }
+
+  // 单个色点：透明原生取色器盖在圆点上，点一下弹系统取色面板（取色笔 / RGB·HSL·HEX 多格式输入）；
+  // 拖动即生效（150ms 防抖），关掉面板（失焦）立刻落盘；没有额外的「保存」按钮。
+  function ColorDot(props) {
+    var timerRef = React.useRef(null);
+    var pendingRef = React.useRef(null);
+    React.useEffect(function () {
+      return function () { if (timerRef.current) clearTimeout(timerRef.current); };
+    }, []);
+    var flush = function () {
+      if (timerRef.current) { clearTimeout(timerRef.current); timerRef.current = null; }
+      var hex = pendingRef.current;
+      pendingRef.current = null;
+      if (hex && props.onPick) props.onPick(hex);
+    };
+    var queue = function (raw) {
+      var norm = normalizeColor(raw);
+      if (!norm) return;
+      pendingRef.current = norm;
+      if (props.onPreview) props.onPreview(norm); // 拖动过程中先实时改 CSS 变量，立刻可见
+      if (timerRef.current) clearTimeout(timerRef.current);
+      timerRef.current = setTimeout(flush, 150);
+    };
+    return React.createElement('div', { className: 'ocgu-color-dotitem' },
+      React.createElement('label', {
+        className: 'ocgu-color-chip',
+        style: { background: props.display },
+        title: props.title || props.label
+      },
+        React.createElement('input', {
+          type: 'color', className: 'ocgu-color-native', value: props.pickerValue,
+          'aria-label': props.label,
+          onChange: function (e) { queue(e.target.value); },
+          onBlur: flush
+        })),
+      React.createElement('span', {
+        className: 'ocgu-color-cap', 'data-on': props.custom ? '1' : '0'
+      }, props.label));
+  }
+
+  // 一行三档色点：正常 / 警告 / 危险（点色点即弹原生取色器）
+  function ColorControl(props) {
+    var t = props.t || tZh;
+    var slot = props.slot || 'all';
+    var value = props.value || {};
+    var follow = value.colorFollowHost === true;
+    var normalRaw = colorOf(value, slot, 'normal');
+    var warnRaw = colorOf(value, slot, 'warn');
+    var dangerRaw = colorOf(value, slot, 'danger');
+    var dots = [
+      {
+        kind: 'normal', label: t('color.normal'), custom: !!normalRaw,
+        display: follow ? HOST_ACCENT : (normalRaw || DEFAULT_SUCCESS),
+        pickerValue: hex6Of(normalRaw) || '#22C55E'
+      },
+      {
+        kind: 'warn', label: t('color.warn'), custom: !!warnRaw,
+        display: warnRaw || DEFAULT_WARN,
+        pickerValue: hex6Of(warnRaw) || '#F59E0B'
+      },
+      {
+        kind: 'danger', label: t('color.danger'), custom: !!dangerRaw,
+        display: dangerRaw || DEFAULT_DANGER,
+        pickerValue: hex6Of(dangerRaw) || '#EF4444'
+      }
+    ];
+    return React.createElement('div', { className: 'ocgu-color-dots' },
+      dots.map(function (d) {
+        return React.createElement(ColorDot, {
+          key: d.kind, label: d.label, display: d.display, pickerValue: d.pickerValue,
+          custom: d.custom, title: d.label + ' · ' + d.display,
+          onPick: function (hex) { if (props.onChange) props.onChange(d.kind, hex); },
+          onPreview: function (hex) { if (props.onPreview) props.onPreview(d.kind, hex); }
+        });
+      }));
+  }
+
   function UsageFloat(props) {
     var t = props.t || tZh;
     var remote = props.remote;
@@ -1682,11 +1969,13 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
     }
 
     var pillScale = scaleOf(value);
+    var floatStyle = colorVarStyle(value);
+    if (pillScale !== 1) { floatStyle.transform = 'scale(' + pillScale + ')'; floatStyle.transformOrigin = 'top left'; }
     return React.createElement('div', {
       ref: rootRef,
       className: 'ocgu-float',
-      // 整体同比例缩放（含余额、三环与悬停浮层）；原点固定左上，位置换算已按视觉尺寸处理
-      style: pillScale === 1 ? undefined : { transform: 'scale(' + pillScale + ')', transformOrigin: 'top left' },
+      // 配色变量写在本根节点上（浮窗 + 悬停浮层共用），并叠整体等比缩放（原点固定左上）
+      style: floatStyle,
       'data-scale': String(pillScale),
       'data-state': refreshState,
       'data-warn': warn ? 'true' : 'false',
@@ -1943,6 +2232,144 @@ function SettingsPage(props) {
       if (v.refreshMinutes) setRefreshDraft(String(v.refreshMinutes));
     };
 
+    // ---------- 配色（3.5.0）----------
+    // 三档颜色（正常 / 警告 / 危险）× 统一或分离两处 + 恢复默认 / 跟随宿主 + 三态实时预览
+    var toggleColorUnified = function () {
+      updateNs(remote, viewRef.current, { colorUnified: !(value.colorUnified !== false) }, function (err, nv) {
+        if (err || !nv) { say('colorUnified', t('msg.saveFailed', { err: err || t('msg.unknownErr') }), 'error'); return; }
+        apply(nv);
+        say('colorUnified', nsValue(nv).colorUnified !== false ? t('msg.colorUnifiedOn') : t('msg.colorUnifiedOff'));
+      });
+    };
+    // 写入某一槽某一档颜色；手动改「正常」档时自动取消「跟随宿主」（用户自定义优先）
+    var commitColor = function (slot, kind, color) {
+      var patch = {};
+      patch[colorField(slot, kind)] = color;
+      if (kind === 'normal' && value.colorFollowHost === true) patch.colorFollowHost = false;
+      updateNs(remote, viewRef.current, patch, function (err, nv) {
+        if (err || !nv) { say('color', t('msg.saveFailed', { err: err || t('msg.unknownErr') }), 'error'); return; }
+        apply(nv);
+        say('color', t('msg.colorSet'));
+      });
+    };
+    // 恢复默认配色：三档 × 两处全部清空（回到主题默认绿 / 橙 / 红），并取消跟随宿主
+    var resetColor = function () {
+      var patch = { colorFollowHost: false };
+      var keys = ['colorAll', 'colorAllWarn', 'colorAllDanger', 'colorRing', 'colorRingWarn', 'colorRingDanger', 'colorBar', 'colorBarWarn', 'colorBarDanger'];
+      for (var i = 0; i < keys.length; i++) patch[keys[i]] = '';
+      updateNs(remote, viewRef.current, patch, function (err, nv) {
+        if (err || !nv) { say('colorOps', t('msg.saveFailed', { err: err || t('msg.unknownErr') }), 'error'); return; }
+        apply(nv);
+        say('colorOps', t('msg.colorReset'));
+      });
+    };
+    // 跟随宿主配色：正常档改用宿主强调色（随主题实时变化）；警告 / 危险不变；手动改正常档会自动退出跟随
+    var toggleFollowHost = function () {
+      var next = !(value.colorFollowHost === true);
+      updateNs(remote, viewRef.current, { colorFollowHost: next }, function (err, nv) {
+        if (err || !nv) { say('colorOps', t('msg.saveFailed', { err: err || t('msg.unknownErr') }), 'error'); return; }
+        apply(nv);
+        say('colorOps', next ? t('msg.colorFollowOn') : t('msg.colorFollowOff'));
+      });
+    };
+    var colorDotsRow = function (slot, title, hint) {
+      return React.createElement(FieldRow, {
+        key: 'color-' + slot,
+        title: title,
+        hint: hint,
+        msg: msgOf('color'),
+        tone: toneOf('color'),
+        nowrap: true,
+        control: [React.createElement(ColorControl, {
+          key: 'cc', t: t, slot: slot, value: value,
+          onChange: function (kind, c) { commitColor(slot, kind, c); }
+        })]
+      });
+    };
+    // 三态实时预览：非极简三环 / 极简嵌套三环 / 条状进度（只用演示数据，不读真实用量）
+    // 三态实时预览：三种形态都**同时显示正常 / 警告 / 危险三档**，方便一眼核对配色。
+    // 演示数据映射：5 小时 = 危险、本周 = 警告、本月 = 正常；数值跟随当前「已使用 / 剩余」口径
+    // （已使用 96 / 88 / 42，剩余 4 / 12 / 58），货币符号跟随「金额显示计价币种」设置。
+    var colorPreview = function () {
+      var pmode = modeOf(value);
+      var curMode = String(value.currencyMode || 'auto');
+      var cny = curMode === 'cny' || (curMode === 'auto' && isZhLocale(t));
+      var sym = cny ? '¥' : '$';
+      var DEMO_USED = { rolling: 96, weekly: 88, monthly: 42 };
+      var DEMO_LEVEL = { rolling: 'danger', weekly: 'warn', monthly: 'normal' };
+      var pctOf = function (key) {
+        var used = DEMO_USED[key] || 0;
+        return pmode === 'used' ? used : 100 - used;
+      };
+      var ringR = 9, ringC = 2 * Math.PI * ringR;
+      var miniRing = function (key) {
+        var pct = pctOf(key), level = DEMO_LEVEL[key];
+        return React.createElement('svg', {
+          key: 'r' + key, width: '22', height: '22', viewBox: '0 0 24 24', 'aria-hidden': 'true', focusable: 'false'
+        },
+          React.createElement('circle', { className: 'ocgu-cprev-ring-track', cx: 12, cy: 12, r: ringR, strokeWidth: 3.2 }),
+          React.createElement('circle', {
+            className: 'ocgu-cprev-ring', 'data-level': level, cx: 12, cy: 12, r: ringR, strokeWidth: 3.2,
+            strokeDasharray: String(ringC), strokeDashoffset: String(ringC * (1 - pct / 100)),
+            transform: 'rotate(-90 12 12)'
+          }),
+          React.createElement('text', {
+            className: 'ocgu-cprev-num', 'data-level': level,
+            x: 12, y: 12, textAnchor: 'middle', dominantBaseline: 'central'
+          }, String(pct)));
+      };
+      // 极简模式：三环各显示哪个窗口由用户「三环显示数据」决定，颜色按该窗口在演示数据里的档位取
+      var ringMap = ringKeysOf(value);
+      var NEST_RADII = { outer: 11.5, middle: 7.5, inner: 3.5 };
+      var nestKids = [];
+      RING_ROLES.forEach(function (role) {
+        var winKey = ringMap[role] || 'monthly';
+        var r = NEST_RADII[role];
+        var c = 2 * Math.PI * r;
+        var pct = pctOf(winKey);
+        nestKids.push(React.createElement('circle', {
+          key: 't' + role, className: 'ocgu-cprev-ring-track', cx: 13, cy: 13, r: r, strokeWidth: 2.6
+        }));
+        nestKids.push(React.createElement('circle', {
+          key: 'a' + role, className: 'ocgu-cprev-ring', 'data-level': DEMO_LEVEL[winKey],
+          cx: 13, cy: 13, r: r, strokeWidth: 2.6,
+          strokeDasharray: String(c), strokeDashoffset: String(c * (1 - pct / 100)),
+          transform: 'rotate(-90 13 13)'
+        }));
+      });
+      var bars = WINDOWS.map(function (w) {
+        return React.createElement('div', { key: 'b' + w.key, className: 'ocgu-cprev-track' },
+          React.createElement('div', {
+            className: 'ocgu-cprev-fill', 'data-level': DEMO_LEVEL[w.key],
+            style: { width: pctOf(w.key) + '%' }
+          }));
+      });
+      // 顺序：极简模式 → 非极简浮窗 → 条状进度；三个图各自包在等高 figure 里，水平中线严格对齐
+      return React.createElement('div', { className: 'ocgu-cprev' },
+        React.createElement('div', { key: 'minimal', className: 'ocgu-cprev-item' },
+          React.createElement('div', { className: 'ocgu-cprev-figure' },
+            // 极简模式在真实浮窗里没有外框：余额 + 三环嵌套直接浮在胶囊里，这里同样不加卡片底 / 边框
+            React.createElement('div', { className: 'ocgu-cprev-inline' },
+              React.createElement('span', { className: 'ocgu-cprev-bal' }, sym + '86'),
+              React.createElement('svg', {
+                width: '30', height: '30', viewBox: '0 0 26 26', 'aria-hidden': 'true', focusable: 'false'
+              }, nestKids))),
+          React.createElement('span', { className: 'ocgu-cprev-cap' }, t('color.preview.minimal'))),
+        React.createElement('div', { key: 'normal', className: 'ocgu-cprev-item' },
+          React.createElement('div', { className: 'ocgu-cprev-figure' },
+            React.createElement('div', { className: 'ocgu-cprev-card' },
+              React.createElement('span', { className: 'ocgu-cprev-bal' }, sym + '86.40'),
+              React.createElement('span', { className: 'ocgu-cprev-sep' }),
+              miniRing('monthly'), miniRing('weekly'), miniRing('rolling'))),
+          React.createElement('span', { className: 'ocgu-cprev-cap' }, t('color.preview.normal'))),
+        React.createElement('div', { key: 'bar', className: 'ocgu-cprev-item' },
+          React.createElement('div', { className: 'ocgu-cprev-figure' },
+            React.createElement('div', {
+              className: 'ocgu-cprev-card', style: { height: 'auto', padding: '8px 10px', borderRadius: '12px' }
+            }, React.createElement('div', { className: 'ocgu-cprev-bars' }, bars))),
+          React.createElement('span', { className: 'ocgu-cprev-cap' }, t('color.preview.bar'))));
+    };
+
     var refresh = function () {
       setLoading(true);
       requestRefresh(remote, viewRef.current, {
@@ -2120,7 +2547,13 @@ function SettingsPage(props) {
         widgetAnchorX: DEFAULT_ANCHORS.widgetAnchorX,
         widgetOffsetX: DEFAULT_ANCHORS.widgetOffsetX,
         widgetAnchorY: DEFAULT_ANCHORS.widgetAnchorY,
-        widgetOffsetY: DEFAULT_ANCHORS.widgetOffsetY
+        widgetOffsetY: DEFAULT_ANCHORS.widgetOffsetY,
+        // 配色一并回到默认（统一配色开、取消跟随宿主、三档 × 两处颜色留空 = 主题默认绿 / 橙 / 红）
+        colorUnified: true,
+        colorFollowHost: false,
+        colorAll: '', colorAllWarn: '', colorAllDanger: '',
+        colorRing: '', colorRingWarn: '', colorRingDanger: '',
+        colorBar: '', colorBarWarn: '', colorBarDanger: ''
       };
       updateNs(remote, viewRef.current, patch, function (err, nv) {
         if (err || !nv) { say('resetAll', t('msg.saveFailed', { err: err || t('msg.unknownErr') }), 'error'); return; }
@@ -2137,6 +2570,10 @@ function SettingsPage(props) {
       'showBalance', 'pillBalanceSource', 'tipShowBalance', 'tipShowQuota',
       'percentMode', 'quotaRefModel', 'currencyMode', 'minimalMode',
       'ringOuter', 'ringMiddle', 'ringInner',
+      'colorUnified', 'colorFollowHost',
+      'colorAll', 'colorAllWarn', 'colorAllDanger',
+      'colorRing', 'colorRingWarn', 'colorRingDanger',
+      'colorBar', 'colorBarWarn', 'colorBarDanger',
       'widgetAnchorX', 'widgetOffsetX', 'widgetAnchorY', 'widgetOffsetY'
     ];
     var readExportable = function () {
@@ -2179,6 +2616,10 @@ function SettingsPage(props) {
       showBalance: 'boolean', pillBalanceSource: 'string', tipShowBalance: 'boolean', tipShowQuota: 'boolean',
       percentMode: 'string', quotaRefModel: 'string', currencyMode: 'string', minimalMode: 'boolean',
       ringOuter: 'string', ringMiddle: 'string', ringInner: 'string',
+      colorUnified: 'boolean', colorFollowHost: 'boolean',
+      colorAll: 'string', colorAllWarn: 'string', colorAllDanger: 'string',
+      colorRing: 'string', colorRingWarn: 'string', colorRingDanger: 'string',
+      colorBar: 'string', colorBarWarn: 'string', colorBarDanger: 'string',
       widgetAnchorX: 'string', widgetOffsetX: 'number', widgetAnchorY: 'string', widgetOffsetY: 'number'
     };
     var clampImport = function (v, a, b) { return v < a ? a : (v > b ? b : v); };
@@ -2212,6 +2653,7 @@ function SettingsPage(props) {
         if (k === 'currencyMode' && ['auto', 'cny', 'usd'].indexOf(val) < 0) continue;
         if (k === 'pillBalanceSource' && ['deepseek', 'quota'].indexOf(val) < 0) continue;
         if ((k === 'ringOuter' || k === 'ringMiddle' || k === 'ringInner') && ['rolling', 'weekly', 'monthly'].indexOf(val) < 0) continue;
+        if (/^color(All|Ring|Bar)(Warn|Danger)?$/.test(k) && !normalizeColor(val)) continue;
         if (k === 'widgetAnchorX' && ['card-left', 'card-right', 'view-left', 'view-right'].indexOf(val) < 0) continue;
         if (k === 'widgetAnchorY' && ['card-top', 'card-bottom', 'view-top', 'view-bottom'].indexOf(val) < 0) continue;
         if (k === 'quotaRefModel' && !val) continue;
@@ -2371,7 +2813,8 @@ function SettingsPage(props) {
       var RAD = { outer: 34.2, middle: 22.8, inner: 11.4 };
       var CX = 40, CY = 40;
       var LEVEL_COLOR = {
-        ok: 'var(--dsw-alias-state-success-primary)',
+        // 正常档跟随用户配色（与浮窗 / 浮层 / 设置页共用同一组 CSS 变量），阈值档保持语义色
+        ok: 'var(--ocgu-c-ring,var(--dsw-alias-state-success-primary))',
         warn: 'var(--dsw-alias-state-warn-primary)',
         danger: 'var(--dsw-alias-state-error-primary)',
         empty: 'var(--dsw-alias-label-tertiary)'
@@ -2482,7 +2925,8 @@ function SettingsPage(props) {
         }));
     };
 
-    return React.createElement('div', { style: { padding: '4px 0 20px' } },
+    // 配色变量写在本根节点上，设置页内所有进度条 / 预览 / 三环预览都从这里继承
+    return React.createElement('div', { style: Object.assign({ padding: '4px 0 20px' }, colorVarStyle(value)) },
       React.createElement('div', { className: 'ocgu-title-row' },
         React.createElement('div', { className: 'ocgu-sec' }, t('settings.title')),
         React.createElement('button', {
@@ -2501,6 +2945,7 @@ function SettingsPage(props) {
         },
           tabButton('usage', 'tab.usage'),
           tabButton('widget', 'tab.widget'),
+          tabButton('color', 'tab.color'),
           tabButton('general', 'tab.general'))),
 
       // ── 标签一：用量（配额参考 + 计价币种 + 套餐配额卡片 + 自动刷新间隔）──
@@ -2737,6 +3182,49 @@ function SettingsPage(props) {
             key: 'pos', onClick: resetPos, disabled: isDefaultPos || !value.widgetVisible,
             className: 'ocgu-btn', 'data-kind': 'outline', title: t('title.resetPos')
           }, isDefaultPos ? t('btn.atDefault') : t('btn.resetPos'))]
+        })) : null,
+
+      // ── 标签三：配色（统一配色 / 三档色点 / 恢复默认 · 跟随宿主 / 三态实时预览）──
+      tab === 'color' ? React.createElement('div', { key: 'color', className: 'ocgu-tabpane' },
+        React.createElement(FieldRow, {
+          key: 'colorUnified',
+          title: t('field.colorUnified'),
+          hint: t('field.colorUnified.hint'),
+          msg: msgOf('colorUnified'),
+          tone: toneOf('colorUnified'),
+          nowrap: true,
+          control: [sw(value.colorUnified !== false, toggleColorUnified, t('field.colorUnified'), false)]
+        }),
+        (value.colorUnified !== false)
+          ? colorDotsRow('all', t('field.colorDots'), t('field.colorDots.hint'))
+          : [colorDotsRow('ring', t('field.colorRing'), t('field.colorDots.hint')),
+            colorDotsRow('bar', t('field.colorBar'), t('field.colorDots.hint'))],
+        React.createElement(FieldRow, {
+          key: 'colorOps',
+          title: t('field.colorOps'),
+          hint: t('field.colorOps.hint'),
+          msg: msgOf('colorOps'),
+          tone: toneOf('colorOps'),
+          nowrap: true,
+          control: [
+            React.createElement('button', {
+              key: 'reset', onClick: resetColor, className: 'ocgu-btn', 'data-kind': 'outline',
+              title: t('field.colorOps.hint')
+            }, t('btn.colorReset')),
+            React.createElement('button', {
+              key: 'follow', onClick: toggleFollowHost, className: 'ocgu-btn',
+              'data-kind': value.colorFollowHost === true ? 'primary' : 'outline',
+              'aria-pressed': value.colorFollowHost === true ? 'true' : 'false',
+              title: t('field.colorOps.hint')
+            }, value.colorFollowHost === true ? t('btn.following') : t('btn.followHost'))
+          ]
+        }),
+        React.createElement(FieldRow, {
+          key: 'colorPreview',
+          title: t('field.colorPreview'),
+          hint: t('field.colorPreview.hint'),
+          layout: 'block',
+          control: [colorPreview()]
         })) : null,
 
       // 通用标签续（两把 Key 仍属「通用」）

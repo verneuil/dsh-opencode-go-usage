@@ -132,7 +132,7 @@ Follow the on-screen prompt to reload afterwards (replacing an installed JavaScr
 
 ## Settings page
 
-The settings page has three tabs: **Usage data** (default) / **Floating pill** / **General settings**.
+The settings page has four tabs: **Usage data** (default) / **Floating pill** / **Colour settings** / **General settings**.
 
 Next to the page title sit the **GitHub icon and the current version** (e.g. `v3.4.3`); clicking the icon opens this repository.
 
@@ -159,24 +159,31 @@ Next to the page title sit the **GitHub icon and the current version** (e.g. `v3
 - **Ring data mapping** (only available in minimal mode): choose which of “5 hours / Weekly / Monthly” each of the outer / middle / inner rings shows, with a live preview on the right (the three segmented controls are labelled Outer / Middle / Inner).
 - **Reset the pill position**: back to the default position (top-left of the window).
 
+**Colour settings**
+
+- **Unified colour** (switch, on by default): one set of three tiers — **normal / warning / danger** — paints both the **ring progress** (the pill's rings, nesting included) and the **bar progress** (the hover popover plus the three bars on the Usage data tab); turn it off to get separate **Ring progress colour** / **Bar progress colour** rows, each with its own three tiers.
+- **Picking a colour**: each row shows three dots labelled **Normal / Warning / Danger**; clicking a dot opens the system colour picker (eyedropper plus RGB / HSL / HEX inputs). Changes apply live and are saved when the picker closes — no save button. Defaults are the theme green / amber / red.
+- **Colour actions**: **Restore default colours** resets all three tiers × both places to the theme defaults; **Follow host colours** switches the normal tier to the host accent (warning / danger keep their defaults) and tracks the theme live — picking a normal colour by hand stops following automatically.
+- **Colour preview**: shows **minimal mode / regular pill / bar progress** with their horizontal centre lines aligned, updating live; each of the three previews shows **all three tiers at once** (demo data maps 5 hours = danger, weekly = warning, monthly = normal) and the numbers follow the **Used / Left** basis (used 96 / 88 / 42 ↔ left 4 / 12 / 58). The Ring data mapping preview uses the same colours as the real pill and popover.
+
 **General settings**
 
 - **API Key** section: **overrides for both keys** (leave empty to use the DSH credential store; clear them at any time to go back to automatic).
 - **Settings** section:
   - **Sidebar entry** (switch): when enabled the DSH sidebar shows a row for this plugin that opens its full settings page; off by default and it never affects the settings page itself;
-  - **Restore defaults**: one click writes back “Used basis / 5-minute auto-refresh / Minimal on / no balance on the pill / reference model DeepSeek V4.1 Flash / currency auto / left source DS balance / both popover balances shown / default top-left position”.
+  - **Restore defaults**: one click writes back “Used basis / 5-minute auto-refresh / Minimal on / no balance on the pill / reference model DeepSeek V4.1 Flash / currency auto / left source DS balance / both popover balances shown / default bottom-left position / default colours”.
 
 **Shared behaviour**
 
 - **Per-row feedback**: each action's message appears in the row it belongs to — red on failure, green on success. Messages live in a slot on the title row, so **showing and hiding them does not shift the layout**, and they disappear after 3 seconds.
 - **Hints wrap first**: when a title or hint competes with the control on the right, the hint wraps onto more lines while the control stays on the same row, right-aligned; long titles wrap too instead of being truncated;
-- **Animated segmented controls**: every two/multi-choice control (the three settings tabs, progress mode, amount currency, pill-balance source and the ring mapping) slides its selected pill to the target position (240 ms); switching settings tabs also fades the panel in with a slight rise (220 ms). All of it is disabled automatically when the system asks for reduced motion.
+- **Animated segmented controls**: every two/multi-choice control (the four settings tabs, progress mode, amount currency, pill-balance source and the ring mapping) slides its selected pill to the target position (240 ms); switching settings tabs also fades the panel in with a slight rise (220 ms). All of it is disabled automatically when the system asks for reduced motion.
 
 Because the plugin ships its own settings page, the host side calls the official `settings.configure({ auto: false })` to switch off the auto-generated form, avoiding two duplicate configuration UIs.
 
 ## Screenshots
 
-> All ten are **rendered illustrations** built from the plugin's real stylesheet and the host theme tokens (not machine screenshots). The three settings groups cover every tab: **Usage data** (quota reference model, amount currency, plan quota and the usage card), **Floating pill** (master switch, size slider, balance and popover data, minimal mode, ring data mapping with its live preview, position reset) and **General settings** (both keys, sidebar entry, restore defaults, export / import configuration). The states image includes the latest hover popover, and the last one shows the full settings page opened from the sidebar entry.
+> All twelve are **rendered illustrations** built from the plugin's real stylesheet and the host theme tokens (not machine screenshots). The four settings groups cover every tab: **Usage data** (quota reference model, amount currency, plan quota and the usage card), **Floating pill** (master switch, size slider, balance and popover data, minimal mode, ring data mapping with its live preview, position reset), **Colour settings** (unified colour, normal / warning / danger dots, restore defaults and follow-host, three-state colour preview) and **General settings** (both keys, sidebar entry, restore defaults, export / import configuration). The states image includes the latest hover popover, and the last one shows the full settings page opened from the sidebar entry.
 
 | Pill · light | Pill · dark |
 | --- | --- |
@@ -185,6 +192,8 @@ Because the plugin ships its own settings page, the host side calls the official
 | ![Settings · Usage data · light](screenshots/settings-light.png) | ![Settings · Usage data · dark](screenshots/settings-dark.png) |
 | **Settings · Floating pill (light)** | **Settings · Floating pill (dark)** |
 | ![Settings · Floating pill · light](screenshots/settings-widget-light.png) | ![Settings · Floating pill · dark](screenshots/settings-widget-dark.png) |
+| **Settings · Colour settings (light)** | **Settings · Colour settings (dark)** |
+| ![Settings · Colour settings · light](screenshots/settings-color-light.png) | ![Settings · Colour settings · dark](screenshots/settings-color-dark.png) |
 | **Settings · General settings (light)** | **Settings · General settings (dark)** |
 | ![Settings · General settings · light](screenshots/settings-general-light.png) | ![Settings · General settings · dark](screenshots/settings-general-dark.png) |
 | **Sidebar entry · full settings page** (what the sidebar row opens when the entry is enabled) |  |
@@ -249,6 +258,10 @@ The settings page covers the common options; the fields below can also be edited
 | `tipShowBalance`, `tipShowQuota`                                | Whether each popover balance row is shown (both default on; both off leaves only the bars)                                                                        |
 | `sidebarEntry`                                                  | Whether the sidebar shows a row for this plugin (off by default; same as the "Sidebar entry" switch)                                                              |
 | `ringOuter` / `ringMiddle` / `ringInner`                        | Which window each of the outer / middle / inner rings shows in minimal mode: `rolling` (5 hours), `weekly`, `monthly` (defaults `monthly` / `weekly` / `rolling`) |
+| `colorUnified`                                                  | Unified colour: one three-tier set paints both ring and bar progress (on by default); turn it off for two independent sets                                       |
+| `colorFollowHost`                                               | Follow host colours: the normal tier uses the host accent (`--dsw-alias-brand-primary`) while warning / danger keep their defaults; picking a normal colour turns it off (off by default) |
+| `colorAll` / `colorAllWarn` / `colorAllDanger`                  | Custom colours for the unified set (CSS values: `#RRGGBB`, `rgb()`, `hsl()`; empty = theme green / amber / red) |
+| `colorRing*` / `colorBar*` (with `…Warn` / `…Danger` suffixes)   | When `colorUnified` is off: the three tiers for ring / bar progress (no suffix = normal, `Warn` = warning, `Danger` = danger) |
 | `quotaRefModel`                                                 | Reference model id (default `deepseek-v4.1-flash`; options come from the official model table)                                                                    |
 | `currencyMode`                                                  | Amount currency: `auto` (default) / `cny` / `usd`                                                                                                                 |
 | `percentMode`                                                   | Usage progress basis: `used` (default) or `left`                                                                                                                  |

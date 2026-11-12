@@ -146,7 +146,43 @@ check('import path is hardened against untrusted JSON', () => read('client.js').
 check('import whitelist never accepts key fields', () => { const m = read('client.js').match(/var IMPORT_TYPES = \{([\s\S]*?)\};/); return !!m && !/apiKey|deepseekApiKey/i.test(m[1]) })
 check('config export never lists API keys', () => { const m = read('client.js').match(/var EXPORT_KEYS = \[([\s\S]*?)\];/); return !!m && !/apiKey|deepseekApiKey/.test(m[1]) })
 check('export asks for confirmation first', () => read('client.js').includes('ocgu-modal-mask') && read('client.js').includes("t('dlg.export.body1')") && read('client.js').includes("t('dlg.export.body2')") && read('client.js').includes("data-em"))
-check('pill root applies the scale transform', () => read('client.js').includes("transform: 'scale(' + pillScale + ')'"))
+check('pill root applies the scale transform', () => read('client.js').includes("'scale(' + pillScale + ')'"))
+
+console.log('# colour theming (3.5.0)')
+check('Config declares the colour fields', () => ['colorUnified', 'colorAll', 'colorRing', 'colorBar'].every((k) => read('index.js').includes('  ' + k + ': z.')))
+check('progress colours read the ring / bar CSS variables', () => {
+  const src = read('client.js')
+  return src.includes('--ocgu-c-ring,var(--dsw-alias-state-success-primary)') &&
+    src.includes('--ocgu-c-bar,var(--dsw-alias-state-success-primary)') &&
+    src.includes('function colorVarStyle') &&
+    // 配色变量必须挂在组件根元素的 inline style 上（:root 上存 var(--dsw-…) 会解析不到，跟随宿主失效）
+    src.includes('colorVarStyle(value)')
+})
+check('client ships the native-colour picker and the three-state preview', () => {
+  const src = read('client.js')
+  return src.includes('function ColorControl') && src.includes("type: 'color'") &&
+    src.includes('function hex6Of') && src.includes('function normalizeColor') &&
+    src.includes('ocgu-cprev') && src.includes('color.preview.normal')
+})
+check('the colour picker applies live without a save button', () => {
+  const src = read('client.js')
+  return src.includes('ocgu-color-native') && !src.includes("t('btn.apply')")
+})
+check('every progress tier has its own colour and follow-host is wired', () => {
+  const src = read('client.js')
+  return ['--ocgu-c-ring-warn', '--ocgu-c-ring-danger', '--ocgu-c-bar-warn', '--ocgu-c-bar-danger']
+    .every((v) => src.includes(v)) && src.includes('colorFollowHost') && src.includes('HOST_ACCENT')
+})
+check('colour preview shows all three tiers and follows the percent basis', () => {
+  const src = read('client.js')
+  return src.includes('DEMO_LEVEL') && src.includes('DEMO_USED') && src.includes('pctOf')
+})
+check('colour settings live on their own tab', () => read('client.js').includes("tabButton('color', 'tab.color')") && read('client.js').includes("tab === 'color'"))
+check('colour settings are exportable and key-free', () => {
+  const keys = (read('client.js').match(/var EXPORT_KEYS = \[([\s\S]*?)\];/) || [])[1] || ''
+  return ['colorUnified', 'colorFollowHost', 'colorAll', 'colorAllWarn', 'colorAllDanger', 'colorBarDanger']
+    .every((k) => keys.includes("'" + k + "'")) && !/apiKey|deepseekApiKey/i.test(keys)
+})
 
 console.log('# locale bundles')
 for (const file of ['locale/zh.json', 'locale/en.json']) {
