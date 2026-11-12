@@ -4,27 +4,15 @@
 - 设置页新增「配色设置」：进度条可分别设置**正常 / 警告 / 危险**三档的配色；
 - 可统一或分开设置「环状进度」与「条状进度」的颜色
 - **跟随宿主配色**：正常档改用宿主主题强调色，随宿主主题实时变化（切换主题立即生效）；手动给正常档选色会自动退出跟随。
-- **恢复默认配色**：一次把两处三档全部还原为默认（主题绿 / 橙 / 红）。
-
-### 改进
-- 取色改为系统取色面板（取色笔 + RGB / HSL / HEX 多格式输入），拖动即生效、关闭面板即保存，无需额外确认按钮。
-- 三档颜色均可自定义，阈值判定逻辑不变（已用口径 ≥80% 橙 / ≥95% 红；剩余口径反向）。
-- 「恢复默认设置」与配置导出 / 导入同步覆盖全部配色项。
-- 未改动配色时外观与 3.4.3 完全一致（默认即主题绿 / 橙 / 红）。
+- **恢复默认配色**：一次把两处三档全部还原为默认（主题绿 / 橙 / 红），配置导入 / 导出同步覆盖全部配色项。
 
 ---
 
 ### Features
-- New **Colour settings** tab on the settings page: the progress bars can be coloured per tier — **normal / warning / danger**;
+- New **Colour settings** on the settings page: each progress bar can now be coloured per tier — **normal / warning / danger**;
 - The **ring progress** and the **bar progress** can be coloured together or separately
 - **Follow host colours**: the normal tier uses the host accent and tracks the live theme (switching themes applies immediately); picking a normal colour by hand stops following.
-- **Restore default colours**: resets all tiers in both places to the defaults (theme green / amber / red).
-
-### Improvements
-- The picker is now the native system colour panel (eyedropper plus RGB / HSL / HEX input); changes apply while dragging and are saved when the panel closes, with no extra confirm button.
-- All three tiers can be customised while the threshold logic is unchanged (Used ≥80% amber / ≥95% red; reversed for Left).
-- Restore defaults and config export / import now cover every colour setting.
-- With colours untouched the UI is identical to 3.4.3 (defaults are the theme green / amber / red).
+- **Restore default colours**: resets all tiers in both places to the defaults (theme green / amber / red); config import / export also covers every colour setting.
 
 ## 3.4.3
 
