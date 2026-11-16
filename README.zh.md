@@ -1,4 +1,4 @@
-﻿<div align="center">
+<div align="center">
 
 <img src="assets/icon.png" width="96" height="96" alt="OCG 余量查询 icon" />
 
@@ -17,7 +17,7 @@
 
 
 [![Listed on dsh-plugin.org](https://dsh-plugin.org/badges/listed.svg)](https://dsh-plugin.org/plugins/verneuil/dsh-opencode-go-usage)
-[![dsh.so install · dsh 0.2.2-rc.1](https://cdn.dsh.so/badge/install/dsh-opencode-go-usage-15@0.2.2-rc.1.svg)](https://www.dsh.so/artifact/dsh-opencode-go-usage-15/?ref=badge-install)
+[![dsh.so install · dsh 0.2.2-rc.3](https://cdn.dsh.so/badge/install/dsh-opencode-go-usage-15@0.2.2-rc.3.svg)](https://www.dsh.so/artifact/dsh-opencode-go-usage-15/?ref=badge-install)
 [![Awesome DSH Plugin](https://awesome-dsh-plugin.com/badge.svg)](https://awesome-dsh-plugin.com/p/verneuil/dsh-opencode-go-usage)
 
 [更新日志](CHANGELOG.md) · [反馈](https://github.com/verneuil/dsh-opencode-go-usage/issues)
