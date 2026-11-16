@@ -17,7 +17,7 @@
 
 
 [![Listed on dsh-plugin.org](https://dsh-plugin.org/badges/listed.svg)](https://dsh-plugin.org/plugins/verneuil/dsh-opencode-go-usage)
-[![dsh.so install · dsh 0.2.2-rc.1](https://cdn.dsh.so/badge/install/dsh-opencode-go-usage-15@0.2.2-rc.1.svg)](https://www.dsh.so/artifact/dsh-opencode-go-usage-15/?ref=badge-install)
+[![dsh.so install · dsh 0.2.2-rc.3](https://cdn.dsh.so/badge/install/dsh-opencode-go-usage-15@0.2.2-rc.3.svg)](https://www.dsh.so/artifact/dsh-opencode-go-usage-15/?ref=badge-install)
 [![Awesome DSH Plugin](https://awesome-dsh-plugin.com/badge.svg)](https://awesome-dsh-plugin.com/p/verneuil/dsh-opencode-go-usage)
 
 [Changelog](CHANGELOG.md) · [Feedback](https://github.com/verneuil/dsh-opencode-go-usage/issues)
