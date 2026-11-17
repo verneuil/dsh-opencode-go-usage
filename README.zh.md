@@ -99,8 +99,8 @@
 | ---------------------------- | ------------------------------------------------------------------------------------------------------------ |
 | **GitHub 直装**（推荐）      | `github:verneuil/dsh-opencode-go-usage`                                                                      |
 | **npm 安装**                 | `dsh plugin --profile web add @verneuil/dsh-opencode-go-usage`                                               |
-| **固定某个版本**             | `github:verneuil/dsh-opencode-go-usage#v3.6.0`（换成任意已发布 tag）                                         |
-| **Release 包**               | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v3.6.0/dsh-opencode-go-usage-3.5.0.tgz` |
+| **固定某个版本**             | `github:verneuil/dsh-opencode-go-usage#v3.6.1`（换成任意已发布 tag）                                         |
+| **Release 包**               | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v3.6.1/dsh-opencode-go-usage-3.5.0.tgz` |
 | **Release 直链（始终最新）** | `https://github.com/verneuil/dsh-opencode-go-usage/releases/latest/download/dsh-opencode-go-usage.tgz`       |
 | **离线 tgz**                 | `file:D:/你的路径/dsh-opencode-go-usage-3.5.0.tgz`                                                           |
 
@@ -140,7 +140,7 @@ dsh plugin --profile web add github:verneuil/dsh-opencode-go-usage
 
 设置页分四个标签：**用量数据**（默认）/ **浮窗管理** / **配色设置** / **通用设置**。
 
-页面顶部标题右侧是 **GitHub 图标 + 当前版本号**（如 `v3.6.0`），点击图标打开本插件仓库。
+页面顶部标题右侧是 **GitHub 图标 + 当前版本号**（如 `v3.6.1`），点击图标打开本插件仓库。
 
 **用量数据**
 
@@ -233,7 +233,7 @@ GET https://api.frankfurter.app/latest?from=USD&to=CNY      # USD/CNY 汇率（�
 用量接口返回 `{ usage: { rolling, weekly, monthly } }`，每个窗口含 `status` / `percent`（**已用**百分比）/ `resetsAt`；余额接口返回 `balance_infos[]`（优先取 CNY 行）。**插件界面默认显示「已使用」，可切换为「剩余」；内部始终以「已用」为基准。**
 宿主半侧负责拉取与解析（两把 Key 都不出宿主进程），客户端只读宿主写入的配置投影。
 
-**模型清单与汇率**跟随刷新一起更新：**手动刷新（按钮 / 点击浮窗）强制重抓**，自动刷新按 **模型表 24 小时 / 汇率 1 小时**复用缓存；两者都抓不到时回退到**内置快照**（`go-data.js`，生成于 2026-10-31：30 个官方模型 + 汇率 6.669566），并在界面上点名报错。**配额折算取的是模型表里的 Go 档月度配额。**
+**模型清单与汇率**跟随刷新一起更新：**手动刷新（按钮 / 点击浮窗）强制重抓**，自动刷新按 **模型表 24 小时 / 汇率 1 小时**复用缓存；两者都抓不到时回退到**内置快照**（`go-data.js`，生成于 2026-11-17：32 个官方模型 + 汇率 6.679257），并在界面上点名报错。**配额折算取的是模型表里的 Go 档月度配额。**
 
 **Key 来源**（两侧各自独立，按优先级）：
 
@@ -311,7 +311,7 @@ GET https://api.frankfurter.app/latest?from=USD&to=CNY      # USD/CNY 汇率（�
 - **界面语言**：浮窗与设置页支持**中英双语**，随 DSH 语言设置切换；接口层返回的**错误详情**（如 401/403、返回结构异常）目前仍为中文。
 - **配额金额是折算值**：官方并不提供"某模型此刻还剩多少额度"的接口，本插件按「该模型 **Go 档**月度配额 × **本月已用百分比**」估算，仅作参考；月度百分比是**全套餐**的进度，不等于该模型自身的消耗占比。**Go Plus / Go Teams 档暂未纳入**（固定按 Go 档计算）。
 - **汇率只影响显示**：DS 余额原始币种是人民币、配额原始币种是美元，换算仅影响展示（`auto` 时中文 ¥、英文 ＄），不改变任何实际账单。
-- **模型清单可能滞后**：内置快照是 2026-10-31 的官方数据；联网时随刷新自动更新，离线或抓取失败时显示内置快照并在界面标注。
+- **模型清单可能滞后**：内置快照是 2026-11-17 的官方数据；联网时随刷新自动更新，离线或抓取失败时显示内置快照并在界面标注。
 - **使用风险自负**：本软件按 MIT 许可「原样」提供，不附带任何担保。
 
 ## 许可

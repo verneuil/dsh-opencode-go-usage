@@ -274,6 +274,11 @@ const data = snapshot.GO_DATA_SNAPSHOT
 check('snapshotDate is an ISO date', () => /^\d{4}-\d{2}-\d{2}$/.test(data.snapshotDate))
 check('snapshotDate is not in the future', () => new Date(`${data.snapshotDate}T00:00:00Z`).getTime() <= Date.now() + 86400000)
 check('snapshotDate is not older than 400 days', () => Date.now() - new Date(`${data.snapshotDate}T00:00:00Z`).getTime() < 400 * 86400000)
+check('live model list parses the public Go models JSON', () => {
+  const src = read('go-fetch.js')
+  return src.includes('https://opencode.ai/inference/go/v1/models') &&
+    src.includes('monthly_usage') && !src.includes('GO_PAGE_URL')
+})
 check('usdCny looks like a real rate', () => typeof data.fx?.usdCny === 'number' && data.fx.usdCny > 1 && data.fx.usdCny < 20)
 check('model table has at least 20 entries', () => Array.isArray(data.models) && data.models.length >= 20)
 check('every model has id and name', () => data.models.every((m) => typeof m.id === 'string' && m.id && typeof m.name === 'string' && m.name))

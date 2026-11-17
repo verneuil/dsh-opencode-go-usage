@@ -1,4 +1,4 @@
-﻿/**
+/**
  * go-fetch.js — 运行时抓取「OpenCode Go 模型配额表」与「USD/CNY 汇率」（宿主半侧，ESM）。
  *
  * 设计要点：
@@ -11,7 +11,7 @@
  */
 import { GO_DATA_SNAPSHOT } from "./go-data.js"
 
-export const GO_PAGE_URL = "https://opencode.ai/v2/docs/console/go"
+export const GO_MODELS_URL = "https://opencode.ai/inference/go/v1/models"
 export const FX_SOURCES = [
   { name: "open.er-api.com", url: "https://open.er-api.com/v6/latest/USD" },
   { name: "frankfurter.app", url: "https://api.frankfurter.app/latest?from=USD&to=CNY" },
@@ -19,7 +19,7 @@ export const FX_SOURCES = [
 export { GO_DATA_SNAPSHOT }
 
 // UA 只在这里定义一次，宿主半侧 import 复用（避免版本号两处漂移）
-export const USER_AGENT = "dsh-opencode-go-usage/3.6.0 (+DeepSeek Harness plugin; +https://github.com/verneuil/dsh-opencode-go-usage)"
+export const USER_AGENT = "dsh-opencode-go-usage/3.6.1 (+DeepSeek Harness plugin; +https://github.com/verneuil/dsh-opencode-go-usage)"
 const UA = USER_AGENT
 
 function stripTags(s) {
@@ -42,63 +42,29 @@ function parseMoney(s) {
 
 /**
  * 抓取并解析官方模型表。
+ * 2026-11 起官方把「模型 / Monthly limit」表格从文档页移除，改用公开 JSON：
+ * GET https://opencode.ai/inference/go/v1/models → data[].go.monthly_usage.go 即 Go 档月度额度（美元）。
  * @returns {Promise<{models: Array<{id:string,name:string,go:number|null}>, at: string, source: string}>}
  */
 export async function fetchGoModelsLive(timeoutMs) {
-  const res = await fetch(GO_PAGE_URL, {
-    headers: { "user-agent": UA, accept: "text/html" },
+  const res = await fetch(GO_MODELS_URL, {
+    headers: { "user-agent": UA, accept: "application/json" },
     signal: AbortSignal.timeout(timeoutMs || 20000),
   })
-  if (!res.ok) throw new Error("官方页面返回 HTTP " + res.status)
-  const html = await res.text()
-  if (!/Monthly limit/i.test(html)) throw new Error("页面结构变化：未找到「Monthly limit」表")
+  if (!res.ok) throw new Error("官方模型接口返回 HTTP " + res.status)
+  const json = await res.json()
+  const list = json && Array.isArray(json.data) ? json.data : []
+  if (list.length < 5) throw new Error("接口返回异常：只有 " + list.length + " 个模型")
 
-  // 切表 → 切行 → 切单元格
-  const tables = []
-  const tre = /<table>([\s\S]*?)<\/table>/g
-  let m
-  while ((m = tre.exec(html))) {
-    const rows = []
-    const rre = /<tr>([\s\S]*?)<\/tr>/g
-    let r
-    while ((r = rre.exec(m[1]))) {
-      const cells = []
-      const cre = /<t[hd][^>]*>([\s\S]*?)<\/t[hd]>/g
-      let c
-      while ((c = cre.exec(r[1]))) cells.push(c[1])
-      if (cells.length) rows.push(cells)
-    }
-    if (rows.length) tables.push({ head: rows[0].map(stripTags).join(" | "), rows: rows.slice(1) })
+  const models = []
+  for (const m of list) {
+    if (!m || typeof m.id !== "string" || !m.id) continue
+    const goRaw = m.go && m.go.monthly_usage ? m.go.monthly_usage.go : null
+    const go = typeof goRaw === "number" && isFinite(goRaw) ? goRaw : null
+    const name = typeof m.name === "string" && m.name.trim() ? m.name.trim() : m.id
+    models.push({ id: m.id, name, go })
   }
-
-  const limitTables = tables.filter((t) => /Monthly limit/i.test(t.head))
-  if (limitTables.length < 1) throw new Error("页面结构变化：限额表数量不足")
-  // 只按 Go 档：第一张表即 Go（第二张是 Go Plus，限额更大，本插件不使用）
-  const goTable = limitTables[0]
-
-  const ep = tables.find((t) => /Model ID/i.test(t.head))
-  if (!ep) throw new Error("页面结构变化：未找到模型 ID 映射表")
-  const idByName = new Map()
-  for (const cells of ep.rows) {
-    const name = stripTags(cells[0])
-    const id = stripTags(cells[1])
-    if (name && /^[a-z0-9][a-z0-9.\-]*$/i.test(id)) idByName.set(name, id)
-  }
-
-  const byId = new Map()
-  for (const cells of goTable.rows) {
-    const name = stripTags(cells[0])
-    if (!name) continue
-    const base = name.replace(/\s*\(.*$/, "").trim() // 去掉 (Off-Peak) / (≤ 256K tokens) 等后缀
-    const id = idByName.get(base)
-    if (!id) continue // 免费/临时模型若没进 Endpoints 表就跳过，不影响主要模型
-    const go = parseMoney(cells[cells.length - 1])
-    const cur = byId.get(id)
-    // 同 ID 的分层行（如 Off-Peak / Peak）：限额应一致，取较大者兜底
-    if (!cur) byId.set(id, { id, name: base, go })
-    else if (go !== null && (cur.go === null || go > cur.go)) cur.go = go
-  }
-  const models = [...byId.values()].sort((a, b) => a.name.localeCompare(b.name))
+  models.sort((a, b) => a.name.localeCompare(b.name))
   if (models.length < 5) throw new Error("解析结果异常：只得到 " + models.length + " 个模型")
   return { models, at: new Date().toISOString(), source: "live" }
 }

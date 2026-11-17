@@ -1,3 +1,27 @@
+## 3.6.1
+
+### 修复
+- 修复「模型列表及配额刷新失败」：官方文档页已移除模型 / Monthly limit 表格，改为解析公开接口 `https://opencode.ai/inference/go/v1/models`（`go.monthly_usage.go` 即 Go 档月度额度）；
+- 模型下拉改用官方接口返回的模型名（含版本号，如 `DeepSeek V4.1 Flash 1017`）；免费模型仍显示「免费」；接口失败时继续回退内置快照。
+
+### 改进
+- 内置兜底数据同步刷新（2026-11-17）：32 个模型（新增 Qwen4 Max、Hy4 flash Free，移除 MiMo-V2.5 / MiMo-V2.5-Pro；GLM-5.3 额度 15 → 100）；汇率快照更新到 17 Nov 2026（1 USD = 6.679257 CNY）。
+
+### 兼容性
+- 无设置项变化；模型仍按 id 保存，默认 `deepseek-v4.1-flash` 与既有选择继续生效。
+
+---
+
+### Fixes
+- Fixed “model list and quota refresh failed”: the official docs page no longer carries the model / Monthly limit tables, so the plugin now parses the public endpoint `https://opencode.ai/inference/go/v1/models` (`go.monthly_usage.go` is the Go-tier monthly allowance);
+- The model dropdown now uses the API's model names (version included, e.g. `DeepSeek V4.1 Flash 1017`); free models still read “Free”; failed requests still fall back to the bundled snapshot.
+
+### Improvements
+- Refreshed the bundled fallback data (2026-11-17): 32 models (adds Qwen4 Max and Hy4 flash Free; removes MiMo-V2.5 / MiMo-V2.5-Pro; GLM-5.3 quota 15 → 100); the exchange-rate snapshot is updated to 17 Nov 2026 (1 USD = 6.679257 CNY).
+
+### Compatibility
+- No settings changed; models are still stored by id, so the default `deepseek-v4.1-flash` and existing choices keep working.
+
 ## 3.6.0
 
 ### 新功能
