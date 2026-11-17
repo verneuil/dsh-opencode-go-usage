@@ -225,7 +225,7 @@ Authorization: Bearer <OpenCode Go API Key>
 GET https://api.deepseek.com/user/balance                  # DeepSeek 官方余额
 Authorization: Bearer <DeepSeek API Key>
 
-GET https://opencode.ai/v2/docs/console/go                  # OpenCode Go 模型清单 + 各模型月度配额（服务端渲染表格）
+GET https://opencode.ai/inference/go/v1/models              # OpenCode Go 模型清单 + 各模型 Go 档月度配额（公开 JSON）
 GET https://open.er-api.com/v6/latest/USD                   # USD/CNY 汇率（主源，免密钥）
 GET https://api.frankfurter.app/latest?from=USD&to=CNY      # USD/CNY 汇率（备源，免密钥）
 ```

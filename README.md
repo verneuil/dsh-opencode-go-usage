@@ -225,7 +225,7 @@ Authorization: Bearer <OpenCode Go API Key>
 GET https://api.deepseek.com/user/balance                  # DeepSeek balance
 Authorization: Bearer <DeepSeek API Key>
 
-GET https://opencode.ai/v2/docs/console/go                  # OpenCode Go model list + per-model monthly quota (server-rendered tables)
+GET https://opencode.ai/inference/go/v1/models              # OpenCode Go model list + Go-tier monthly quota per model (public JSON)
 GET https://open.er-api.com/v6/latest/USD                   # USD/CNY rate (primary, no key)
 GET https://api.frankfurter.app/latest?from=USD&to=CNY      # USD/CNY rate (backup, no key)
 ```
