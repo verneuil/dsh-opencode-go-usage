@@ -22,24 +22,6 @@ export { GO_DATA_SNAPSHOT }
 export const USER_AGENT = "dsh-opencode-go-usage/3.6.1 (+DeepSeek Harness plugin; +https://github.com/verneuil/dsh-opencode-go-usage)"
 const UA = USER_AGENT
 
-function stripTags(s) {
-  return String(s)
-    .replace(/<[^>]*>/g, "")
-    .replace(/&gt;/g, ">").replace(/&lt;/g, "<").replace(/&amp;/g, "&")
-    .replace(/&#x27;|&#39;/g, "'").replace(/&quot;/g, '"').replace(/&nbsp;/g, " ")
-    .replace(/\s+/g, " ")
-    .trim()
-}
-
-// "$80" → 80；"Unlimited" → null（无限制）；"Free" → 0
-function parseMoney(s) {
-  const t = stripTags(s)
-  if (/unlimited/i.test(t)) return null
-  if (/^free$/i.test(t)) return 0
-  const m = t.match(/\$?\s*([\d.]+)/)
-  return m ? Number(m[1]) : null
-}
-
 /**
  * 抓取并解析官方模型表。
  * 2026-11 起官方把「模型 / Monthly limit」表格从文档页移除，改用公开 JSON：

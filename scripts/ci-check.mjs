@@ -276,7 +276,8 @@ check('snapshotDate is not in the future', () => new Date(`${data.snapshotDate}T
 check('snapshotDate is not older than 400 days', () => Date.now() - new Date(`${data.snapshotDate}T00:00:00Z`).getTime() < 400 * 86400000)
 check('live model list parses the public Go models JSON', () => {
   const src = read('go-fetch.js')
-  return src.includes('https://opencode.ai/inference/go/v1/models') &&
+  const m = /export const GO_MODELS_URL = "([^"]+)"/.exec(src)
+  return !!m && m[1] === 'https://opencode.ai/inference/go/v1/models' &&
     src.includes('monthly_usage') && !src.includes('GO_PAGE_URL')
 })
 check('usdCny looks like a real rate', () => typeof data.fx?.usdCny === 'number' && data.fx.usdCny > 1 && data.fx.usdCny < 20)
