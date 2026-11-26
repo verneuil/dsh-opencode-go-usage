@@ -96,12 +96,22 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
     '.ocgu-quota{display:flex;flex-direction:column;gap:1px;font-size:10.5px;font-weight:600;line-height:1.45;font-variant-numeric:tabular-nums;color:var(--dsw-alias-label-secondary)}' +
     '.ocgu-quota-h{color:var(--dsw-alias-label-primary)}' +
     '.ocgu-quota-sub{font-weight:400}' +
-    // 配额剩余标题下方的多模型明细：左名称、右剩余金额
-    '.ocgu-quota-line{display:flex;align-items:baseline;justify-content:space-between;gap:10px;font-size:10.5px;font-weight:400;line-height:1.45;font-variant-numeric:tabular-nums}' +
+    // 配额剩余标题下方的多模型明细：左名称、右剩余金额；行间用极淡短线分隔
+    '.ocgu-quota-line{position:relative;display:flex;align-items:baseline;justify-content:space-between;gap:10px;font-size:10.5px;font-weight:400;line-height:1.45;font-variant-numeric:tabular-nums}' +
+    '.ocgu-quota-line+.ocgu-quota-line{padding-top:4px}' +
+    '.ocgu-quota .ocgu-quota-h+.ocgu-quota-line{margin-top:3px}' +
+    '.ocgu-quota-line+.ocgu-quota-line::before{content:"";position:absolute;left:2px;right:2px;top:1px;height:1px;background:color-mix(in srgb,var(--dsw-alias-border-l2) 60%,transparent);pointer-events:none}' +
     '.ocgu-quota-name{color:var(--dsw-alias-label-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
     '.ocgu-quota-val{color:var(--dsw-alias-label-primary);font-weight:600;white-space:nowrap}' +
     // 设置页配额块：标题用字段标题样式（照搬），下面两行用小字样式并居中（由渲染层加 textAlign）
-    '.ocgu-qset{display:flex;flex-direction:column;gap:2px;margin-top:10px}' +
+    '.ocgu-qset{display:flex;flex-direction:column;gap:5px;margin-top:10px}' +
+    // 多模型配额：四列按各列最长内容 + 2 个字符间距对齐，整块仍居左（不用表格、不拉满整行）
+    '.ocgu-qset-grid{display:grid;grid-template-columns:repeat(4,max-content);column-gap:2ch;row-gap:3px;align-items:baseline;justify-content:start;max-width:100%;overflow-x:auto;font-size:11.5px;line-height:1.45;font-variant-numeric:tabular-nums;color:var(--dsw-alias-label-secondary)}' +
+    '.ocgu-qset-row{display:contents}' +
+    '.ocgu-qset-cell{white-space:nowrap}' +
+    '.ocgu-qset-lb{color:var(--dsw-alias-label-tertiary)}' +
+    // 行间短线：只在内容宽度内、左右各留 4px，不拉到卡片边缘
+    '.ocgu-qset-sep{grid-column:1/-1;height:1px;margin:0 4px;background:color-mix(in srgb,var(--dsw-alias-border-l2) 60%,transparent);pointer-events:none}' +
     // 抓取失败点名报错：单行出品，浮层底部与设置页共用
     '.ocgu-errline{display:flex;align-items:baseline;gap:6px;font-size:9.5px;line-height:1.45;color:var(--dsw-alias-state-error-primary)}' +
     '.ocgu-errline svg{flex:none;transform:translateY(1px)}' +
@@ -141,7 +151,11 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
     // 极简模式：三环嵌套（外 M / 中 W / 内 R），只比常规三环略大；余额取整后显示在环旁
     '.ocgu-nest{position:relative;flex:none;display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;animation:ocgu-swap .3s cubic-bezier(.22,.9,.28,1)}' +
     '.ocgu-nest svg{position:absolute;inset:0;width:26px;height:26px;overflow:visible}' +
-    '.ocgu-nest-track{fill:none;stroke-width:2.6;stroke:color-mix(in srgb,var(--dsw-alias-label-tertiary) 26%,transparent)}' +
+    '.ocgu-nest-track{fill:none;stroke-width:2.6;stroke:color-mix(in srgb,var(--ocgu-ring,var(--dsw-alias-label-tertiary)) 32%,transparent);transition:stroke .2s ease}' +
+    '.ocgu-nest-track[data-level="ok"]{--ocgu-ring:var(--ocgu-c-ring,var(--dsw-alias-state-success-primary))}' +
+    '.ocgu-nest-track[data-level="warn"]{--ocgu-ring:var(--ocgu-c-ring-warn,var(--dsw-alias-state-warn-primary))}' +
+    '.ocgu-nest-track[data-level="danger"]{--ocgu-ring:var(--ocgu-c-ring-danger,var(--dsw-alias-state-error-primary))}' +
+    '.ocgu-nest-track[data-level="empty"]{--ocgu-ring:color-mix(in srgb,var(--dsw-alias-label-secondary) 78%,transparent)}' +
     '.ocgu-nest-arc{fill:none;stroke-width:2.6;stroke-linecap:round;stroke:var(--ocgu-c-ring,var(--dsw-alias-state-success-primary));transition:stroke-dashoffset .35s cubic-bezier(.22,.9,.28,1),stroke .2s ease}' +
     '.ocgu-nest-arc[data-level="warn"]{stroke:var(--ocgu-c-ring-warn,var(--dsw-alias-state-warn-primary))}' +
     '.ocgu-nest-arc[data-level="danger"]{stroke:var(--ocgu-c-ring-danger,var(--dsw-alias-state-error-primary))}' +
@@ -234,7 +248,10 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
     '.ocgu-cprev-track{height:8px;border-radius:999px;background:color-mix(in srgb,var(--dsw-alias-label-tertiary) 22%,transparent);overflow:hidden}' +
     '.ocgu-cprev-fill{height:100%;border-radius:999px;background:var(--ocgu-c-bar,var(--dsw-alias-state-success-primary))}' +
     '.ocgu-cprev-ring{fill:none;stroke:var(--ocgu-c-ring,var(--dsw-alias-state-success-primary));stroke-linecap:round}' +
-    '.ocgu-cprev-ring-track{fill:none;stroke:color-mix(in srgb,var(--dsw-alias-label-tertiary) 26%,transparent)}' +
+    '.ocgu-cprev-ring-track{fill:none;stroke:color-mix(in srgb,var(--ocgu-cprev,var(--dsw-alias-label-tertiary)) 32%,transparent)}' +
+    '.ocgu-cprev-ring-track[data-level="normal"]{--ocgu-cprev:var(--ocgu-c-ring,var(--dsw-alias-state-success-primary))}' +
+    '.ocgu-cprev-ring-track[data-level="warn"]{--ocgu-cprev:var(--ocgu-c-ring-warn,var(--dsw-alias-state-warn-primary))}' +
+    '.ocgu-cprev-ring-track[data-level="danger"]{--ocgu-cprev:var(--ocgu-c-ring-danger,var(--dsw-alias-state-error-primary))}' +
     '.ocgu-cprev-num{font-size:8px;font-weight:600;fill:var(--ocgu-c-ring,var(--dsw-alias-state-success-primary))}' +
     // 预览里三档颜色与实际一致：正常 / 警告 / 危险
     '.ocgu-cprev-fill[data-level="warn"]{background:var(--ocgu-c-bar-warn,var(--dsw-alias-state-warn-primary))}' +
@@ -721,12 +738,12 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
       left: usable ? usdText(value, t, q.left) : '--'
     };
   }
-  // 设置页配额：每个选中的参考模型一行（格式与原来的单模型行一致）
-  function quotaSetLines(value, t) {
-    if (!goModelList(value).length) return [t('quota.loading')];
+  // 设置页配额：每个选中的参考模型一行，字段拆成四列供网格对齐
+  function quotaSetRows(value, t) {
+    if (!goModelList(value).length) return [];
     return quotaModels(value).map(function (m) {
       var a = quotaTextsFor(value, t, m);
-      return t('quota.setLine', { name: (m.name || m.id), quota: a.quota, used: a.used, left: a.left });
+      return { key: m.id, name: (m.name || m.id), quota: a.quota, used: a.used, left: a.left };
     });
   }
   // 浮层配额：每个选中的参考模型一行（左名称、右剩余金额）
@@ -906,8 +923,12 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
       // ── 配额参考（按 Go 档月度配额 × 月度已用百分比折算）──
       'msg.keyTooLong': 'Key 过长（最多 512 个字符）',
       'quota.title': 'OpenCode Go 套餐配额',
-      'quota.setLine': '模型：{name}（总配额：{quota}，消耗：{used}，剩余：{left}）',
-      'quota.tipLeftLabel': 'OpenCode Go配额剩余：',
+      'usage.barsTitle': '用量进度条',
+      'quota.colModel': '模型：',
+      'quota.colQuota': '总配额：',
+      'quota.colUsed': '消耗换算：',
+      'quota.colLeft': '剩余换算：',
+      'quota.tipLeftLabel': 'OpenCode Go配额剩余换算：',
       'quota.unlimited': '无限制',
       'quota.free': '免费',
       'quota.loading': '配额数据获取中…',
@@ -1050,15 +1071,15 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
       'msg.colorFollowOn': '正常档已跟随宿主主题色',
       'msg.colorFollowOff': '已取消跟随宿主主题色',
       'pill.srcDeepseek': 'DS余额',
-      'pill.srcQuota': 'OCG配额剩余',
+      'pill.srcQuota': 'OCG配额剩余换算',
       'field.tipBalanceSrc': '鼠标悬停浮层数据控制',
       'field.tipBalanceSrc.hint': '全都不勾选时，浮层只显示三条进度条',
       'tip.chkDeepseek': 'DS余额',
-      'tip.chkQuota': 'OCG配额剩余',
+      'tip.chkQuota': 'OCG配额剩余换算',
       'tip.chkPace': '预计用量走势',
       'tip.ddNone': '都不显示',
       'msg.pillSrcDeepseek': '浮窗左侧已显示 DS 余额',
-      'msg.pillSrcQuota': '浮窗左侧已显示 OCG 配额剩余',
+      'msg.pillSrcQuota': '浮窗左侧已显示 OCG 配额剩余换算',
       'msg.pillQuotaModel': '浮窗左侧配额模型：{name}',
       'msg.tipData': '浮层数据：{list}',
       'msg.tipDataNone': '浮层数据：无（只显示进度条）',
@@ -1141,8 +1162,12 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
       // ── Quota reference (Go-tier monthly quota × monthly used percentage) ──
       'msg.keyTooLong': 'Key too long (512 characters max)',
       'quota.title': 'OpenCode Go plan quota',
-      'quota.setLine': 'Model: {name} (total: {quota}, used: {used}, left: {left})',
-      'quota.tipLeftLabel': 'OpenCode Go quota left: ',
+      'usage.barsTitle': 'Usage progress bars',
+      'quota.colModel': 'Model: ',
+      'quota.colQuota': 'Total: ',
+      'quota.colUsed': 'Used (converted): ',
+      'quota.colLeft': 'Left (converted): ',
+      'quota.tipLeftLabel': 'OpenCode Go quota left (converted): ',
       'quota.unlimited': 'Unlimited',
       'quota.free': 'Free',
       'quota.loading': 'Loading quota data…',
@@ -1286,7 +1311,7 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
       'msg.colorFollowOn': 'Normal tier now follows the host accent',
       'msg.colorFollowOff': 'Stopped following the host accent',
       'pill.srcDeepseek': 'DS balance',
-      'pill.srcQuota': 'OCG quota left',
+      'pill.srcQuota': 'OCG quota left (converted)',
       'field.tipBalanceSrc': 'Hover popover data control',
       'field.tipBalanceSrc.hint': 'With nothing ticked the popover shows only the three progress bars',
       'tip.chkDeepseek': 'DS balance',
@@ -1294,7 +1319,7 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
       'tip.chkPace': 'Usage forecast',
       'tip.ddNone': 'None',
       'msg.pillSrcDeepseek': 'Pill left now shows the DS balance',
-      'msg.pillSrcQuota': 'Pill left now shows the OCG quota left',
+      'msg.pillSrcQuota': 'Pill left now shows the converted OCG quota left',
       'msg.pillQuotaModel': 'Pill quota model: {name}',
       'msg.tipData': 'Popover data: {list}',
       'msg.tipDataNone': 'Popover data: none (progress bars only)',
@@ -2078,7 +2103,10 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
         var nHas = hasData && !!(nw.status || nw.resetsAt);
         var nd = dispOf(nw.percent, mode);
         var nc = 2 * Math.PI * rg.r;
-        nestKids.push(React.createElement('circle', { key: 't' + i, className: 'ocgu-nest-track', cx: NC, cy: NC, r: rg.r }));
+        nestKids.push(React.createElement('circle', {
+          key: 't' + i, className: 'ocgu-nest-track', cx: NC, cy: NC, r: rg.r,
+          'data-level': nHas ? nd.level : 'empty'
+        }));
         nestKids.push(React.createElement('circle', {
           key: 'a' + i, className: 'ocgu-nest-arc', cx: NC, cy: NC, r: rg.r,
           'data-level': nHas ? nd.level : 'empty',
@@ -2161,6 +2189,9 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
         // 只有「配额剩余」这一段存在时，进度条上方才需要第二条分割线；
         // 仅显示余额时，余额自己那条分隔线已经够了（否则两条会叠在一起）。
         tipShowQuota ? React.createElement('div', { className: 'ocgu-tip-sep' }) : null,
+        // 三条用量进度条：加一行与余额 / 配额同款的模块标题
+        React.createElement('div', { key: 'usageTitle', className: 'ocgu-tip-bal ocgu-quota-h' },
+          React.createElement('span', { className: 'ocgu-tip-lb' }, t('usage.barsTitle'))),
         tipRows,
         // 走势图是独立板块：先统一分割线，再放图表（关闭走势图时分割线也不渲染）
         tipShowPace && tipPace ? React.createElement('div', { key: 'paceSep', className: 'ocgu-tip-sep' }) : null,
@@ -2676,7 +2707,7 @@ function SettingsPage(props) {
         return React.createElement('svg', {
           key: 'r' + key, width: '22', height: '22', viewBox: '0 0 24 24', 'aria-hidden': 'true', focusable: 'false'
         },
-          React.createElement('circle', { className: 'ocgu-cprev-ring-track', cx: 12, cy: 12, r: ringR, strokeWidth: 3.2 }),
+          React.createElement('circle', { className: 'ocgu-cprev-ring-track', 'data-level': level, cx: 12, cy: 12, r: ringR, strokeWidth: 3.2 }),
           React.createElement('circle', {
             className: 'ocgu-cprev-ring', 'data-level': level, cx: 12, cy: 12, r: ringR, strokeWidth: 3.2,
             strokeDasharray: String(ringC), strokeDashoffset: String(ringC * (1 - pct / 100)),
@@ -2697,7 +2728,7 @@ function SettingsPage(props) {
         var c = 2 * Math.PI * r;
         var pct = pctOf(winKey);
         nestKids.push(React.createElement('circle', {
-          key: 't' + role, className: 'ocgu-cprev-ring-track', cx: 13, cy: 13, r: r, strokeWidth: 2.6
+          key: 't' + role, className: 'ocgu-cprev-ring-track', 'data-level': DEMO_LEVEL[winKey], cx: 13, cy: 13, r: r, strokeWidth: 2.6
         }));
         nestKids.push(React.createElement('circle', {
           key: 'a' + role, className: 'ocgu-cprev-ring', 'data-level': DEMO_LEVEL[winKey],
@@ -3171,8 +3202,8 @@ function SettingsPage(props) {
     var openConsole = function () {
       try { window.open('https://opencode.ai/console', '_blank', 'noopener'); } catch (e) { /* 打不开不影响其它功能 */ }
     };
-    // 配额 / 币种：本页与浮层共用同一套计算（quotaSetLines / quotaTipRows 在模块作用域）
-    var qSetLines = quotaSetLines(value, t);
+    // 配额 / 币种：本页与浮层共用同一套计算（quotaSetRows / quotaTipRows 在模块作用域）
+    var qSetRows = quotaSetRows(value, t);
     var modelList = goModelList(value);
     var selQuotaModels = quotaModels(value);
     var selQuotaIds = selQuotaModels.map(function (m) { return m.id; });
@@ -3268,7 +3299,7 @@ function SettingsPage(props) {
         var cc = 2 * Math.PI * rr;
         circles.push(React.createElement('circle', {
           key: 't' + role, cx: CX, cy: CY, r: rr, fill: 'none',
-          stroke: 'var(--dsw-alias-label-tertiary)', strokeOpacity: 0.26, strokeWidth: 5.2
+          stroke: LEVEL_COLOR[has ? d.level : 'empty'], strokeOpacity: 0.32, strokeWidth: 5.2
         }));
         circles.push(React.createElement('circle', {
           key: 'a' + role, cx: CX, cy: CY, r: rr, fill: 'none',
@@ -3388,7 +3419,21 @@ function SettingsPage(props) {
 
       // ── 标签一：用量（配额参考 + 计价币种 + 套餐配额卡片 + 自动刷新间隔）──
       tab === 'usage' ? React.createElement('div', { key: 'usage', className: 'ocgu-tabpane' },
-      // 配额参考模型选择（本标签第一项；原「用量详情」标题与标签名重复，已删除）
+      // 金额显示计价币种（本标签第一项）：小号分段控件 = 自动 / ¥ 人民币 / ＄ 美元
+      React.createElement(FieldRow, {
+        title: t('field.currency'),
+        hint: fxHint(value, t),
+        msg: msgOf('currency'),
+        tone: toneOf('currency'),
+        nowrap: true,
+        control: [
+          React.createElement(Seg, {
+            key: 'seg', label: t('field.currency'), title: t('cur.autoHint'),
+            value: String(value.currencyMode || 'auto')
+          }, curButton('auto', 'cur.auto'), curButton('cny', 'cur.cny'), curButton('usd', 'cur.usd'))
+        ]
+      }),
+      // 配额参考模型选择（紧跟在计价币种下方）
       React.createElement(FieldRow, {
         title: t('quota.pick'),
         hint: quotaModelHint(value, t),
@@ -3418,27 +3463,30 @@ function SettingsPage(props) {
               : React.createElement('div', { className: 'ocgu-dd-item', style: { color: 'var(--dsw-alias-label-tertiary)' } }, t('quota.loading'))))
         ]
       }),
-      // 金额显示计价币种（紧跟在配额参考模型选择下方）：小号分段控件 = 自动 / ¥ 人民币 / ＄ 美元
-      React.createElement(FieldRow, {
-        title: t('field.currency'),
-        hint: fxHint(value, t),
-        msg: msgOf('currency'),
-        tone: toneOf('currency'),
-        nowrap: true,
-        control: [
-          React.createElement(Seg, {
-            key: 'seg', label: t('field.currency'), title: t('cur.autoHint'),
-            value: String(value.currencyMode || 'auto')
-          }, curButton('auto', 'cur.auto'), curButton('cny', 'cur.cny'), curButton('usd', 'cur.usd'))
-        ]
-      }),
-      // 套餐配额：标题照搬字段标题样式，下面每个选中的参考模型一行（金额跟随全局币种）
+      // 套餐配额：标题照搬字段标题样式；每个模型一行，四列按最长内容 + 2 字符间距对齐
       React.createElement('div', { className: 'ocgu-qset', title: quotaSrcHint(value, t) },
         React.createElement('div', { className: 'ocgu-field-title' }, t('quota.title')),
-        qSetLines.map(function (line, i) {
-          return React.createElement('div', { className: 'ocgu-hint', key: i }, line);
-        })),
+        qSetRows.length ? React.createElement('div', { className: 'ocgu-qset-grid' },
+          qSetRows.map(function (row, i) {
+            var cell = function (labelKey, value) {
+              return React.createElement('span', { className: 'ocgu-qset-cell' },
+                React.createElement('span', { className: 'ocgu-qset-lb' }, t(labelKey)), value);
+            };
+            var parts = [React.createElement('div', { className: 'ocgu-qset-row', key: row.key },
+              cell('quota.colModel', row.name),
+              cell('quota.colQuota', row.quota),
+              cell('quota.colUsed', row.used),
+              cell('quota.colLeft', row.left))];
+            if (i < qSetRows.length - 1) {
+              parts.push(React.createElement('span', {
+                className: 'ocgu-qset-sep', key: row.key + '-sep', 'aria-hidden': 'true'
+              }));
+            }
+            return parts;
+          }))
+          : React.createElement('div', { className: 'ocgu-hint' }, t('quota.loading'))),
       React.createElement('div', { className: 'ocgu-card', style: { marginTop: '10px' } },
+        React.createElement('div', { className: 'ocgu-field-title', style: { marginBottom: '10px' } }, t('usage.barsTitle')),
         React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' } },
           React.createElement('span', { className: 'ocgu-badge', 'data-tone': badgeTone(ocgKeyStatus) }, statusText(ocgKeyStatus)),
           React.createElement('span', { className: 'ocgu-hint' }, value.keyHint || 'OPENCODE_GO_API_KEY'),

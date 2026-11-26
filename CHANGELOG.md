@@ -1,3 +1,31 @@
+## 3.6.3
+
+### 改进
+- 优化设置页「OpenCode Go 套餐配额」下的模型配额行显示排版；
+- 优化悬停浮层的整体显示排版；
+- 调整部分菜单的位次；
+- 优化部分菜单和说明的准确性；
+- 优化极简模式三环的轨道由灰色改为与该环档位一致的派生浅色，与常规圆环视觉保持一致；
+- 重新设计插件图标：去掉光晕、修复顶部裁切，改为实心绿并留出安全边距；npm 包补上 assets/icon.png，README 与插件市场图标同步。
+
+### 兼容性
+- 无设置项与数据结构变化，旧配置继续生效；
+- 图标路径不变，仅替换文件；npm 包新增 assets/icon.png，不影响安装。
+
+---
+
+### Improvements
+- Improved the layout of the per-model quota rows under “OpenCode Go plan quota” on the settings page;
+- Improved the overall layout of the hover popover;
+- Adjusted the order of some settings rows;
+- Improved the accuracy of some menu labels and descriptions;
+- Changed the minimal-mode nested-ring tracks from grey to a derived light colour matching each ring's tier, consistent with the regular rings;
+- Redesigned the plugin icon: removed the glow, fixed the top clipping, switched to solid green with a safe inner margin; the npm package now ships `assets/icon.png`, and the README / marketplace icons are synced.
+
+### Compatibility
+- No settings or data-structure changes; existing configuration keeps working;
+- The icon path is unchanged (file contents only); the npm package now includes `assets/icon.png`, with no effect on installation.
+
 ## 3.6.2
 
 ### 新功能

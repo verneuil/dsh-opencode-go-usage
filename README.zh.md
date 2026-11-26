@@ -36,7 +36,7 @@
 
 - **OpenCode Go配额计算+DeepSeek官方余额展示**：
 
-  - 浮窗左侧的余额区域可选择显示**DeepSeek 官方余额**或**按参考模型折算出的 OCG 配额剩余**；
+  - 浮窗左侧的余额区域可选择显示**DeepSeek 官方余额**或**按所选参考模型折算出的 OCG 配额剩余换算**；
   - OCG模型列表与配额自动获取，取不到就用内置模型表和配额数据。
 
 - **三环进度条显示窗口用量**：
@@ -58,7 +58,7 @@
 
 - **OCG 配额折算**：
 
-  - 在设置页选一个**参考模型**（默认 DeepSeek V4.1 Flash，可选 OpenCode Go 全部官方模型），插件按「该模型 **Go 档**月度配额 × 本月已用百分比」算出**已消耗 / 剩余金额**，显示在设置页与悬停浮层；
+  - 在设置页勾选最多五个**参考模型**（默认 DeepSeek V4.1 Flash，可选 OpenCode Go 全部官方模型），插件按每个模型「**Go 档**月度配额 × 本月已用百分比」分别算出**消耗换算 / 剩余换算金额**，显示在设置页与悬停浮层；
   - 免费模型显示「免费」，无限制模型显示「无限制」，剩余配额等均显示为 -- 。
 
 - **金额计价币种**：
@@ -95,10 +95,10 @@
 | ---------------------------- | ------------------------------------------------------------------------------------------------------------ |
 | **GitHub 直装**（推荐）      | `github:verneuil/dsh-opencode-go-usage`                                                                      |
 | **npm 安装**                 | `dsh plugin --profile web add @verneuil/dsh-opencode-go-usage`                                               |
-| **固定某个版本**             | `github:verneuil/dsh-opencode-go-usage#v3.6.2`（换成任意已发布 tag）                                         |
-| **Release 包**               | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v3.6.2/dsh-opencode-go-usage-3.6.2.tgz` |
+| **固定某个版本**             | `github:verneuil/dsh-opencode-go-usage#v3.6.3`（换成任意已发布 tag）                                         |
+| **Release 包**               | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v3.6.3/dsh-opencode-go-usage-3.6.3.tgz` |
 | **Release 直链（始终最新）** | `https://github.com/verneuil/dsh-opencode-go-usage/releases/latest/download/dsh-opencode-go-usage.tgz`       |
-| **离线 tgz**                 | `file:D:/你的路径/dsh-opencode-go-usage-3.6.2.tgz`                                                           |
+| **离线 tgz**                 | `file:D:/你的路径/dsh-opencode-go-usage-3.6.3.tgz`                                                           |
 
 命令行等价写法（`dsh plugin` 会把声明了 `dsh.bundle` 的依赖自动加进 profile 的 bundles，无需手写 patch）：
 
@@ -136,13 +136,13 @@ dsh plugin --profile web add github:verneuil/dsh-opencode-go-usage
 
 设置页分四个标签：**用量数据**（默认）/ **浮窗管理** / **配色设置** / **通用设置**。
 
-页面顶部标题右侧是 **GitHub 图标 + 当前版本号**（如 `v3.6.2`），点击图标打开本插件仓库。
+页面顶部标题右侧是 **GitHub 图标 + 当前版本号**（如 `v3.6.3`），点击图标打开本插件仓库。
 
 **用量数据**
 
-- **配额参考模型选择**：下拉框列出 OpenCode Go 全部官方模型（默认 **DeepSeek V4.1 Flash**）；下方小字显示**模型表更新时间**与本次刷新结果。
 - **金额显示计价币种**：三选一： `自动` / `¥ 人民币` / `＄ 美元`；下方小字显示**当前汇率、汇率更新时间**与刷新结果。
-- **套餐配额**： `模型：X（总配额：Z，消耗：Y，剩余：W）`；金额按**参考模型的 Go 档月度配额 × 本月已用百分比**折算。
+- **配额参考模型选择**：多选下拉，列出 OpenCode Go 全部官方模型，最多勾选 5 个（默认 **DeepSeek V4.1 Flash**）；下方小字显示**模型表更新时间**与本次刷新结果。
+- **套餐配额**：每个已选模型一行，四列对齐显示 模型 / 总配额 / 消耗换算 / 剩余换算；金额按**参考模型的 Go 档月度配额 × 本月已用百分比**折算。
 - **用量详情**：三个窗口的进度条、百分比（口径可选）、重置倒计时与接口 status。
 - **预计用量走势**：用量卡片内、三根进度条下方，显示**本期订阅预计用量走势**（实际段实线 / 预计段虚线、50% 与 100% 虚线、续费日期；鼠标悬停预计段可按天查看预估用量与日均增长）。
 - **进度口径二选一**（用量详情卡片右上角）：**已使用** / **剩余**；紧挨着它的是 **OpenCode 官方图标**，点击打开 [OpenCode 账户页](https://opencode.ai/console)。浮窗与设置页同时跟随该口径；默认**已使用**。
@@ -156,8 +156,9 @@ dsh plugin --profile web add github:verneuil/dsh-opencode-go-usage
 - **浮窗总开关**：关闭后，下面各项整行变灰且不可操作。
 - **浮窗大小**：拖动条调档，只有「默认 100%」这一档带文字标注。向左两档为减小 10% / 减小 20%，向右五档为 +15% / +30% / +50% / +75% / +100%（即 80% ~ 200%）；余额、三环与悬停浮层同比例缩放，位置锚线保持有效。
 - **在浮窗左侧显示余额**（开关）：浮窗左侧显示一行余额；关掉后下一项一并收起。
-- **浮窗左侧余额数据**（二选一）：`DS余额` / `OCG配额剩余` —— 决定左侧那一行取哪份数据（DS 余额包含赠金）。
-- **鼠标悬停浮层数据控制**（下拉多选）：`DS余额` / `OCG配额剩余` / `预计用量走势` —— 可任意勾选，或**全都不勾选**（此时浮层只留三条进度条）；**点击下拉范围之外会自动收起**。关闭走势图后，浮层里不会留下分割线痕迹。
+- **浮窗左侧余额数据**（二选一）：`DS余额` / `OCG配额剩余换算` —— 决定左侧那一行取哪份数据（DS 余额包含赠金）。
+- **左侧显示的配额模型**（仅左侧选 OCG 配额时出现）：从已勾选的参考模型里单选一个，浮窗左侧显示该模型的剩余换算金额。
+- **鼠标悬停浮层数据控制**（下拉多选）：`DS余额` / `OCG配额剩余换算` / `预计用量走势` —— 可任意勾选，或**全都不勾选**（此时浮层只留三条进度条）；**点击下拉范围之外会自动收起**。关闭走势图后，浮层里不会留下分割线痕迹。
 - **极简模式**（开关）：三环嵌套（外 / 中 / 内）+ 余额取整显示在环旁。
 - **三环显示数据**（仅在极简模式下可用）：分别指定外 / 中 / 内三环显示「5 小时 / 本周 / 本月」中的哪一个，右侧带实时预览（三个按钮左侧标注「外环 / 中环 / 内环」）。
 - **重置浮窗位置**：把浮窗放回默认位置（**窗口左下角**，贴左边 7px、距底 9.2px）。
@@ -257,7 +258,8 @@ GET https://api.frankfurter.app/latest?from=USD&to=CNY      # USD/CNY 汇率（�
 | `widgetVisible`                                                 | 浮窗显示开关                                                                                                                                 |
 | `widgetScale`                                                   | 浮窗大小倍数：`1` 默认（默认值）/ `0.9` 减小 10% / `0.8` 减小 20% / `1.15` +15% / `1.3` +30% / `1.5` +50% / `1.75` +75% / `2` +100% |
 | `showBalance`                                                   | 浮窗左侧是否显示余额那一行（默认关）                                                                                                         |
-| `pillBalanceSource`                                             | 浮窗左侧余额数据：`deepseek` DS 余额（默认）/ `quota` OCG 配额剩余                                                                           |
+| `pillBalanceSource`                                             | 浮窗左侧余额数据：`deepseek` DS 余额（默认）/ `quota` OCG 配额剩余换算                                                                       |
+| `pillQuotaModel`                                                | 左侧选 OCG 配额时显示哪个参考模型（空 = 已选模型中的第一个）                                                                                 |
 | `tipShowBalance`、`tipShowQuota`、`tipShowPace`                  | 悬停浮层里两段余额与预计用量走势是否显示（默认都开；全关则浮层只留三条进度条）                                                              |
 | `sidebarEntry`                                                  | 侧栏里是否出现本插件入口（默认关闭；等同于设置页的「侧栏入口」开关）                                                                         |
 | `ringOuter` / `ringMiddle` / `ringInner`                        | 极简模式下外 / 中 / 内三环各自显示的窗口：`rolling` = 5 小时、`weekly` = 本周、`monthly` = 本月（默认分别 `monthly` / `weekly` / `rolling`） |
@@ -265,7 +267,8 @@ GET https://api.frankfurter.app/latest?from=USD&to=CNY      # USD/CNY 汇率（�
 | `colorFollowHost`                                               | 跟随宿主配色：正常档改用宿主强调色（`--dsw-alias-brand-primary`），警告 / 危险保持默认；手动改正常档会自动关闭（默认关）                     |
 | `colorAll` / `colorAllWarn` / `colorAllDanger`                  | 统一配色下的三档自定义色（CSS 值：`#RRGGBB`、`rgb()`、`hsl()`；留空 = 主题默认绿 / 橙 / 红）                                              |
 | `colorRing*` / `colorBar*`（带 `…Warn` / `…Danger` 后缀）       | 关闭统一配色后环状 / 条状各自的三档颜色（正常 = 无后缀，警告 = `Warn`，危险 = `Danger`）；条状正常色同时用于预计用量走势的实际段               |
-| `quotaRefModel`                                                 | 配额参考模型 ID（默认 `deepseek-v4.1-flash`，可选项来自官方模型表）                                                                          |
+| `quotaRefModel`                                                 | 旧的单模型参考 ID（默认 `deepseek-v4.1-flash`）；`quotaRefModels` 为空时作为单模型回退                                                        |
+| `quotaRefModels`                                                | 多选参考模型 ID 数组（最多 5 个；为空时回退到 `quotaRefModel` / DeepSeek V4.1 Flash）                                                        |
 | `currencyMode`                                                  | 金额计价币种：`auto` 自动（默认）/ `cny` 人民币 / `usd` 美元                                                                                 |
 | `percentMode`                                                   | 用量进度口径：`used` 已使用（默认）/ `left` 剩余                                                                                             |
 | `widgetAnchorX/Y`、`widgetOffsetX/Y`                            | 浮窗锚定（拖动时由客户端写入；默认窗口左下角，距左 7px、距底 9.2px）                                                                                       |

@@ -285,6 +285,8 @@ check('popover quota row labels the reference model', () => {
   const host = read('index.js')
   return client.includes('QUOTA_MAX_MODELS') && client.includes('quotaRefModels') &&
     client.includes('ocgu-quota-line') && client.includes('pillQuotaModel') &&
+    client.includes('ocgu-qset-grid') && client.includes('quotaSetRows') &&
+    client.includes('usage.barsTitle') && client.includes('quota.colLeft') &&
     host.includes('quotaRefModels') && host.includes('pillQuotaModel')
 })
 check('usdCny looks like a real rate', () => typeof data.fx?.usdCny === 'number' && data.fx.usdCny > 1 && data.fx.usdCny < 20)
