@@ -60,6 +60,7 @@
     "cordis.patch.yml",
     "locale",
     "icon.svg",
+    "assets/icon.png",
     "README.md",
     "README.zh.md",
     "CHANGELOG.md",
