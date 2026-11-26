@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/icon.png" width="96" height="96" alt="OCG Usage icon" />
+<img src="assets/icon.png?v=3.6.4" width="96" height="96" alt="OCG Usage icon" />
 
 # OCG Usage
 
@@ -96,10 +96,10 @@ In DSH, open the **plugin manager → “Install plugin” dialog → paste one 
 | -------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
 | **Straight from GitHub** (recommended) | `github:verneuil/dsh-opencode-go-usage`                                                                      |
 | **From npm**                           | `dsh plugin --profile web add @verneuil/dsh-opencode-go-usage`                                               |
-| **Pin a version**                      | `github:verneuil/dsh-opencode-go-usage#v3.6.3` (replace with any published tag)                              |
-| **Release tarball**                    | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v3.6.3/dsh-opencode-go-usage-3.6.3.tgz` |
+| **Pin a version**                      | `github:verneuil/dsh-opencode-go-usage#v3.6.4` (replace with any published tag)                              |
+| **Release tarball**                    | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v3.6.4/dsh-opencode-go-usage-3.6.4.tgz` |
 | **Release URL (always latest)**        | `https://github.com/verneuil/dsh-opencode-go-usage/releases/latest/download/dsh-opencode-go-usage.tgz`       |
-| **Offline tgz**                        | `file:D:/your/path/dsh-opencode-go-usage-3.6.3.tgz`                                                          |
+| **Offline tgz**                        | `file:D:/your/path/dsh-opencode-go-usage-3.6.4.tgz`                                                          |
 
 The equivalent command line (`dsh plugin` automatically adds dependencies that declare `dsh.bundle` to the profile's bundles — no hand-written patch needed):
 
@@ -137,7 +137,7 @@ Follow the on-screen prompt to reload afterwards (replacing an installed JavaScr
 
 The settings page has four tabs: **Usage data** (default) / **Floating pill** / **Colour settings** / **General settings**.
 
-Next to the page title sit the **GitHub icon and the current version** (e.g. `v3.6.3`); clicking the icon opens this repository.
+Next to the page title sit the **GitHub icon and the current version** (e.g. `v3.6.4`); clicking the icon opens this repository.
 
 **Usage data**
 
@@ -192,21 +192,21 @@ Because the plugin ships its own settings page, the host side calls the official
 
 | Pill · light | Pill · dark |
 | --- | --- |
-| ![Pill · light](screenshots/float-light.png) | ![Pill · dark](screenshots/float-dark.png) |
+| ![Pill · light](screenshots/float-light.png?v=3.6.4) | ![Pill · dark](screenshots/float-dark.png?v=3.6.4) |
 | **Settings · Usage data (light)** | **Settings · Usage data (dark)** |
-| ![Settings · Usage data · light](screenshots/settings-light.png) | ![Settings · Usage data · dark](screenshots/settings-dark.png) |
+| ![Settings · Usage data · light](screenshots/settings-light.png?v=3.6.4) | ![Settings · Usage data · dark](screenshots/settings-dark.png?v=3.6.4) |
 | **Settings · Floating pill (light)** | **Settings · Floating pill (dark)** |
-| ![Settings · Floating pill · light](screenshots/settings-widget-light.png) | ![Settings · Floating pill · dark](screenshots/settings-widget-dark.png) |
+| ![Settings · Floating pill · light](screenshots/settings-widget-light.png?v=3.6.4) | ![Settings · Floating pill · dark](screenshots/settings-widget-dark.png?v=3.6.4) |
 | **Settings · Colour settings (light)** | **Settings · Colour settings (dark)** |
-| ![Settings · Colour settings · light](screenshots/settings-color-light.png) | ![Settings · Colour settings · dark](screenshots/settings-color-dark.png) |
+| ![Settings · Colour settings · light](screenshots/settings-color-light.png?v=3.6.4) | ![Settings · Colour settings · dark](screenshots/settings-color-dark.png?v=3.6.4) |
 | **Settings · General settings (light)** | **Settings · General settings (dark)** |
-| ![Settings · General settings · light](screenshots/settings-general-light.png) | ![Settings · General settings · dark](screenshots/settings-general-dark.png) |
+| ![Settings · General settings · light](screenshots/settings-general-light.png?v=3.6.4) | ![Settings · General settings · dark](screenshots/settings-general-dark.png?v=3.6.4) |
 | **Sidebar entry · full settings page** (what the sidebar row opens when the entry is enabled) |  |
-| ![Sidebar entry](screenshots/sidebar-light.png) |  |
+| ![Sidebar entry](screenshots/sidebar-light.png?v=3.6.4) |  |
 
 **States and colour grades** (refreshing / success / failure / three grade colours / minimal mode / most compact form / narrowed after hiding the balance)
 
-![States and colour grades](screenshots/states-light.png)
+![States and colour grades](screenshots/states-light.png?v=3.6.4)
 
 ## Design goal: minimal
 

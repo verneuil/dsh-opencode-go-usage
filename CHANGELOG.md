@@ -1,3 +1,13 @@
+## 3.6.4
+
+### 改进
+- 补充更新插件icon。
+
+---
+
+### Improvements
+- Updated the plugin icon.
+
 ## 3.6.3
 
 ### 改进

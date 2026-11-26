@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/icon.png" width="96" height="96" alt="OCG 余量查询 icon" />
+<img src="assets/icon.png?v=3.6.4" width="96" height="96" alt="OCG 余量查询 icon" />
 
 # OCG 余量查询
 
@@ -95,10 +95,10 @@
 | ---------------------------- | ------------------------------------------------------------------------------------------------------------ |
 | **GitHub 直装**（推荐）      | `github:verneuil/dsh-opencode-go-usage`                                                                      |
 | **npm 安装**                 | `dsh plugin --profile web add @verneuil/dsh-opencode-go-usage`                                               |
-| **固定某个版本**             | `github:verneuil/dsh-opencode-go-usage#v3.6.3`（换成任意已发布 tag）                                         |
-| **Release 包**               | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v3.6.3/dsh-opencode-go-usage-3.6.3.tgz` |
+| **固定某个版本**             | `github:verneuil/dsh-opencode-go-usage#v3.6.4`（换成任意已发布 tag）                                         |
+| **Release 包**               | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v3.6.4/dsh-opencode-go-usage-3.6.4.tgz` |
 | **Release 直链（始终最新）** | `https://github.com/verneuil/dsh-opencode-go-usage/releases/latest/download/dsh-opencode-go-usage.tgz`       |
-| **离线 tgz**                 | `file:D:/你的路径/dsh-opencode-go-usage-3.6.3.tgz`                                                           |
+| **离线 tgz**                 | `file:D:/你的路径/dsh-opencode-go-usage-3.6.4.tgz`                                                           |
 
 命令行等价写法（`dsh plugin` 会把声明了 `dsh.bundle` 的依赖自动加进 profile 的 bundles，无需手写 patch）：
 
@@ -136,7 +136,7 @@ dsh plugin --profile web add github:verneuil/dsh-opencode-go-usage
 
 设置页分四个标签：**用量数据**（默认）/ **浮窗管理** / **配色设置** / **通用设置**。
 
-页面顶部标题右侧是 **GitHub 图标 + 当前版本号**（如 `v3.6.3`），点击图标打开本插件仓库。
+页面顶部标题右侧是 **GitHub 图标 + 当前版本号**（如 `v3.6.4`），点击图标打开本插件仓库。
 
 **用量数据**
 
@@ -192,21 +192,21 @@ dsh plugin --profile web add github:verneuil/dsh-opencode-go-usage
 
 | 浮窗 · 浅色 | 浮窗 · 深色 |
 | --- | --- |
-| ![浮窗 · 浅色](screenshots/float-light.png) | ![浮窗 · 深色](screenshots/float-dark.png) |
+| ![浮窗 · 浅色](screenshots/float-light.png?v=3.6.4) | ![浮窗 · 深色](screenshots/float-dark.png?v=3.6.4) |
 | **设置页 · 用量数据（浅色）** | **设置页 · 用量数据（深色）** |
-| ![设置页 · 用量数据 · 浅色](screenshots/settings-light.png) | ![设置页 · 用量数据 · 深色](screenshots/settings-dark.png) |
+| ![设置页 · 用量数据 · 浅色](screenshots/settings-light.png?v=3.6.4) | ![设置页 · 用量数据 · 深色](screenshots/settings-dark.png?v=3.6.4) |
 | **设置页 · 浮窗管理（浅色）** | **设置页 · 浮窗管理（深色）** |
-| ![设置页 · 浮窗管理 · 浅色](screenshots/settings-widget-light.png) | ![设置页 · 浮窗管理 · 深色](screenshots/settings-widget-dark.png) |
+| ![设置页 · 浮窗管理 · 浅色](screenshots/settings-widget-light.png?v=3.6.4) | ![设置页 · 浮窗管理 · 深色](screenshots/settings-widget-dark.png?v=3.6.4) |
 | **设置页 · 配色设置（浅色）** | **设置页 · 配色设置（深色）** |
-| ![设置页 · 配色设置 · 浅色](screenshots/settings-color-light.png) | ![设置页 · 配色设置 · 深色](screenshots/settings-color-dark.png) |
+| ![设置页 · 配色设置 · 浅色](screenshots/settings-color-light.png?v=3.6.4) | ![设置页 · 配色设置 · 深色](screenshots/settings-color-dark.png?v=3.6.4) |
 | **设置页 · 通用设置（浅色）** | **设置页 · 通用设置（深色）** |
-| ![设置页 · 通用设置 · 浅色](screenshots/settings-general-light.png) | ![设置页 · 通用设置 · 深色](screenshots/settings-general-dark.png) |
+| ![设置页 · 通用设置 · 浅色](screenshots/settings-general-light.png?v=3.6.4) | ![设置页 · 通用设置 · 深色](screenshots/settings-general-dark.png?v=3.6.4) |
 | **侧栏入口 · 整页设置**（开启「侧栏入口」后，点侧栏里那一行打开的页面） |  |
-| ![侧栏入口 · 整页设置](screenshots/sidebar-light.png) |  |
+| ![侧栏入口 · 整页设置](screenshots/sidebar-light.png?v=3.6.4) |  |
 
 **形态与配色总览**（更新中 / 成功 / 失败 / 三档配色 / 极简模式 / 最精简形态 / 关掉余额后变窄）
 
-![形态与配色总览](screenshots/states-light.png)
+![形态与配色总览](screenshots/states-light.png?v=3.6.4)
 
 ## 目标：极简
 
