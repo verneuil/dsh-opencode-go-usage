@@ -91,10 +91,15 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
     '.ocgu-dd-panel{position:absolute;right:0;top:calc(100% + 4px);z-index:30;min-width:100%;padding:4px;border:.5px solid var(--dsw-alias-border-l2);border-radius:10px;background:var(--dsw-alias-bg-base);box-shadow:0 8px 24px rgba(0,0,0,.16)}' +
     '.ocgu-dd-item{display:flex;align-items:center;gap:6px;padding:5px 8px;border-radius:6px;font-size:12px;color:var(--dsw-alias-label-primary);cursor:pointer;white-space:nowrap}' +
     '.ocgu-dd-item:hover{background:var(--dsw-alias-interactive-bg-hover)}' +
+    '.ocgu-dd-item[data-disabled="1"]{opacity:.45;cursor:not-allowed}' +
     // 配额四行：标题用深色（primary），其余三行用浅色（secondary）；设置页那版字号更大
     '.ocgu-quota{display:flex;flex-direction:column;gap:1px;font-size:10.5px;font-weight:600;line-height:1.45;font-variant-numeric:tabular-nums;color:var(--dsw-alias-label-secondary)}' +
     '.ocgu-quota-h{color:var(--dsw-alias-label-primary)}' +
     '.ocgu-quota-sub{font-weight:400}' +
+    // 配额剩余标题下方的多模型明细：左名称、右剩余金额
+    '.ocgu-quota-line{display:flex;align-items:baseline;justify-content:space-between;gap:10px;font-size:10.5px;font-weight:400;line-height:1.45;font-variant-numeric:tabular-nums}' +
+    '.ocgu-quota-name{color:var(--dsw-alias-label-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
+    '.ocgu-quota-val{color:var(--dsw-alias-label-primary);font-weight:600;white-space:nowrap}' +
     // 设置页配额块：标题用字段标题样式（照搬），下面两行用小字样式并居中（由渲染层加 textAlign）
     '.ocgu-qset{display:flex;flex-direction:column;gap:2px;margin-top:10px}' +
     // 抓取失败点名报错：单行出品，浮层底部与设置页共用
@@ -608,20 +613,49 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
     return clampNum(pct, 0, 100);
   }
   // 配额折算：Go 档月度配额（美元）× 月度已用百分比
-  function quotaOf(value) {
+  var QUOTA_MAX_MODELS = 5;
+  var DEFAULT_QUOTA_MODEL_ID = 'deepseek-v4.1-flash';
+  // 选中的参考模型 id 列表：优先 quotaRefModels，其次旧单值 quotaRefModel，最后默认 DS V4.1 Flash
+  function quotaModelIds(value) {
+    var out = [];
+    var arr = value && Array.isArray(value.quotaRefModels) ? value.quotaRefModels : [];
+    for (var i = 0; i < arr.length && out.length < QUOTA_MAX_MODELS; i++) {
+      var id = String(arr[i] || '');
+      if (id && out.indexOf(id) < 0) out.push(id);
+    }
+    if (out.length) return out;
+    return [String((value && value.quotaRefModel) || DEFAULT_QUOTA_MODEL_ID)];
+  }
+  function quotaModels(value) {
     var list = goModelList(value);
-    var id = String((value && value.quotaRefModel) || 'deepseek-v4.1-flash');
-    var m = null;
-    for (var i = 0; i < list.length; i++) { if (list[i].id === id) { m = list[i]; break; } }
-    if (!m && list.length) { m = list[0]; id = m.id; }   // 选中模型已下架 → 退到列表第一个
-    var q = m ? Number(m.go) : NaN;
+    var byId = {};
+    for (var i = 0; i < list.length; i++) byId[list[i].id] = list[i];
+    var ids = quotaModelIds(value), out = [];
+    for (var j = 0; j < ids.length; j++) if (byId[ids[j]]) out.push(byId[ids[j]]);
+    // 未选中任何模型 / 选中的 id 全部失效：优先回退到默认 DS V4.1 Flash，其次列表第一个
+    if (!out.length && list.length) {
+      var def = null;
+      for (var k = 0; k < list.length; k++) if (list[k].id === DEFAULT_QUOTA_MODEL_ID) { def = list[k]; break; }
+      out.push(def || list[0]);
+    }
+    return out.slice(0, QUOTA_MAX_MODELS);
+  }
+  function quotaForModel(value, model) {
+    var q = model ? Number(model.go) : NaN;
     var used = monthlyUsedPct(value);
     var hasQuota = isFinite(q) && q > 0;
     return {
-      model: m, id: id, quota: q, usedPct: used,
+      model: model, id: model ? model.id : '', quota: q, usedPct: used, hasQuota: hasQuota,
       used: hasQuota ? q * used / 100 : NaN,
       left: hasQuota ? q * (1 - used / 100) : NaN
     };
+  }
+  // 浮窗左侧配额剩余：只显示用户单选的那个模型；失效/未选时回退到第一个已选模型
+  function pillQuotaModelOf(value) {
+    var models = quotaModels(value);
+    var want = String((value && value.pillQuotaModel) || '');
+    for (var i = 0; i < models.length; i++) if (models[i].id === want) return models[i];
+    return models[0] || null;
   }
   // 抓取失败清单：点名到具体数据源（用量 / 余额 / 汇率 / 模型表）
   function fetchErrors(value, t) {
@@ -675,9 +709,9 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
       status: at ? srcStatus(value, 'fx', t) : ''
     });
   }
-  // 配额金额三态：正常 / 免费 / 无限制
-  function quotaAmounts(value, t) {
-    var q = quotaOf(value);
+  // 单个模型的金额三态：正常 / 免费 / 无限制
+  function quotaTextsFor(value, t, model) {
+    var q = quotaForModel(value, model);
     var usable = isFinite(q.quota) && q.quota > 0;
     var quotaStr = q.quota === -1 ? t('quota.unlimited') : (q.quota === 0 ? t('quota.free') : usdText(value, t, q.quota));
     return {
@@ -687,18 +721,21 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
       left: usable ? usdText(value, t, q.left) : '--'
     };
   }
-  // 浮层：配额剩余一行（标签 + 金额两段，金额加粗）；总配额 / 已消耗那行已按要求去掉
-  function quotaTipLines(value, t) {
-    if (!goModelList(value).length) return [t('quota.loading'), ''];
-    var a = quotaAmounts(value, t);
-    return [t('quota.tipLeftLabel'), a.left];
+  // 设置页配额：每个选中的参考模型一行（格式与原来的单模型行一致）
+  function quotaSetLines(value, t) {
+    if (!goModelList(value).length) return [t('quota.loading')];
+    return quotaModels(value).map(function (m) {
+      var a = quotaTextsFor(value, t, m);
+      return t('quota.setLine', { name: (m.name || m.id), quota: a.quota, used: a.used, left: a.left });
+    });
   }
-  // 设置页配额小字：一行（模型 + 括号内的总配额 / 消耗 / 剩余）
-  function quotaSetLine(value, t) {
-    if (!goModelList(value).length) return t('quota.loading');
-    var a = quotaAmounts(value, t);
-    var name = (a.q.model && a.q.model.name) || a.q.id;
-    return t('quota.setLine', { name: name, quota: a.quota, used: a.used, left: a.left });
+  // 浮层配额：每个选中的参考模型一行（左名称、右剩余金额）
+  function quotaTipRows(value, t) {
+    if (!goModelList(value).length) return [];
+    return quotaModels(value).map(function (m) {
+      var a = quotaTextsFor(value, t, m);
+      return { key: m.id, name: (m.name || m.id), left: a.left };
+    });
   }
   function currencySymbol(cur) {
     if (!cur || cur === 'CNY') return '¥';
@@ -874,7 +911,7 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
       'quota.unlimited': '无限制',
       'quota.free': '免费',
       'quota.loading': '配额数据获取中…',
-      'quota.pick': '配额参考模型选择',
+      'quota.pick': '配额参考模型选择（最多 5 个）',
       'quota.hintModels': '模型表更新时间：{t}（{rel}）{status}',
       'quota.hintFx': '1 USD = {rate} CNY，{t}（{rel}）{status}',
       'quota.ok': '，刷新成功',
@@ -958,6 +995,8 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
       'field.pillBalance.hint': '在浮窗胶囊左侧显示一行余额；关闭后下一项一并收起',
       'field.pillBalanceSrc': '浮窗左侧余额数据',
       'field.pillBalanceSrc.hint': 'DS余额包含赠金',
+      'field.pillQuotaModel': '左侧显示的配额模型',
+      'field.pillQuotaModel.hint': '从已勾选的参考模型里单选一个；浮窗左侧立即切换',
       'field.ringMap': '三环显示数据',
       'field.ringMap.hint': '分别指定极简模式下外 / 中 / 内三环显示哪个窗口',
       'ring.outer': '外环',
@@ -1020,6 +1059,7 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
       'tip.ddNone': '都不显示',
       'msg.pillSrcDeepseek': '浮窗左侧已显示 DS 余额',
       'msg.pillSrcQuota': '浮窗左侧已显示 OCG 配额剩余',
+      'msg.pillQuotaModel': '浮窗左侧配额模型：{name}',
       'msg.tipData': '浮层数据：{list}',
       'msg.tipDataNone': '浮层数据：无（只显示进度条）',
       'field.minimal': '极简模式',
@@ -1106,7 +1146,7 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
       'quota.unlimited': 'Unlimited',
       'quota.free': 'Free',
       'quota.loading': 'Loading quota data…',
-      'quota.pick': 'Quota reference model',
+      'quota.pick': 'Quota reference models (up to 5)',
       'quota.hintModels': 'Model table updated: {t} ({rel}){status}',
       'quota.hintFx': '1 USD = {rate} CNY, {t} ({rel}){status}',
       'quota.ok': ', refresh ok',
@@ -1191,6 +1231,8 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
       'field.pillBalance.hint': 'One balance line on the left of the pill; turning it off also collapses the row below',
       'field.pillBalanceSrc': 'Pill left-side balance data',
       'field.pillBalanceSrc.hint': 'The DS balance includes bonus credit',
+      'field.pillQuotaModel': 'Quota model shown on the pill',
+      'field.pillQuotaModel.hint': 'Pick one of the selected reference models; the pill switches immediately',
       'field.ringMap': 'Ring data mapping',
       'field.ringMap.hint': 'Choose which window each outer / middle / inner ring shows in minimal mode',
       'ring.outer': 'Outer',
@@ -1253,6 +1295,7 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
       'tip.ddNone': 'None',
       'msg.pillSrcDeepseek': 'Pill left now shows the DS balance',
       'msg.pillSrcQuota': 'Pill left now shows the OCG quota left',
+      'msg.pillQuotaModel': 'Pill quota model: {name}',
       'msg.tipData': 'Popover data: {list}',
       'msg.tipDataNone': 'Popover data: none (progress bars only)',
       'field.minimal': 'Minimal mode',
@@ -1434,7 +1477,7 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
   // 两路都先换算成当前「金额显示计价币种」；rounded = true 用于极简模式（去掉小数）
   function pillBalanceText(value, t, rounded) {
     var s = String((value && value.pillBalanceSource) || 'deepseek') === 'quota'
-      ? quotaAmounts(value, t).left        // 形如 ¥305.03 / $45.60 / --
+      ? quotaTextsFor(value, t, pillQuotaModelOf(value)).left  // 只显示用户单选的模型，金额跟随全局币种
       : curBalanceText(value, t);          // DeepSeek 余额（接口给的是 ¥，按币种换算）
     if (s === '--') return s;
     return rounded ? s.replace(/\.\d+$/, '') : s;
@@ -2083,7 +2126,7 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
             React.createElement('span', { className: 'ocgu-tip-win' }, t('win.' + w.key)),
             React.createElement('span', { className: 'ocgu-tip-cd' }, fmtCountdown(tw.resetsAt, t) || t('cd.unknown'))));
       });
-      var tipQuota = quotaTipLines(value, t);
+      var tipQuotaRows = quotaTipRows(value, t);
       var tipPace = paceOf(usage);
       var tipBalText = curBalanceText(value, t);
       var tipErrs = fetchErrors(value, t);
@@ -2104,11 +2147,17 @@ window.__ModuleLoader__.load({ id: '@verneuil/dsh-opencode-go-usage', factory: (
           React.createElement('span', { className: 'ocgu-tip-lb' }, t('tip.balanceLabel')),
           React.createElement('span', { className: 'ocgu-tip-amt' }, tipBalText)) : null,
         tipShowBal ? React.createElement('div', { className: 'ocgu-tip-sep' }) : null,
-        // ② 配额剩余：同样独占一栏（标签 + 右对齐的加粗金额）；下方保留既有分割线
+        // ② 配额剩余：标题行金额留空，下面每个选中的参考模型一行（左名称、右剩余）
         tipShowQuota ? React.createElement('div', { className: 'ocgu-quota', title: quotaSrcHint(value, t) },
           React.createElement('div', { className: 'ocgu-tip-bal ocgu-quota-h' },
-            React.createElement('span', { className: 'ocgu-tip-lb' }, tipQuota[0]),
-            React.createElement('span', { className: 'ocgu-tip-amt' }, tipQuota[1]))) : null,
+            React.createElement('span', { className: 'ocgu-tip-lb' }, t('quota.tipLeftLabel'))),
+          tipQuotaRows.length
+            ? tipQuotaRows.map(function (row) {
+              return React.createElement('div', { className: 'ocgu-quota-line', key: row.key },
+                React.createElement('span', { className: 'ocgu-quota-name', title: row.name }, row.name),
+                React.createElement('span', { className: 'ocgu-quota-val' }, row.left));
+            })
+            : React.createElement('div', { className: 'ocgu-hint', style: { fontSize: '10px' } }, t('quota.loading'))) : null,
         // 只有「配额剩余」这一段存在时，进度条上方才需要第二条分割线；
         // 仅显示余额时，余额自己那条分隔线已经够了（否则两条会叠在一起）。
         tipShowQuota ? React.createElement('div', { className: 'ocgu-tip-sep' }) : null,
@@ -2449,12 +2498,15 @@ function SettingsPage(props) {
     var loading = loadState[0];
     var setLoading = loadState[1];
     var dsKeyState = React.useState('');
-    // 下拉多选（悬停浮层余额数据）：点击其范围之外自动收起（点面板内的复选框不收起）
+    // 下拉多选（悬停浮层余额数据 / 参考模型）：点击其范围之外自动收起（点面板内的复选框不收起）
     var ddRef = React.useRef(null);
+    var quotaDdRef = React.useRef(null);
     React.useEffect(function () {
       var onDocDown = function (e) {
-        var el = ddRef.current;
-        if (el && el.open && !el.contains(e.target)) el.open = false;
+        [ddRef, quotaDdRef].forEach(function (ref) {
+          var el = ref.current;
+          if (el && el.open && !el.contains(e.target)) el.open = false;
+        });
       };
       document.addEventListener('pointerdown', onDocDown, true);
       return function () { document.removeEventListener('pointerdown', onDocDown, true); };
@@ -2811,14 +2863,28 @@ function SettingsPage(props) {
       });
     };
 
-    // 切换配额参考模型（只影响折算显示，不触网）
-    var setQuotaModel = function (id) {
-      var next = String(id || '');
-      if (String(value.quotaRefModel || '') === next) return;
-      updateNs(remote, viewRef.current, { quotaRefModel: next }, function (err, nv) {
+    // 切换参考模型（多选，最多 5 个；只影响折算显示，不触网）
+    var setQuotaModels = function (ids) {
+      var next = ids.slice(0, QUOTA_MAX_MODELS);
+      if (!next.length) return;
+      var cur = quotaModelIds(value);
+      if (cur.join('\u0000') === next.join('\u0000')) return;
+      updateNs(remote, viewRef.current, { quotaRefModels: next, quotaRefModel: next[0] }, function (err, nv) {
         if (err || !nv) { say('quota', t('msg.saveFailed', { err: err || t('msg.unknownErr') }), 'error'); return; }
         apply(nv);
       });
+    };
+    var toggleQuotaModel = function (id) {
+      var cur = quotaModels(value).map(function (m) { return m.id; });
+      var idx = cur.indexOf(id);
+      if (idx >= 0) {
+        if (cur.length <= 1) return; // 至少保留一个
+        cur = cur.slice(0, idx).concat(cur.slice(idx + 1));
+      } else {
+        if (cur.length >= QUOTA_MAX_MODELS) return;
+        cur = cur.concat([id]);
+      }
+      setQuotaModels(cur);
     };
 
     // 切换计价币种（auto / cny / usd）
@@ -2837,6 +2903,18 @@ function SettingsPage(props) {
         if (err || !nv) { say('pillSrc', t('msg.saveFailed', { err: err || t('msg.unknownErr') }), 'error'); return; }
         apply(nv);
         say('pillSrc', v === 'quota' ? t('msg.pillSrcQuota') : t('msg.pillSrcDeepseek'));
+      });
+    };
+    // 浮窗左侧选「OCG配额剩余」时，单选取哪个参考模型的配额
+    var setPillQuotaModel = function (id) {
+      var next = String(id || '');
+      if (!next || String(value.pillQuotaModel || '') === next) return;
+      var models = quotaModels(value), name = next;
+      for (var i = 0; i < models.length; i++) if (models[i].id === next) { name = models[i].name || next; break; }
+      updateNs(remote, viewRef.current, { pillQuotaModel: next }, function (err, nv) {
+        if (err || !nv) { say('pillModel', t('msg.saveFailed', { err: err || t('msg.unknownErr') }), 'error'); return; }
+        apply(nv);
+        say('pillModel', t('msg.pillQuotaModel', { name: name }));
       });
     };
     // 悬停浮层各段的显隐（全不勾选 = 只留进度条）
@@ -2885,6 +2963,8 @@ function SettingsPage(props) {
         showBalance: false,
         widgetVisible: true,
         quotaRefModel: 'deepseek-v4.1-flash',
+        quotaRefModels: ['deepseek-v4.1-flash'],
+        pillQuotaModel: '',
         currencyMode: 'auto',
         pillBalanceSource: 'deepseek',
         tipShowBalance: true,
@@ -2914,7 +2994,7 @@ function SettingsPage(props) {
     var EXPORT_KEYS = [
       'refreshMinutes', 'widgetVisible', 'widgetScale', 'sidebarEntry',
       'showBalance', 'pillBalanceSource', 'tipShowBalance', 'tipShowQuota', 'tipShowPace',
-      'percentMode', 'quotaRefModel', 'currencyMode', 'minimalMode',
+      'percentMode', 'quotaRefModel', 'quotaRefModels', 'currencyMode', 'minimalMode', 'pillQuotaModel',
       'ringOuter', 'ringMiddle', 'ringInner',
       'colorUnified', 'colorFollowHost',
       'colorAll', 'colorAllWarn', 'colorAllDanger',
@@ -2960,7 +3040,7 @@ function SettingsPage(props) {
     var IMPORT_TYPES = {
       refreshMinutes: 'number', widgetVisible: 'boolean', widgetScale: 'number', sidebarEntry: 'boolean',
       showBalance: 'boolean', pillBalanceSource: 'string', tipShowBalance: 'boolean', tipShowQuota: 'boolean', tipShowPace: 'boolean',
-      percentMode: 'string', quotaRefModel: 'string', currencyMode: 'string', minimalMode: 'boolean',
+      percentMode: 'string', quotaRefModel: 'string', currencyMode: 'string', minimalMode: 'boolean', pillQuotaModel: 'string',
       ringOuter: 'string', ringMiddle: 'string', ringInner: 'string',
       colorUnified: 'boolean', colorFollowHost: 'boolean',
       colorAll: 'string', colorAllWarn: 'string', colorAllDanger: 'string',
@@ -3005,6 +3085,12 @@ function SettingsPage(props) {
         if (k === 'quotaRefModel' && !val) continue;
         patch[k] = val;
         count++;
+      }
+      if (Array.isArray(src.quotaRefModels)) {
+        var qids = src.quotaRefModels.filter(function (x) {
+          return typeof x === 'string' && x && x.length <= IMPORT_MAX_STRING;
+        }).slice(0, 5);
+        if (qids.length) { patch.quotaRefModels = qids; count++; }
       }
       return { patch: patch, count: count, badShape: false };
     };
@@ -3085,10 +3171,14 @@ function SettingsPage(props) {
     var openConsole = function () {
       try { window.open('https://opencode.ai/console', '_blank', 'noopener'); } catch (e) { /* 打不开不影响其它功能 */ }
     };
-    // 配额 / 币种：本页与浮层共用同一套计算（quotaSetLine / quotaTipLines 在模块作用域）
-    var qSet = quotaSetLine(value, t);
-    var qInfo = quotaOf(value);
+    // 配额 / 币种：本页与浮层共用同一套计算（quotaSetLines / quotaTipRows 在模块作用域）
+    var qSetLines = quotaSetLines(value, t);
     var modelList = goModelList(value);
+    var selQuotaModels = quotaModels(value);
+    var selQuotaIds = selQuotaModels.map(function (m) { return m.id; });
+    var quotaSummary = selQuotaModels.length
+      ? selQuotaModels.map(function (m) { return m.name || m.id; }).join(' + ')
+      : t('quota.loading');
     var errList = fetchErrors(value, t);
     var errText = errList.length ? t('err.prefix') + errList.join(isZhLocale(t) ? '、' : ', ') : '';
     var curButton = function (m, key) {
@@ -3306,15 +3396,26 @@ function SettingsPage(props) {
         tone: toneOf('quota'),
         nowrap: true,
         control: [
-          React.createElement('select', {
-            key: 'sel', className: 'ocgu-select', value: qInfo.id,
-            onChange: function (e) { setQuotaModel(e.target.value); },
-            'aria-label': t('quota.pick')
-          }, modelList.length
-            ? modelList.map(function (m) {
-              return React.createElement('option', { key: m.id, value: m.id }, m.name);
-            })
-            : [React.createElement('option', { key: 'none', value: qInfo.id }, t('quota.loading'))])
+          React.createElement('details', { key: 'quotaDd', className: 'ocgu-dd', ref: quotaDdRef },
+            React.createElement('summary', { className: 'ocgu-dd-sum', title: quotaSummary }, quotaSummary),
+            React.createElement('div', {
+              className: 'ocgu-dd-panel', style: { maxHeight: '280px', overflowY: 'auto' }
+            }, modelList.length
+              ? modelList.map(function (m) {
+                var on = selQuotaIds.indexOf(m.id) >= 0;
+                var off = !on && selQuotaIds.length >= QUOTA_MAX_MODELS;
+                return React.createElement('label', {
+                  key: m.id, className: 'ocgu-dd-item', title: m.name || m.id,
+                  'data-disabled': off ? '1' : '0'
+                },
+                  React.createElement('input', {
+                    type: 'checkbox', checked: on, disabled: off,
+                    onChange: function () { toggleQuotaModel(m.id); },
+                    'aria-label': m.name || m.id
+                  }),
+                  m.name || m.id);
+              })
+              : React.createElement('div', { className: 'ocgu-dd-item', style: { color: 'var(--dsw-alias-label-tertiary)' } }, t('quota.loading'))))
         ]
       }),
       // 金额显示计价币种（紧跟在配额参考模型选择下方）：小号分段控件 = 自动 / ¥ 人民币 / ＄ 美元
@@ -3331,10 +3432,12 @@ function SettingsPage(props) {
           }, curButton('auto', 'cur.auto'), curButton('cny', 'cur.cny'), curButton('usd', 'cur.usd'))
         ]
       }),
-      // 套餐配额：标题照搬字段标题样式，下面一行小字
+      // 套餐配额：标题照搬字段标题样式，下面每个选中的参考模型一行（金额跟随全局币种）
       React.createElement('div', { className: 'ocgu-qset', title: quotaSrcHint(value, t) },
         React.createElement('div', { className: 'ocgu-field-title' }, t('quota.title')),
-        React.createElement('div', { className: 'ocgu-hint' }, qSet)),
+        qSetLines.map(function (line, i) {
+          return React.createElement('div', { className: 'ocgu-hint', key: i }, line);
+        })),
       React.createElement('div', { className: 'ocgu-card', style: { marginTop: '10px' } },
         React.createElement('div', { style: { display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' } },
           React.createElement('span', { className: 'ocgu-badge', 'data-tone': badgeTone(ocgKeyStatus) }, statusText(ocgKeyStatus)),
@@ -3465,6 +3568,24 @@ function SettingsPage(props) {
             }, pillSrcButton('deepseek', 'pill.srcDeepseek'), pillSrcButton('quota', 'pill.srcQuota'))
           ]
         }),
+        // ②½ 左侧选「OCG配额剩余」时：从已勾选的参考模型里单选一个，浮窗左侧显示其配额剩余
+        String(value.pillBalanceSource || 'deepseek') === 'quota' ? React.createElement(FieldRow, {
+          title: t('field.pillQuotaModel'),
+          hint: t('field.pillQuotaModel.hint'),
+          msg: msgOf('pillModel'),
+          tone: toneOf('pillModel'),
+          nowrap: true,
+          disabled: !value.widgetVisible || value.showBalance === false,
+          control: [
+            React.createElement('select', {
+              key: 'sel', className: 'ocgu-select', value: (pillQuotaModelOf(value) || {}).id || '',
+              onChange: function (e) { setPillQuotaModel(e.target.value); },
+              'aria-label': t('field.pillQuotaModel')
+            }, selQuotaModels.map(function (m) {
+              return React.createElement('option', { key: m.id, value: m.id }, m.name || m.id);
+            }))
+          ]
+        }) : null,
         // ③ 鼠标悬停浮层数据控制：下拉多选（全不勾则只留进度条），避免横向占位
         React.createElement(FieldRow, {
           title: t('field.tipBalanceSrc'),

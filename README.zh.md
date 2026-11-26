@@ -95,10 +95,10 @@
 | ---------------------------- | ------------------------------------------------------------------------------------------------------------ |
 | **GitHub 直装**（推荐）      | `github:verneuil/dsh-opencode-go-usage`                                                                      |
 | **npm 安装**                 | `dsh plugin --profile web add @verneuil/dsh-opencode-go-usage`                                               |
-| **固定某个版本**             | `github:verneuil/dsh-opencode-go-usage#v3.6.1`（换成任意已发布 tag）                                         |
-| **Release 包**               | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v3.6.1/dsh-opencode-go-usage-3.5.0.tgz` |
+| **固定某个版本**             | `github:verneuil/dsh-opencode-go-usage#v3.6.2`（换成任意已发布 tag）                                         |
+| **Release 包**               | `https://github.com/verneuil/dsh-opencode-go-usage/releases/download/v3.6.2/dsh-opencode-go-usage-3.6.2.tgz` |
 | **Release 直链（始终最新）** | `https://github.com/verneuil/dsh-opencode-go-usage/releases/latest/download/dsh-opencode-go-usage.tgz`       |
-| **离线 tgz**                 | `file:D:/你的路径/dsh-opencode-go-usage-3.5.0.tgz`                                                           |
+| **离线 tgz**                 | `file:D:/你的路径/dsh-opencode-go-usage-3.6.2.tgz`                                                           |
 
 命令行等价写法（`dsh plugin` 会把声明了 `dsh.bundle` 的依赖自动加进 profile 的 bundles，无需手写 patch）：
 
@@ -136,7 +136,7 @@ dsh plugin --profile web add github:verneuil/dsh-opencode-go-usage
 
 设置页分四个标签：**用量数据**（默认）/ **浮窗管理** / **配色设置** / **通用设置**。
 
-页面顶部标题右侧是 **GitHub 图标 + 当前版本号**（如 `v3.6.1`），点击图标打开本插件仓库。
+页面顶部标题右侧是 **GitHub 图标 + 当前版本号**（如 `v3.6.2`），点击图标打开本插件仓库。
 
 **用量数据**
 

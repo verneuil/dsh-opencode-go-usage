@@ -280,6 +280,13 @@ check('live model list parses the public Go models JSON', () => {
   return !!m && m[1] === 'https://opencode.ai/inference/go/v1/models' &&
     src.includes('monthly_usage') && !src.includes('GO_PAGE_URL')
 })
+check('popover quota row labels the reference model', () => {
+  const client = read('client.js')
+  const host = read('index.js')
+  return client.includes('QUOTA_MAX_MODELS') && client.includes('quotaRefModels') &&
+    client.includes('ocgu-quota-line') && client.includes('pillQuotaModel') &&
+    host.includes('quotaRefModels') && host.includes('pillQuotaModel')
+})
 check('usdCny looks like a real rate', () => typeof data.fx?.usdCny === 'number' && data.fx.usdCny > 1 && data.fx.usdCny < 20)
 check('model table has at least 20 entries', () => Array.isArray(data.models) && data.models.length >= 20)
 check('every model has id and name', () => data.models.every((m) => typeof m.id === 'string' && m.id && typeof m.name === 'string' && m.name))

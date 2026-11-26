@@ -98,6 +98,8 @@ return z.object({
   showBalance: z.boolean().default(false).volatile(),
   // 浮窗左侧余额的数据来源：deepseek = DeepSeek 官方余额；quota = 按参考模型折算的 OCG 配额剩余
   pillBalanceSource: z.string().default("deepseek").volatile(),
+  // 浮窗左侧选 OCG 配额剩余时，具体显示哪个参考模型的配额（空 = 已选中的第一个）
+  pillQuotaModel: z.string().default("").volatile(),
   // 鼠标悬停浮层里两段余额各自是否显示（都不选则浮层只留进度条）
   tipShowBalance: z.boolean().default(true).volatile(),
   tipShowQuota: z.boolean().default(true).volatile(),
@@ -106,6 +108,8 @@ return z.object({
   percentMode: z.string().default("used").volatile(),
   // 配额参考模型（模型 ID）：用「月度已用百分比 × 该模型的 Go 档月度配额」折算金额
   quotaRefModel: z.string().default("deepseek-v4.1-flash").volatile(),
+  // 多选参考模型（最多 5 个）；空数组时回退到旧的单值 quotaRefModel
+  quotaRefModels: z.array(z.string()).default([]).volatile(),
   // 计价币种：auto = 中文界面用 ¥ / 英文界面用 $；cny / usd 为强制
   currencyMode: z.string().default("auto").volatile(),
   // 极简模式（默认开）：三环嵌套（外 M / 中 W / 内 R）+ 环旁余额（只到元）

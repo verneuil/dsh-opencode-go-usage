@@ -1,3 +1,37 @@
+## 3.6.2
+
+### 新功能
+- 「用量数据 → 配额参考模型选择」由单选改为多选下拉：最多勾选 5 个模型；
+- 「OpenCode Go 套餐配额」按勾选的模型逐行显示总配额 / 消耗 / 剩余；
+- 悬停浮层改为按模型逐行显示配额剩余；
+- 「浮窗管理 → 浮窗左侧余额数据」选择「OCG配额剩余」时，新增**单选下拉**：从已勾选的参考模型中选择一个，浮窗左侧显示该模型的配额剩余。
+
+### 改进
+- 设置页、悬停浮层、浮窗左侧的金额显示币种统一跟随「金额显示计价币种」内的设置；
+- 内置兜底数据刷新（2026-11-26）：37 个模型（新增 LongCat-2.5、Jev 1.14、GPT-6 Luna Decision、Gemini Decision 1、Gemini Embedding 2、Qwen3 Embedding 8B、text-embedding-3-small、HungerG Free；移除 LongCat-2.0、LongCat 2.5 Free、GLM-5.2）；GLM-5.3 额度 100 → 200，Kimi K3.1 Pro 15 → 60；汇率快照更新到 25 Nov 2026（1 USD = 6.678179 CNY）。
+
+### 兼容性
+- 新增 `quotaRefModels` 数组与 `pillQuotaModel` 字段；旧的 `quotaRefModel` 继续保留并作为单模型回退，旧配置升级后仍显示原来的模型；
+- 未勾选任何模型时自动回退到 DeepSeek V4.1 Flash 1017；已下架的模型 id 会被忽略；
+- 配置导入 / 导出覆盖新的多选模型与浮窗模型字段。
+
+---
+
+### Features
+- **Quota reference models** on the Usage data tab changed from single-select to a **multi-select dropdown**: up to 5 models;
+- **OpenCode Go plan quota** now shows one line per selected model (total / used / left);
+- The hover popover now lists **quota left per model**;
+- When **Pill left-side balance data** is set to “OCG quota left”, a new **single-select dropdown** lets you pick one of the selected reference models; the pill's left side then shows that model's remaining quota.
+
+### Improvements
+- Amounts in the settings page, hover popover and the pill's left side all follow the **Amount display currency** setting;
+- Refreshed the bundled fallback data (2026-11-26): 37 models (adds LongCat-2.5, Jev 1.14, GPT-6 Luna Decision, Gemini Decision 1, Gemini Embedding 2, Qwen3 Embedding 8B, text-embedding-3-small and HungerG Free; removes LongCat-2.0, LongCat 2.5 Free and GLM-5.2); GLM-5.3 quota 100 → 200 and Kimi K3.1 Pro 15 → 60; the exchange-rate snapshot is updated to 25 Nov 2026 (1 USD = 6.678179 CNY).
+
+### Compatibility
+- Adds the `quotaRefModels` array and `pillQuotaModel` field; the old `quotaRefModel` is kept as the single-model fallback, so existing settings still show the same model after upgrading;
+- With no model selected, it falls back to **DeepSeek V4.1 Flash 1017**; ids of models that are no longer listed are ignored;
+- Config import / export covers the new multi-model and pill-model fields.
+
 ## 3.6.1
 
 ### 修复
